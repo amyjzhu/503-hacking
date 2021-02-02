@@ -1,17 +1,8 @@
 d3.json("data.json").then(data => {
     console.log(data)
 
-    var packageLinks = data.map(p => p.uses.map(link => {return {source: p.name, target: link, value: 1}})).flat();
-    console.log(packageLinks)
-    // TODO create links object with source, target, value
-    // TODO package nodes will have to become class nodes with different groups
-    /*"nodes": [
-    {"id": "Myriel", "group": 1},
-    {"id": "Napoleon", "group": 1},
-    {"id": "Mlle.Baptistine", "group": 1},*/
+    // this is kind of just temp. data processing stuff for a prototype
 
-    var classLinks = data.map(p => p.classes.map(cls => cls.uses.map(link => {return {source: cls.name, target: link, value: 1}}))).flat().flat();
-    console.log(classLinks);
 
     var methodLinks; // should be a similar approach...
 
@@ -22,15 +13,29 @@ d3.json("data.json").then(data => {
         // not sre if these groups an be zero-indexed
         pkgGroups.push({id: pkg.name, group: idx + 1});
         pkg.classes.forEach(cls => {
-            classGroups.push({id: cls.name, group: idx + 1})
+            classGroups.push({id: cls.name, group: idx + 1, pkg: pkg.name})
         })
     })
+    
+    // TODO -- the strength of the package links should depend on number of class links
+    var packageLinks = data.map(p => p.uses.map(link => {return {source: p.name, target: link, value: 1}})).flat();
+    console.log(packageLinks)
+    
+    /*"nodes": [
+    {"id": "Myriel", "group": 1},
+    {"id": "Napoleon", "group": 1},
+    {"id": "Mlle.Baptistine", "group": 1},*/
+
+    var classLinks = data.map(p => p.classes.map(cls => cls.uses.map(link => {return {source: cls.name, target: link, value: 1}}))).flat().flat();
+    console.log(classLinks);
 
     console.log(pkgGroups);
     console.log(classGroups);
 
     // var data = {packages: [], classes: [], packageLinks: [], classLinks: [], data: []} // original data
-    var visData = {packages: pkgGroups, classes: classGroups, packageLinls: packageLinks, classLinks: classLinks, data: data};
+    var visData = {packages: pkgGroups, classes: classGroups, packageLinks: packageLinks, classLinks: classLinks, data: data};
+
+    var vis = new StructureVis({parentElement: "#vis", data: visData})
 
     // TODO we should also have a different views data structure to help us filter elements
 
