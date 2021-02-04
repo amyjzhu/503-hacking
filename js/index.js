@@ -1,3 +1,4 @@
+
 d3.json("data.json").then(data => {
     console.log(data)
 
@@ -39,4 +40,9 @@ d3.json("data.json").then(data => {
 
     // TODO we should also have a different views data structure to help us filter elements
 
+    
+    d3.select("#in")
+        .on("click", () => { vis.changeViewLevel("up") });
+    d3.select("#out")
+        .on("click", () => { vis.changeViewLevel("down") })
 })
