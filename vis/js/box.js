@@ -21,6 +21,13 @@ class StructureVis {
         // this.colours = ["red", "blue", "yellow", "green"]
         this.colours = d3.schemePastel1;
 
+        this.zoomBarHeight = 300;
+        this.minZoom = 0.5;
+        this.maxZoom = 20;
+        this.zoomLevel = 1;
+
+        this.transitionPoints = [0.25];
+
         this.view = _config.view || "default"
         this.viewLevel = _config.view || "package"
         this.initVis();
@@ -73,6 +80,8 @@ class StructureVis {
             .on('tick', () => vis.ticked(vis));
         vis.simulation.stop();
 
+        vis.addZoomLevel();
+
         vis.update();
     }
 
@@ -100,14 +109,24 @@ class StructureVis {
         vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData, d => { console.log(vis.viewLevel + d.id); return vis.viewLevel + d.id });
         console.log(vis.boxGroups);
         vis.boxGroups = vis.boxGroupsSelect.enter().append("g").merge(vis.boxGroupsSelect);
+
+        var zoom = d3.zoom()
+        // only scale up, e.g. between 1x and 50x
+        .scaleExtent([vis.minZoom, vis.maxZoom]);
+
         vis.svg
             // .on("wheel", function (d) {
             //     var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
             //     vis.changeViewLevel(direction);
             // });
-            .call(d3.zoom().on("zoom", function () {
-                vis.chart.attr("transform", d3.event.transform)
+            .call(zoom.on("zoom", function () {
+                vis.visArea.attr("transform", d3.event.transform);
+                vis.changeViewLevel();
+                vis.zoomLevel = d3.event.transform.k;
+                console.log(vis.zoomLevel);
+                vis.updateZoomLevel();
                 // also, after a certain threshold, we should change direction
+                //scaleExtent
 
             }))
 
@@ -170,10 +189,19 @@ class StructureVis {
     changeViewLevel(direction) {
         let vis = this;
 
+        // TODO hacky, need to fix this impl later for extensibility
+        var viewThreshold = vis.transitionPoints[0] * (vis.maxZoom - vis.minZoom);
+        console.log(vis.maxZoom - vis.minZoom);
+        console.log(vis.transitionPoints[0])
+        console.log(vis.zoomLevel);
+        console.log(viewThreshold);
+        console.log(vis.viewLevel);
+        if (vis.zoomLevel >= viewThreshold && vis.viewLevel == "package") {
+
         // TODO make sure things in class stay in view
         // TODO want each box to split up naturally
-        if (direction == "up") {
-            if (vis.viewLevel == "package") {
+        // if (direction == "up") {
+            // if (vis.viewLevel == "package") {
 
                 vis.simulation.stop();
 
@@ -191,15 +219,59 @@ class StructureVis {
                 // reset the sim
                 vis.simulation.alpha(0.5);
                 vis.update();
-            }
-        } else {
-            if (vis.viewLevel == "class") {
+            // }
+        } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel == "class") {
                 vis.simulation.stop();
 
                 vis.viewLevel = "package";
                 vis.simulation.alpha(0.5);
                 vis.update();
-            }
         }
+    }
+
+    addZoomLevel() {
+        let vis = this;
+
+        vis.zoomScale = d3.scaleLinear()
+        .domain([vis.minZoom, vis.maxZoom])
+        .range([0, vis.zoomBarHeight]);
+
+        vis.zoomArea = vis.chart.append("g").attr("class", "zoombar")
+        .attr("transform", `translate(${vis.width - 70}, ${vis.height - vis.zoomBarHeight - 20})`);
+
+        vis.zoomArea.append("rect")
+        .attr("height", vis.zoomBarHeight)
+        .attr("width", 50)
+        .style("fill", "red");
+        
+        // add a bar that shows how zoomed-in we are
+        // a rectangle with zoom level indications...
+        // position the bar as an indicator of scale - zoom vs height
+
+        vis.zoomArea.selectAll("line").data(vis.transitionPoints)
+        .enter()
+        .append("line")
+        .attr("x1", 0)
+        .attr("x2", 50)
+        .attr("y1", d => vis.zoomBarHeight - vis.zoomScale(d * (vis.maxZoom - vis.minZoom)))
+        .attr("y2", d => vis.zoomBarHeight - vis.zoomScale(d * (vis.maxZoom - vis.minZoom)))
+        .style("stroke", "black");
+
+        vis.updateZoomLevel();
+    }
+
+    updateZoomLevel() {
+        let vis = this;
+
+        let zoom = vis.zoomArea.selectAll("#zoom-level").data([vis.zoomLevel]);
+
+        console.log(zoom)
+        zoom.enter().append("line").attr("id", "zoom-level")
+        .merge(zoom)
+        .attr("x1", -5)
+        .attr("x2", 55)
+        .attr("y1", d => vis.zoomBarHeight - vis.zoomScale(d))
+        .attr("y2", d => vis.zoomBarHeight - vis.zoomScale(d))
+        .style("stroke", "green");
     }
 }
