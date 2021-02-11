@@ -23,7 +23,7 @@ class StructureVis {
 
         this.zoomBarHeight = 300;
         this.minZoom = 0.5;
-        this.maxZoom = 20;
+        this.maxZoom = 10;
         this.zoomLevel = 1;
 
         this.transitionPoints = [0.25];
