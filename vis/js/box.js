@@ -18,6 +18,8 @@ class StructureVis {
         this.forceStrength = _config.forceStrength || 0.25
         this.boxWidth = 200;
         this.boxHeight = 100;
+        this.smallBoxWidth = this.boxWidth / 4;
+        this.smallBoxHeight = this.boxHeight / 4;
         // this.colours = ["red", "blue", "yellow", "green"]
         this.colours = d3.schemePastel1;
 
@@ -46,6 +48,8 @@ class StructureVis {
             .domain([1, 2, 3, 4]) // TODO make input
             .range(vis.colours)
 
+        vis.boxData = vis.data.packages.concat(vis.data.classes);
+
         // probably want to cross-reference much of 
         // Sherry's bubbleviz as I can
         // Filtering is something where we need to keep track of ids
@@ -58,6 +62,15 @@ class StructureVis {
 
         vis.boxArea = vis.visArea.append("g").attr("class", "boxes");
 
+        // calculate classes by package
+
+        vis.classesByPackage = {};
+        vis.data.packages.map(p => p.id).forEach(id => {
+            vis.classesByPackage[id] = vis.data.classes.filter(c => c.pkg == id);
+        });
+
+        console.log(vis.classesByPackage);
+
         // let's add some buttons
 
          // charge function that is called for each node, creates repulsion between nodes
@@ -68,6 +81,9 @@ class StructureVis {
 
         // maybe I could change initial position by 
         // setting is before we start the simulation?
+        // TODO I only want to run the simulation ONCE. and I don't want to move 
+        // items after the first time.
+        // Also need simulation for classes INSIDE packages
         vis.simulation = d3.forceSimulation()
             .velocityDecay(0.18)
             // .force("link", d3.forceLink(vis.linkData).id(d => d.id))
@@ -80,6 +96,29 @@ class StructureVis {
             .on('tick', () => vis.ticked(vis));
         vis.simulation.stop();
 
+        // let's also make simulations per class
+        vis.perPkgSimulations = Object.keys(vis.classesByPackage).map(pkg => {
+            var mapping = {};
+            mapping.id = pkg;
+            mapping.sim = 
+            d3.forceSimulation()
+            .velocityDecay(0.18)
+            // .force("link", d3.forceLink(vis.linkData).id(d => d.id))
+            .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
+            .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
+            .force('charge', d3.forceManyBody().strength(charge))
+            // .force("charge", d3.forceManyBody())
+            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
+            .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
+            .on('tick', () => vis.classTicked(vis));
+            mapping.cls = vis.classesByPackage[pkg];
+            return mapping;
+        });
+        
+        vis.perPkgSimulations.forEach(sim => sim.sim.stop());
+
+        console.log(vis.perPkgSimulations)
+
         vis.addZoomLevel();
 
         vis.update();
@@ -90,11 +129,11 @@ class StructureVis {
 
         // filter the data according to view level
         // and view, eventually
+
+
         if (this.viewLevel == "package") {
-            vis.boxData = vis.data.packages;
             vis.linkData = vis.data.packageLinks;
         } else {
-            vis.boxData = vis.data.classes;
             vis.linkData = vis.data.classLinks;
         }
 
@@ -105,10 +144,6 @@ class StructureVis {
         let vis = this;
         // need to create 
 
-        console.log(vis.boxData)
-        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData, d => { console.log(vis.viewLevel + d.id); return vis.viewLevel + d.id });
-        console.log(vis.boxGroups);
-        vis.boxGroups = vis.boxGroupsSelect.enter().append("g").merge(vis.boxGroupsSelect);
 
         var zoom = d3.zoom()
         // only scale up, e.g. between 1x and 50x
@@ -123,31 +158,49 @@ class StructureVis {
                 vis.visArea.attr("transform", d3.event.transform);
                 vis.changeViewLevel();
                 vis.zoomLevel = d3.event.transform.k;
-                console.log(vis.zoomLevel);
                 vis.updateZoomLevel();
                 // also, after a certain threshold, we should change direction
                 //scaleExtent
 
-            }))
+            }));
+
+            
+        console.log(vis.boxData);
+        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == "package"), d => { return vis.viewLevel + d.id });
+        console.log(vis.boxGroups);
+        vis.boxGroups = vis.boxGroupsSelect.enter().append("g").merge(vis.boxGroupsSelect);
 
         vis.boxGroupsSelect.exit().remove();
 
 
         var boxes = vis.boxGroups.selectAll("rect").data(d => [d]);
 
+        // packages
         boxes.enter().append("rect")
             .attr("class", "box")
             .merge(boxes)
             .attr("width", vis.boxWidth)
             .attr("height", vis.boxHeight)
-            // .on("wheel", function(d){
-            //     var direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
-            //     vis.changeViewLevel(direction);
-            // })
             // colour coded by group
-            .style("fill", d => vis.colourScale(d.group));
+            .style("fill", d => vis.viewLevel == "package" ? vis.colourScale(d.group) : "none")
+            .style("stroke", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group));
         console.log(boxes)
         boxes.exit().remove();
+
+        // var classGroupsSelect = vis.boxGroups.selectAll("g").data(
+        // vis.classGroups = classGroupsSelect.enter().append("g").attr("class", "classGroup").merge(classGroupsSelect);
+
+        vis.classRects = vis.boxGroups.selectAll(".class-box").data(pkg => vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id), d => vis.viewLevel + d.id );
+        // now for each class, I want to make a simulation
+        // with packageForClasses or whatever
+        vis.classRects = vis.classRects.enter()
+        .append("rect")
+        .attr("class", "class-box")
+        .merge(vis.classRects)
+        .attr("width", vis.smallBoxHeight)
+        .attr("height", vis.smallBoxHeight)
+        .style("fill", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group));
+
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
 
@@ -166,6 +219,8 @@ class StructureVis {
 
         vis.links.exit().remove();
 
+        //TODO: okay, links have to be part of the boxData... hmm...
+        // so changing it probably won't work because it's inter-graph
         vis.simulation.nodes(vis.boxData).restart()
         .force("link", d3.forceLink(vis.linkData).id(d => d.id));
         
@@ -186,45 +241,59 @@ class StructureVis {
             .attr("y2", d => d.target.y)
     }
 
+    classTicked(vis) {
+
+        vis.classRects
+        .attr("transform", d => 
+        `translate(${Math.max(vis.smallBoxWidth, Math.min(vis.boxWidth - vis.smallBoxWidth, d.x))},
+        ${Math.max(vis.smallBoxHeight, Math.min(vis.boxHeight - vis.smallBoxHeight, d.y))})`)
+
+        // do something like this to bound it according to the package
+        // TODO figure out how to do the links... can they all be together in one?
+        // .attr("cx", function(d) {
+        //     return (d.x = Math.max(radius, Math.min(width - radius, d.x)));
+        //   })
+        //   .attr("cy", function(d) {
+        //     return (d.y = Math.max(radius, Math.min(height - radius, d.y)));
+
+        // are the links going to follow them around? oh... yes.
+        vis.links
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y)
+            // todo make sure they are really linked properly...
+    }
+
     changeViewLevel(direction) {
         let vis = this;
 
         // TODO hacky, need to fix this impl later for extensibility
         var viewThreshold = vis.transitionPoints[0] * (vis.maxZoom - vis.minZoom);
-        console.log(vis.maxZoom - vis.minZoom);
-        console.log(vis.transitionPoints[0])
-        console.log(vis.zoomLevel);
-        console.log(viewThreshold);
-        console.log(vis.viewLevel);
+        
         if (vis.zoomLevel >= viewThreshold && vis.viewLevel == "package") {
-
-        // TODO make sure things in class stay in view
-        // TODO want each box to split up naturally
-        // if (direction == "up") {
-            // if (vis.viewLevel == "package") {
-
                 vis.simulation.stop();
-
-                // vis.simulation.stop();
-                // We need to set the starting positions of classes to match packages
-                // Still goes absolutely insane though
-                vis.data.classes = vis.data.classes.map(cls => {
-                    var pkg = vis.data.packages.find(p => p.id == cls.pkg)
-                    cls.x = pkg.x;
-                    cls.y = pkg.y;
-                    return cls;
-                });
+                // vis.data.classes = vis.data.classes.map(cls => {
+                //     var pkg = vis.data.packages.find(p => p.id == cls.pkg)
+                //     cls.x = pkg.x;
+                //     cls.y = pkg.y;
+                //     return cls;
+                // });
                 
                 vis.viewLevel = "class";
                 // reset the sim
-                vis.simulation.alpha(0.5);
+
+                
+                vis.perPkgSimulations.forEach(sim => {
+                    console.log(sim);
+                    sim.sim.nodes(sim.cls).restart();
+                })
+
                 vis.update();
-            // }
         } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel == "class") {
                 vis.simulation.stop();
 
                 vis.viewLevel = "package";
-                vis.simulation.alpha(0.5);
                 vis.update();
         }
     }
@@ -265,7 +334,6 @@ class StructureVis {
 
         let zoom = vis.zoomArea.selectAll("#zoom-level").data([vis.zoomLevel]);
 
-        console.log(zoom)
         zoom.enter().append("line").attr("id", "zoom-level")
         .merge(zoom)
         .attr("x1", -5)
