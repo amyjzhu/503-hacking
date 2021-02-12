@@ -19,7 +19,7 @@ d3.json("data.json").then(data => {
     })
     
     // TODO -- the strength of the package links should depend on number of class links
-    var packageLinks = data.map(p => p.uses.map(link => {return {source: p.name, target: link, value: 1, type:"package"}})).flat();
+    var packageLinks = data.map(p => p.uses.map(link => {return {source: `package${p.name}`, target: `package${link}`, value: 1, type:"package"}})).flat();
     console.log(packageLinks)
     
     /*"nodes": [
@@ -27,7 +27,7 @@ d3.json("data.json").then(data => {
     {"id": "Napoleon", "group": 1},
     {"id": "Mlle.Baptistine", "group": 1},*/
 
-    var classLinks = data.map(p => p.classes.map(cls => cls.uses.map(link => {return {source: cls.name, target: link, value: 1, type: "class"}}))).flat().flat();
+    var classLinks = data.map(p => p.classes.map(cls => cls.uses.map(link => {return {source: "class" + cls.name, target: "class" + link, value: 1, type: "class"}}))).flat().flat();
     console.log(classLinks);
 
     console.log(pkgGroups);

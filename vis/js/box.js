@@ -28,7 +28,9 @@ class StructureVis {
         this.maxZoom = 10;
         this.zoomLevel = 1;
 
-        this.transitionPoints = [0.25];
+        // this.transitionPoints = [0.25];
+        this.transitionPoints = [0.15];
+        this.initialized = 0;
 
         this.view = _config.view || "default"
         this.viewLevel = _config.view || "package"
@@ -100,22 +102,28 @@ class StructureVis {
         vis.perPkgSimulations = Object.keys(vis.classesByPackage).map(pkg => {
             var mapping = {};
             mapping.id = pkg;
-            mapping.sim = 
-            d3.forceSimulation()
+            mapping.simFn = () => {
+            var pkgInfo = vis.data.packages.find(p => p.id == pkg);
+            console.log(pkgInfo.x + vis.boxWidth/2);
+
+            return d3.forceSimulation()
             .velocityDecay(0.18)
             // .force("link", d3.forceLink(vis.linkData).id(d => d.id))
-            .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
-            .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
-            .force('charge', d3.forceManyBody().strength(charge))
+            // instead of vis.center.x we need the package
+            // yeah, the package... doesn't have an x value... hm
+            .force('x', d3.forceX().strength(vis.forceStrength).x(pkgInfo.x + vis.boxWidth / 2))
+            .force('y', d3.forceY().strength(vis.forceStrength).y(pkgInfo.y + vis.boxHeight / 2))
+            .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallBoxHeight, 2) * vis.forceStrength))
             // .force("charge", d3.forceManyBody())
-            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
-            .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
+            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallBoxWidth / 2, 2) + Math.pow(vis.smallBoxHeight / 2, 2))/2))
+            .force("center", d3.forceCenter(pkgInfo.x + vis.boxWidth/2, pkgInfo.y + vis.boxHeight / 2))
             .on('tick', () => vis.classTicked(vis));
+            }
             mapping.cls = vis.classesByPackage[pkg];
             return mapping;
         });
         
-        vis.perPkgSimulations.forEach(sim => sim.sim.stop());
+        // vis.perPkgSimulations.forEach(sim => sim.sim.stop());
 
         console.log(vis.perPkgSimulations)
 
@@ -166,11 +174,12 @@ class StructureVis {
 
             
         console.log(vis.boxData);
-        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == "package"), d => { return vis.viewLevel + d.id });
+        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == "package"), d => { return d.type + d.id });
         console.log(vis.boxGroups);
-        vis.boxGroups = vis.boxGroupsSelect.enter().append("g").merge(vis.boxGroupsSelect);
+        console.log(vis.boxGroupsSelect);
+        vis.boxGroups = vis.boxGroupsSelect.enter().append("g").attr("class", "boxgroups").merge(vis.boxGroupsSelect);
 
-        vis.boxGroupsSelect.exit().remove();
+        // vis.boxGroupsSelect.exit().remove();
 
 
         var boxes = vis.boxGroups.selectAll("rect").data(d => [d]);
@@ -185,12 +194,21 @@ class StructureVis {
             .style("fill", d => vis.viewLevel == "package" ? vis.colourScale(d.group) : "none")
             .style("stroke", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group));
         console.log(boxes)
-        boxes.exit().remove();
+        // boxes.exit().remove();
 
-        // var classGroupsSelect = vis.boxGroups.selectAll("g").data(
-        // vis.classGroups = classGroupsSelect.enter().append("g").attr("class", "classGroup").merge(classGroupsSelect);
+        var classGroupsSelect = vis.boxArea.selectAll(".classGroup").data(vis.boxData.filter(d => d.type == "package"), d => { return d.type + d.id });
+        // var classGroupsSelect = vis.boxGroups.selectAll("g").data(d => [d]);
+        vis.classGroups = classGroupsSelect.enter().append("g").attr("class", "classGroup").merge(classGroupsSelect);
 
-        vis.classRects = vis.boxGroups.selectAll(".class-box").data(pkg => vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id), d => vis.viewLevel + d.id );
+        // vis.classRects = vis.boxGroups.selectAll(".class-box").data(pkg => vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id), d => {console.log(d.type + d.id); return d.type + d.id} );
+        // console.log(vis.boxGroups.selectAll("rect").data(pkg => { return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id) }, d => d.index ));
+        // console.log(vis.boxGroups);
+        // console.log(vis.boxGroups.selectAll("g")); // WHY IS SELECTION EMPTY
+        // console.log(classGroupsSelect);
+        // console.log(vis.classGroups);
+        // console.log(vis.classGroups.selectAll("rect"));
+        // vis.classRects = vis.boxGroups.selectAll(".class-box").data(pkg => { console.log(vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)); return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)}, d => d.index );
+        vis.classRects = vis.classGroups.selectAll("rect").data(pkg => { console.log(vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)); return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)}, d => d.type + d.id );
         // now for each class, I want to make a simulation
         // with packageForClasses or whatever
         vis.classRects = vis.classRects.enter()
@@ -221,16 +239,23 @@ class StructureVis {
 
         //TODO: okay, links have to be part of the boxData... hmm...
         // so changing it probably won't work because it's inter-graph
+        // oh, we may not want to restart here all the time...
+        if (vis.initialized == 0) {
         vis.simulation.nodes(vis.boxData).restart()
-        .force("link", d3.forceLink(vis.linkData).id(d => d.id));
+        vis.initialized = 1;
+        }
+        // .force("link", d3.forceLink(vis.linkData).id(d => d.type + d.id));
         
     }
 
     // todo why is there even a separation between the two? need to 
     // investigate forceSimulation more
     ticked(vis) {
+        console.log("ticked getting called");
+        console.log(vis.boxData)
         // console.log(vis.boxGroups)
         vis.boxGroups
+        // vis.boxArea.selectAll(".boxgroups")
             .attr("transform", d => `translate(${d.x}, ${d.y})`);
         vis.boxGroups.exit().remove();
 
@@ -243,10 +268,16 @@ class StructureVis {
 
     classTicked(vis) {
 
+        // TODO why don't these retain their original positions????
         vis.classRects
         .attr("transform", d => 
-        `translate(${Math.max(vis.smallBoxWidth, Math.min(vis.boxWidth - vis.smallBoxWidth, d.x))},
-        ${Math.max(vis.smallBoxHeight, Math.min(vis.boxHeight - vis.smallBoxHeight, d.y))})`)
+        {
+            // console.log(d); 
+        // `translate(${Math.max(vis.smallBoxWidth, Math.min(vis.boxWidth - vis.smallBoxWidth, d.x))},
+        // ${Math.max(vis.smallBoxHeight, Math.min(vis.boxHeight - vis.smallBoxHeight, d.y))})`);
+        // need to un-transform... hmmm...
+        return `translate(${d.x}, ${d.y})`});
+
 
         // do something like this to bound it according to the package
         // TODO figure out how to do the links... can they all be together in one?
@@ -281,17 +312,32 @@ class StructureVis {
                 // });
                 
                 vis.viewLevel = "class";
+                console.log("changing to class!")
+
                 // reset the sim
 
-                
+            
                 vis.perPkgSimulations.forEach(sim => {
-                    console.log(sim);
-                    sim.sim.nodes(sim.cls).restart();
+                    if (sim.sim == undefined) {
+                    // now we need to create it, if it's the first time...
+                        sim.sim = sim.simFn();
+                        sim.sim.nodes(sim.cls).restart();
+                    } else {
+                        // sim.sim.alpha(0.1);
+                        // sim.sim.nodes(sim.cls).restart();
+                        // this.classTicked(vis);
+                    }
                 })
 
                 vis.update();
         } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel == "class") {
+            // TODO why do they jump so far back afterwards????
                 vis.simulation.stop();
+                console.log("changing to package!")
+
+                vis.perPkgSimulations.forEach(sim => {
+                    sim.sim.stop();
+                })
 
                 vis.viewLevel = "package";
                 vis.update();
