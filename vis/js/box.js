@@ -18,8 +18,8 @@ class StructureVis {
         this.forceStrength = _config.forceStrength || 0.25
         this.boxWidth = 200;
         this.boxHeight = 100;
-        this.smallBoxWidth = this.boxWidth / 4;
-        this.smallBoxHeight = this.boxHeight / 4;
+        this.smallBoxWidth = this.boxWidth / 3;
+        this.smallBoxHeight = this.boxHeight / 3;
         // this.colours = ["red", "blue", "yellow", "green"]
         this.colours = d3.schemePastel1;
 
@@ -115,7 +115,7 @@ class StructureVis {
             .force('y', d3.forceY().strength(vis.forceStrength).y(pkgInfo.y + vis.boxHeight / 2))
             .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallBoxHeight, 2) * vis.forceStrength))
             // .force("charge", d3.forceManyBody())
-            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallBoxWidth / 2, 2) + Math.pow(vis.smallBoxHeight / 2, 2))/2))
+            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallBoxWidth / 2, 2) + Math.pow(vis.smallBoxHeight / 2, 2))))
             .force("center", d3.forceCenter(pkgInfo.x + vis.boxWidth/2, pkgInfo.y + vis.boxHeight / 2))
             .on('tick', () => vis.classTicked(vis));
             }
@@ -208,14 +208,17 @@ class StructureVis {
         // console.log(vis.classGroups);
         // console.log(vis.classGroups.selectAll("rect"));
         // vis.classRects = vis.boxGroups.selectAll(".class-box").data(pkg => { console.log(vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)); return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)}, d => d.index );
-        vis.classRects = vis.classGroups.selectAll("rect").data(pkg => { console.log(vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)); return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)}, d => d.type + d.id );
+        vis.perClassGroup = vis.classGroups.selectAll("g").data(pkg => { console.log(vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)); return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)}, d => d.type + d.id );
+        vis.perClassGroup = vis.perClassGroup.enter().append("g").merge(vis.perClassGroup);
         // now for each class, I want to make a simulation
         // with packageForClasses or whatever
+    
+        vis.classRects = vis.perClassGroup.selectAll("rect").data(d => [d]);
         vis.classRects = vis.classRects.enter()
         .append("rect")
         .attr("class", "class-box")
         .merge(vis.classRects)
-        .attr("width", vis.smallBoxHeight)
+        .attr("width", vis.smallBoxWidth)
         .attr("height", vis.smallBoxHeight)
         .style("fill", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group));
 
@@ -228,6 +231,18 @@ class StructureVis {
             .attr("dy", ".35em")
             .text(d => d.id);
         texts.exit().remove();
+
+        // TODO should just make individual groups for each class box... but meh...
+        vis.classTexts = vis.perClassGroup.selectAll("text").data(d => [d]);
+
+        vis.classTexts = vis.classTexts.enter().append("text")
+            .merge(vis.classTexts)
+            .attr("dx", 12)
+            .attr("dy", ".35em")
+            // .transition()
+            .text(d => vis.viewLevel == "package" ? "" : d.id);
+        vis.classTexts.exit().remove();
+
 
         vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => d.source + d.target);
         vis.links = vis.links.join("line")
@@ -273,7 +288,7 @@ class StructureVis {
     classTicked(vis) {
 
         // TODO why don't these retain their original positions????
-        vis.classRects
+        vis.perClassGroup
         .attr("transform", d => 
         {
             // console.log(d); 
@@ -281,8 +296,7 @@ class StructureVis {
         // ${Math.max(vis.smallBoxHeight, Math.min(vis.boxHeight - vis.smallBoxHeight, d.y))})`);
         // need to un-transform... hmmm...
         return `translate(${d.x}, ${d.y})`});
-
-
+ 
         // do something like this to bound it according to the package
         // TODO figure out how to do the links... can they all be together in one?
         // .attr("cx", function(d) {
@@ -393,7 +407,9 @@ class StructureVis {
         vis.zoomArea.append("rect")
         .attr("height", vis.zoomBarHeight)
         .attr("width", 50)
-        .style("fill", "red");
+        .style("fill", "rgba(186, 85, 211, 0.5)")
+        .style("stroke", "rgb(186, 85, 211)")
+        .style("stroke-width", 2);
         
         // add a bar that shows how zoomed-in we are
         // a rectangle with zoom level indications...
@@ -406,7 +422,8 @@ class StructureVis {
         .attr("x2", 50)
         .attr("y1", d => vis.zoomBarHeight - vis.zoomScale(d * (vis.maxZoom - vis.minZoom)))
         .attr("y2", d => vis.zoomBarHeight - vis.zoomScale(d * (vis.maxZoom - vis.minZoom)))
-        .style("stroke", "black");
+        .style("stroke", "black")
+        .style("stroke-width", 2);
 
         vis.updateZoomLevel();
     }
@@ -418,10 +435,11 @@ class StructureVis {
 
         zoom.enter().append("line").attr("id", "zoom-level")
         .merge(zoom)
-        .attr("x1", -5)
-        .attr("x2", 55)
+        .attr("x1", -10)
+        .attr("x2", 60)
         .attr("y1", d => vis.zoomBarHeight - vis.zoomScale(d))
         .attr("y2", d => vis.zoomBarHeight - vis.zoomScale(d))
-        .style("stroke", "green");
+        .style("stroke", "Purple")
+        .style("stroke-width", 3);
     }
 }
