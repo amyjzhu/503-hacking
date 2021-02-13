@@ -229,7 +229,7 @@ class StructureVis {
             .text(d => d.id);
         texts.exit().remove();
 
-        vis.links = vis.linkArea.selectAll("line").data(vis.linkData);
+        vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => d.source + d.target);
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
             .attr("stroke", "#999")
@@ -242,9 +242,11 @@ class StructureVis {
         // oh, we may not want to restart here all the time...
         if (vis.initialized == 0) {
         vis.simulation.nodes(vis.boxData).restart()
+        // this lower line is optional
+        .force("link", d3.forceLink(vis.linkData).id(d => d.type + d.id));
+
         vis.initialized = 1;
         }
-        // .force("link", d3.forceLink(vis.linkData).id(d => d.type + d.id));
         
     }
 
@@ -259,11 +261,13 @@ class StructureVis {
             .attr("transform", d => `translate(${d.x}, ${d.y})`);
         vis.boxGroups.exit().remove();
 
+    
+        // console.log(vis.links)
         vis.links
             .attr("x1", d => d.source.x)
             .attr("y1", d => d.source.y)
             .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y)
+            .attr("y2", d => d.target.y);
     }
 
     classTicked(vis) {
@@ -288,16 +292,44 @@ class StructureVis {
         //     return (d.y = Math.max(radius, Math.min(height - radius, d.y)));
 
         // are the links going to follow them around? oh... yes.
+        // oksy, I need to set it so that
+
+        // console.log(vis.links)
+        // console.log(vis.boxData)
+        
         vis.links
+            .attr("x1", d => vis.boxData.find(data => d.source == (data.type + data.id)).x)
+            .attr("y1", d => vis.boxData.find(data => d.source == (data.type + data.id)).y)
+            .attr("x2", d => vis.boxData.find(data => d.target == (data.type + data.id)).x)
+            .attr("y2", d => vis.boxData.find(data => d.target == (data.type + data.id)).y);
+            // todo make sure they are really linked properly...
+    }
+
+    updateLinks() {
+        let vis = this;
+
+        // having links go across different force graphs seems a bit troublesome...
+        // so this is a hacky workaround for now
+        if (vis.viewLevel == "package") {
+            vis.links
             .attr("x1", d => d.source.x)
             .attr("y1", d => d.source.y)
             .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y)
-            // todo make sure they are really linked properly...
+            .attr("y2", d => d.target.y);
+        } else {
+        vis.links
+            .attr("x1", d => vis.boxData.find(data => d.source == data.type + data.id).x)
+            .attr("y1", d => vis.boxData.find(data => d.source == data.type + data.id).y)
+            .attr("x2", d => vis.boxData.find(data => d.target == data.type + data.id).x)
+            .attr("y2", d => vis.boxData.find(data => d.target == data.type + data.id).y)
+        }
     }
 
     changeViewLevel(direction) {
         let vis = this;
+
+        console.log(vis.data.packageLinks);
+        console.log(vis.data.classLinks);
 
         // TODO hacky, need to fix this impl later for extensibility
         var viewThreshold = vis.transitionPoints[0] * (vis.maxZoom - vis.minZoom);
@@ -330,6 +362,8 @@ class StructureVis {
                 })
 
                 vis.update();
+                vis.updateLinks();
+
         } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel == "class") {
             // TODO why do they jump so far back afterwards????
                 vis.simulation.stop();
@@ -341,6 +375,8 @@ class StructureVis {
 
                 vis.viewLevel = "package";
                 vis.update();
+                vis.updateLinks();
+
         }
     }
 
