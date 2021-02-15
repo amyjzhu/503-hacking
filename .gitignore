@@ -1,2 +1,4 @@
 
 .vscode/
+/codemap/node_modules/
+/codemap/out/
