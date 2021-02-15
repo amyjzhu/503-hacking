@@ -103,6 +103,7 @@ class StructureVis {
         console.log(vis.perPkgSimulations)
 
         vis.addZoomLevel();
+        vis.addViewButtons();
 
         vis.update();
     }
@@ -151,7 +152,8 @@ class StructureVis {
             .attr("height", vis.boxHeight)
             // colour coded by group
             .style("fill", d => vis.viewLevel == "package" ? vis.colourScale(d.group) : "none")
-            .style("stroke", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group));
+            .style("stroke", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group))
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
         console.log(boxes)
 
         // classes
@@ -168,7 +170,8 @@ class StructureVis {
         .merge(vis.classRects)
         .attr("width", vis.smallBoxWidth)
         .attr("height", vis.smallBoxHeight)
-        .style("fill", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group));
+        .style("fill", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group))
+        .style("visibility", d => { console.log(d.views); return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden"});
 
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
@@ -176,7 +179,8 @@ class StructureVis {
             .merge(texts)
             .attr("dx", 12)
             .attr("dy", ".35em")
-            .text(d => d.id);
+            .text(d => d.id)
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
         texts.exit().remove();
 
         vis.classTexts = vis.perClassGroup.selectAll("text").data(d => [d]);
@@ -185,10 +189,12 @@ class StructureVis {
             .attr("dx", 12)
             .attr("dy", ".35em")
             // .transition()
-            .text(d => vis.viewLevel == "package" ? "" : d.id);
+            .text(d => vis.viewLevel == "package" ? "" : d.id)
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
         vis.classTexts.exit().remove();
 
 
+        // TODO this might be tricky with visibility
         vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => d.source + d.target);
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
@@ -208,8 +214,6 @@ class StructureVis {
     }
 
     ticked(vis) {
-        console.log("ticked getting called");
-        console.log(vis.boxData)
         vis.boxGroups
             .attr("transform", d => `translate(${d.x}, ${d.y})`);
         vis.boxGroups.exit().remove();
@@ -234,13 +238,18 @@ class StructureVis {
             .attr("x1", d => d.source.x)
             .attr("y1", d => d.source.y)
             .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
+            .attr("y2", d => d.target.y)
+            .style("visibility", d => vis.view == "default" || (d.source.views.includes(vis.view) && d.target.views.includes(vis.view)) ? "visible" : "hidden");
+
         } else {
         vis.links
             .attr("x1", d => vis.boxData.find(data => d.source == data.type + data.id).x)
             .attr("y1", d => vis.boxData.find(data => d.source == data.type + data.id).y)
             .attr("x2", d => vis.boxData.find(data => d.target == data.type + data.id).x)
             .attr("y2", d => vis.boxData.find(data => d.target == data.type + data.id).y)
+            .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.type + data.id).views.includes(vis.view) 
+            && vis.boxData.find(data => d.target == data.type + data.id).views.includes(vis.view)) ? "visible" : "hidden");
+
         }
     }
 
@@ -327,5 +336,24 @@ class StructureVis {
         .attr("y2", d => vis.zoomBarHeight - vis.zoomScale(d))
         .style("stroke", "Purple")
         .style("stroke-width", 3);
+    }
+
+    addViewButtons() {
+        let vis = this;
+
+        // collect all view data.
+        let views = Array.from(new Set(vis.boxData.map(d => d.views).flat()));
+        views.push("default");
+        console.log(views);
+
+        d3.select("#button-area").selectAll("button").data(views)
+            .enter()
+            .append("button")
+            .attr("type", "button")
+            .attr("class", "viewButton")
+            .attr("id", d => "viewButton" + d)
+            .text(d => `View ${d}`)
+            .attr("value", d => d)
+            .on("click", d => { vis.view = d; vis.render(); vis.updateLinks(); });
     }
 }

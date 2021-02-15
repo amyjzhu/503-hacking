@@ -12,9 +12,9 @@ d3.json("data.json").then(data => {
     var classGroups = [];
     data.forEach((pkg, idx) => {
         // not sre if these groups an be zero-indexed
-        pkgGroups.push({id: pkg.name, group: idx + 1, type: "package"});
+        pkgGroups.push({id: pkg.name, group: idx + 1, type: "package", views: pkg.views || []});
         pkg.classes.forEach(cls => {
-            classGroups.push({id: cls.name, group: idx + 1, pkg: pkg.name, type: "class"})
+            classGroups.push({id: cls.name, group: idx + 1, pkg: pkg.name, type: "class", views: cls.views || []})
         })
     })
     

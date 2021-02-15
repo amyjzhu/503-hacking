@@ -15,17 +15,21 @@
 	"classes": [{
 		"name": "Server",
 		"methods": [],
-		"uses": ["Client", "RPC", "Misc"]
+		"uses": ["Client", "RPC", "Misc"],
+		"views": ["RPC"]
 	}, {
 		"name": "Client",
 		"methods": [],
-		"uses": ["Server", "RPC"]
+		"uses": ["Server", "RPC"],
+		"views": ["RPC"]
 	}, {
 		"name": "RPC",
 		"methods": [],
-		"uses": []
+		"uses": [],
+		"views": ["RPC"]
 	}],
-	"uses": ["core", "util"]
+	"uses": ["core", "util"],
+	"views": ["RPC"]
 }, {
 	"name": "util",
 	"classes": [{
