@@ -126,7 +126,8 @@ class StructureVis {
                     .force('y', d3.forceY().strength(vis.forceStrength).y(clsInfo.y + vis.smallBoxHeight / 2))
                     .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
                     .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallestBoxWidth / 2, 2) + Math.pow(vis.smallestBoxHeight / 2, 2))))
-                    .force("center", d3.forceCenter(clsInfo.x + vis.smallBoxWidth / 2, clsInfo.y + vis.smallBoxWidth / 2))
+                    .force("center", d => {
+                        return  d3.forceCenter(clsInfo.x + vis.smallBoxWidth / 2, clsInfo.y + vis.smallBoxWidth / 2);})
                     .on('tick', () => vis.methodTicked(vis));
             }
             mapping.cls = vis.methodsByClass[cls];
@@ -321,9 +322,6 @@ class StructureVis {
 
     changeViewLevel(direction) {
         let vis = this;
-
-        console.log(vis.data.packageLinks);
-        console.log(vis.data.classLinks);
 
         // TODO hacky, need to fix this impl later for extensibility
         var viewThreshold = vis.transitionPoints[0] * (vis.maxZoom - vis.minZoom);
