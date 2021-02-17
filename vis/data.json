@@ -6,7 +6,13 @@
 		"uses": ["Visitor", "Client", "RPC", "Misc"]
 	}, {
 		"name": "Visitor",
-		"methods": [],
+		"methods": [{
+			"name": "visit", 
+			"uses": []
+			}, {
+			 "name": "visitBinary",
+			 "uses": ["visit"]
+			}],
 		"uses": ["Count", "Misc"]
 	}],
 	"uses": ["net", "util", "parse"]
@@ -14,7 +20,13 @@
 	"name": "net",
 	"classes": [{
 		"name": "Server",
-		"methods": [],
+		"methods": [{
+			"name": "bind", 
+			"uses": []
+			}, {
+			 "name": "receive",
+			 "uses": ["bind"]
+			}],
 		"uses": ["Client", "RPC", "Misc"],
 		"views": ["RPC"]
 	}, {
