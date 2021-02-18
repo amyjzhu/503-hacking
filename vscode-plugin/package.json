@@ -1,7 +1,7 @@
 {
   "name": "codemap",
   "displayName": "codemap",
-  "description": "Testy test",
+  "description": "",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.53.0"
@@ -10,32 +10,27 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:codemap.helloWorld"
+    "onCommand:codemap.d3"
   ],
-  "main": "./out/extension.js",
+  "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "codemap.helloWorld",
-        "title": "Hello World"
+        "command": "codemap.d3",
+        "title": "Run D3"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.4",
     "@types/node": "^12.11.7",
     "@types/vscode": "^1.53.0",
-    "@typescript-eslint/eslint-plugin": "^4.14.1",
-    "@typescript-eslint/parser": "^4.14.1",
     "eslint": "^7.19.0",
     "glob": "^7.1.6",
     "mocha": "^8.2.1",
