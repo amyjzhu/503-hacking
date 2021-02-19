@@ -7,17 +7,22 @@
     "vscode": "^1.53.0"
   },
   "categories": [
-    "Other"
+    "Visualization"
   ],
   "activationEvents": [
-    "onCommand:codemap.d3"
+    "onCommand:codemap.d3",
+    "onCommand:codemap.server"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
         "command": "codemap.d3",
-        "title": "Run D3"
+        "title": "Displays the visualization of your source code"
+      },
+      {
+        "command": "codemap.server",
+        "title": "Launch or connect to the background server to receive the data"
       }
     ]
   },
