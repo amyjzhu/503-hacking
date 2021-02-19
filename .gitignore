@@ -1,2 +1,7 @@
+node_modules
+.vscode-test/
+*.vsix
 
-.vscode/
+.vscode/extensions.json
+
+.vscode/settings.json
