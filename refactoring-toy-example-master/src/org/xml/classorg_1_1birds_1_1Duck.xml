@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="classorg_1_1birds_1_1Duck" kind="class" prot="public">
+    <compoundname>org::birds::Duck</compoundname>
+    <basecompoundref refid="classorg_1_1birds_1_1Bird" prot="public" virt="non-virtual">org.birds.Bird</basecompoundref>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classorg_1_1birds_1_1Duck_1ac2a51814c1bc33573d42eb33c5a5636f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.birds.Duck.quack</definition>
+        <argsstring>()</argsstring>
+        <name>quack</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/birds/Duck.java" line="5" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/birds/Duck.java" bodystart="5" bodyend="7"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="42">
+        <label>org.birds.Duck</label>
+        <link refid="classorg_1_1birds_1_1Duck"/>
+        <childnode refid="43" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>org.birds.Bird</label>
+        <link refid="classorg_1_1birds_1_1Bird"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="44">
+        <label>org.birds.Duck</label>
+        <link refid="classorg_1_1birds_1_1Duck"/>
+        <childnode refid="45" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>org.birds.Bird</label>
+        <link refid="classorg_1_1birds_1_1Bird"/>
+      </node>
+    </collaborationgraph>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/birds/Duck.java" line="3" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/birds/Duck.java" bodystart="3" bodyend="9"/>
+    <listofallmembers>
+      <member refid="classorg_1_1birds_1_1Bird_1a998f8ecf0817ea79db9b31d5a7a8221f" prot="public" virt="non-virtual"><scope>org::birds::Duck</scope><name>layEgg</name></member>
+      <member refid="classorg_1_1birds_1_1Duck_1ac2a51814c1bc33573d42eb33c5a5636f" prot="public" virt="non-virtual"><scope>org::birds::Duck</scope><name>quack</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

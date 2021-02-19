@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="classorg_1_1animals_1_1CowRenamed" kind="class" prot="public">
+    <compoundname>org::animals::CowRenamed</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classorg_1_1animals_1_1CowRenamed_1a0073d8d9c8315c2e5b577975c54c6d50" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.animals.CowRenamed.moo</definition>
+        <argsstring>()</argsstring>
+        <name>moo</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/CowRenamed.java" line="5" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/CowRenamed.java" bodystart="5" bodyend="7"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1animals_1_1CowRenamed_1a415275f0e357f70914bc18cb3af119e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.animals.CowRenamed.eat</definition>
+        <argsstring>()</argsstring>
+        <name>eat</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/CowRenamed.java" line="9" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/CowRenamed.java" bodystart="9" bodyend="11"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/CowRenamed.java" line="3" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/CowRenamed.java" bodystart="3" bodyend="12"/>
+    <listofallmembers>
+      <member refid="classorg_1_1animals_1_1CowRenamed_1a415275f0e357f70914bc18cb3af119e9" prot="public" virt="non-virtual"><scope>org::animals::CowRenamed</scope><name>eat</name></member>
+      <member refid="classorg_1_1animals_1_1CowRenamed_1a0073d8d9c8315c2e5b577975c54c6d50" prot="public" virt="non-virtual"><scope>org::animals::CowRenamed</scope><name>moo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,265 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="classorg_1_1reptile_1_1Snake" kind="class" prot="public">
+    <compoundname>org::reptile::Snake</compoundname>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classorg_1_1reptile_1_1Snake_1a4f98ba9218ecae841f28b02348cd0381" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int org.reptile.Snake.age</definition>
+        <argsstring></argsstring>
+        <name>age</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="5" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="5" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classorg_1_1reptile_1_1Snake_1a92ab1ea399811a469112213e983e3bed" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int org.reptile.Snake.name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="6" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classorg_1_1reptile_1_1Snake_1aa3277499b42fd24caf8bb676014b03d1" prot="private" static="no" mutable="no">
+        <type>String</type>
+        <definition>String org.reptile.Snake.action</definition>
+        <argsstring></argsstring>
+        <name>action</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="8" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1a4b004d96fe3caa13a34cb010dc81b011" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.Snake.Snake</definition>
+        <argsstring>(int age, int name, int spead, String action)</argsstring>
+        <name>Snake</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>spead</declname>
+        </param>
+        <param>
+          <type>String</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="11" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="11" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1adb05aae1b1050687184bcde974660903" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.Snake.Snake</definition>
+        <argsstring>(int age, int name, int spead)</argsstring>
+        <name>Snake</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>spead</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="17" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="17" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1a65e3df0e2e3bc14506babeffc9cea535" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.Snake.Snake</definition>
+        <argsstring>(int age, int name)</argsstring>
+        <name>Snake</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="25" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="25" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1a85071d0156e660fbacea96891cf891dc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.Snake.Snake</definition>
+        <argsstring>(int age)</argsstring>
+        <name>Snake</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="31" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="31" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1ac52728ba808d18f179c15737158eb5e0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.Snake.Snake</definition>
+        <argsstring>()</argsstring>
+        <name>Snake</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="36" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="36" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1ac1d40c241bbe925849608867e564ff89" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int org.reptile.Snake.getAge</definition>
+        <argsstring>()</argsstring>
+        <name>getAge</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="41" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="41" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1a0feedddf83b671ed5269e14b2a0c00e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.reptile.Snake.setAge</definition>
+        <argsstring>(int age)</argsstring>
+        <name>setAge</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="44" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="44" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1a92a9d78838f77c7e65a8d7a0da8846f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int org.reptile.Snake.getName</definition>
+        <argsstring>()</argsstring>
+        <name>getName</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="47" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="47" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1a153b1dc5e5d841308bf885ee4bd1e72c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.reptile.Snake.setName</definition>
+        <argsstring>(int name)</argsstring>
+        <name>setName</name>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="50" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="50" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1a926fd0b6e2bbbf72d4de6515c0e4f74c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>String</type>
+        <definition>String org.reptile.Snake.getAction</definition>
+        <argsstring>()</argsstring>
+        <name>getAction</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="55" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="55" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Snake_1ab18bbf4a68113e4ffa5bfe7179f415b5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.reptile.Snake.setAction</definition>
+        <argsstring>(String action)</argsstring>
+        <name>setAction</name>
+        <param>
+          <type>String</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="58" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="58" bodyend="60"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" line="3" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Snake.java" bodystart="3" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classorg_1_1reptile_1_1Snake_1aa3277499b42fd24caf8bb676014b03d1" prot="private" virt="non-virtual"><scope>org::reptile::Snake</scope><name>action</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a4f98ba9218ecae841f28b02348cd0381" prot="private" virt="non-virtual"><scope>org::reptile::Snake</scope><name>age</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a926fd0b6e2bbbf72d4de6515c0e4f74c" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>getAction</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1ac1d40c241bbe925849608867e564ff89" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>getAge</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a92a9d78838f77c7e65a8d7a0da8846f0" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>getName</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a92ab1ea399811a469112213e983e3bed" prot="private" virt="non-virtual"><scope>org::reptile::Snake</scope><name>name</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1ab18bbf4a68113e4ffa5bfe7179f415b5" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>setAction</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a0feedddf83b671ed5269e14b2a0c00e7" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>setAge</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a153b1dc5e5d841308bf885ee4bd1e72c" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>setName</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a4b004d96fe3caa13a34cb010dc81b011" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>Snake</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1adb05aae1b1050687184bcde974660903" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>Snake</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a65e3df0e2e3bc14506babeffc9cea535" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>Snake</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1a85071d0156e660fbacea96891cf891dc" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>Snake</name></member>
+      <member refid="classorg_1_1reptile_1_1Snake_1ac52728ba808d18f179c15737158eb5e0" prot="public" virt="non-virtual"><scope>org::reptile::Snake</scope><name>Snake</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

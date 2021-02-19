@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="classorg_1_1animals_1_1Dog" kind="class" prot="public">
+    <compoundname>org::animals::Dog</compoundname>
+    <derivedcompoundref refid="classorg_1_1animals_1_1Labrador" prot="public" virt="non-virtual">org.animals.Labrador</derivedcompoundref>
+    <derivedcompoundref refid="classorg_1_1animals_1_1Poodle" prot="public" virt="non-virtual">org.animals.Poodle</derivedcompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classorg_1_1animals_1_1Dog_1ab980d43c8933497cb25d50963b90efad" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int org.animals.Dog.age</definition>
+        <argsstring></argsstring>
+        <name>age</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" line="6" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classorg_1_1animals_1_1Dog_1a151650744e9ecd67302f340dedfa12af" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int org.animals.Dog.magicNumber</definition>
+        <argsstring></argsstring>
+        <name>magicNumber</name>
+        <initializer>= 17</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" line="7" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" bodystart="7" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classorg_1_1animals_1_1Dog_1a3d6d514003580c63322e00b1e94cb640" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int org.animals.Dog.getAge</definition>
+        <argsstring>()</argsstring>
+        <name>getAge</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" line="9" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" bodystart="9" bodyend="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1animals_1_1Dog_1a751269ebb6021878985d92490ff31465" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.animals.Dog.takeABreath</definition>
+        <argsstring>()</argsstring>
+        <name>takeABreath</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" line="13" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" bodystart="13" bodyend="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="36">
+        <label>org.animals.Dog</label>
+        <link refid="classorg_1_1animals_1_1Dog"/>
+      </node>
+      <node id="38">
+        <label>org.animals.Poodle</label>
+        <link refid="classorg_1_1animals_1_1Poodle"/>
+        <childnode refid="36" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>org.animals.Labrador</label>
+        <link refid="classorg_1_1animals_1_1Labrador"/>
+        <childnode refid="36" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" line="4" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/animals/Dog.java" bodystart="4" bodyend="17"/>
+    <listofallmembers>
+      <member refid="classorg_1_1animals_1_1Dog_1ab980d43c8933497cb25d50963b90efad" prot="private" virt="non-virtual"><scope>org::animals::Dog</scope><name>age</name></member>
+      <member refid="classorg_1_1animals_1_1Dog_1a3d6d514003580c63322e00b1e94cb640" prot="public" virt="non-virtual"><scope>org::animals::Dog</scope><name>getAge</name></member>
+      <member refid="classorg_1_1animals_1_1Dog_1a151650744e9ecd67302f340dedfa12af" prot="public" virt="non-virtual"><scope>org::animals::Dog</scope><name>magicNumber</name></member>
+      <member refid="classorg_1_1animals_1_1Dog_1a751269ebb6021878985d92490ff31465" prot="public" virt="non-virtual"><scope>org::animals::Dog</scope><name>takeABreath</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

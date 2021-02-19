@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="classorg_1_1reptile_1_1TurtleMarinha" kind="class" prot="public">
+    <compoundname>org::reptile::TurtleMarinha</compoundname>
+    <basecompoundref refid="classorg_1_1reptile_1_1Reptile" prot="public" virt="non-virtual">org.reptile.Reptile</basecompoundref>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1aa6a37e881cd4111533c8e5b2680f2639" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.TurtleMarinha.TurtleMarinha</definition>
+        <argsstring>(int age, int name, int spead, String action)</argsstring>
+        <name>TurtleMarinha</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>spead</declname>
+        </param>
+        <param>
+          <type>String</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="5" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="5" bodyend="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1a3d606c417c63c4665dedfa05bf9ef27d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.TurtleMarinha.TurtleMarinha</definition>
+        <argsstring>(int age, int name, int spead)</argsstring>
+        <name>TurtleMarinha</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>spead</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="11" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="11" bodyend="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1a5fd133671924d14f0a425395ae2d4052" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.TurtleMarinha.TurtleMarinha</definition>
+        <argsstring>(int age, int name)</argsstring>
+        <name>TurtleMarinha</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="19" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="19" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1a08dc32b0c0af4a0b8d8fa0dfa3cf2987" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.TurtleMarinha.TurtleMarinha</definition>
+        <argsstring>(int age)</argsstring>
+        <name>TurtleMarinha</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="25" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="25" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1ad22c2b803dfcbd3d4b978f46ea8e6797" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.reptile.TurtleMarinha.TurtleMarinha</definition>
+        <argsstring>()</argsstring>
+        <name>TurtleMarinha</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="30" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="30" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1a9ab8459cee4826b720dd190f1804e5d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int org.reptile.TurtleMarinha.getAge</definition>
+        <argsstring>()</argsstring>
+        <name>getAge</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="32" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="32" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1a7a03a4b0957bf576c0163771b6da8737" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.reptile.TurtleMarinha.setAge</definition>
+        <argsstring>(int age)</argsstring>
+        <name>setAge</name>
+        <param>
+          <type>int</type>
+          <declname>age</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="35" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="35" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1TurtleMarinha_1af1d6fb0e0e707f5029eadfa33ba4c978" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>boolean</type>
+        <definition>boolean org.reptile.TurtleMarinha.equals</definition>
+        <argsstring>(Object obj)</argsstring>
+        <name>equals</name>
+        <param>
+          <type>Object</type>
+          <declname>obj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="39" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="39" bodyend="59"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="80">
+        <label>org.reptile.AnimalMarilho</label>
+        <link refid="classorg_1_1reptile_1_1AnimalMarilho"/>
+      </node>
+      <node id="79">
+        <label>org.reptile.Reptile</label>
+        <link refid="classorg_1_1reptile_1_1Reptile"/>
+        <childnode refid="80" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="78">
+        <label>org.reptile.TurtleMarinha</label>
+        <link refid="classorg_1_1reptile_1_1TurtleMarinha"/>
+        <childnode refid="79" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="83">
+        <label>org.reptile.AnimalMarilho</label>
+        <link refid="classorg_1_1reptile_1_1AnimalMarilho"/>
+      </node>
+      <node id="82">
+        <label>org.reptile.Reptile</label>
+        <link refid="classorg_1_1reptile_1_1Reptile"/>
+        <childnode refid="83" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="81">
+        <label>org.reptile.TurtleMarinha</label>
+        <link refid="classorg_1_1reptile_1_1TurtleMarinha"/>
+        <childnode refid="82" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" line="3" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java" bodystart="3" bodyend="64"/>
+    <listofallmembers>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1aa59c3f24e3591c0d2a1e16c44efd8c0c" prot="protected" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>action</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a9d853c3ae7ab6992c5c2cd79d2f3d3d5" prot="protected" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>age</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a9f7a4e3c44df27faeb2414d876b5ac2c" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>AnimalMarilho</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1af1d6fb0e0e707f5029eadfa33ba4c978" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>equals</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a3a776431ac6c9c794326bcb47378ec68" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>getAction</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1a9ab8459cee4826b720dd190f1804e5d0" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>getAge</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a3d64ec835d69c98d2e541cac5c11a33a" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>getName</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a865f47174d80d0f9c790f249f6c87054" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>getSpead</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a4a3c9dc363b9f0c78880629f59f1ce18" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>hashCode</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a7c13aa29269096f1b8251cc06ad5e17b" prot="protected" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>name</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a5b8a5ca870bc8f41b84580e4f31c1128" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>setAction</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1a7a03a4b0957bf576c0163771b6da8737" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>setAge</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a848dcdb54b4f633bececf773300efd0c" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>setName</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a3d818012f10d55793cf4ed4c67cb9407" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>setSpead</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a38ff48d6ac69a2b424c129119f9a4f4f" prot="protected" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>spead</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1aa6a37e881cd4111533c8e5b2680f2639" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>TurtleMarinha</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1a3d606c417c63c4665dedfa05bf9ef27d" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>TurtleMarinha</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1a5fd133671924d14f0a425395ae2d4052" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>TurtleMarinha</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1a08dc32b0c0af4a0b8d8fa0dfa3cf2987" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>TurtleMarinha</name></member>
+      <member refid="classorg_1_1reptile_1_1TurtleMarinha_1ad22c2b803dfcbd3d4b978f46ea8e6797" prot="public" virt="non-virtual"><scope>org::reptile::TurtleMarinha</scope><name>TurtleMarinha</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
