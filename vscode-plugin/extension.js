@@ -21,7 +21,9 @@ function activate(context) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.server', function () {
-			vscode.window.showInformationMessage('Placeholder behavior for `codemap.server`');
+			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
+			terminal.sendText("pwd");
+			terminal.show();
 		})
 	);
 }
