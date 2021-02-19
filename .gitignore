@@ -1,4 +1,7 @@
+node_modules
+.vscode-test/
+*.vsix
 
-.vscode/
-/codemap/node_modules/
-/codemap/out/
+.vscode/extensions.json
+
+.vscode/settings.json
