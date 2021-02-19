@@ -21,29 +21,31 @@ function activate(context) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.server', function () {
-			vscode.window.showInformationMessage('Placeholder behavior for `codemap.server`');
+			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
+			terminal.sendText("pwd");
+			terminal.show();
 		})
 	);
 }
 
 function getWebviewContent(context, webview) {
 	// Local path to main script run in the webview
-	const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'main.js');
+	const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'js/main.js');
 	const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
 
-	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'box.js');
+	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'js/box.js');
 	const boxUri = webview.asWebviewUri(boxPathOnDisk);
 
 	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'data.json');
 	const dataUri = webview.asWebviewUri(dataPathOnDisk);
 
 	// Local path to css styles
-	// const styleResetPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css');
-	// const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css');
+	const styleResetPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'reset.css');
+	const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
 
 	// Uri to load styles into webview
-	// const stylesResetUri = webview.asWebviewUri(styleResetPath);
-	// const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+	const stylesResetUri = webview.asWebviewUri(styleResetPath);
+	const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
 
 	return `<!DOCTYPE html>
 		<html lang="en">
@@ -55,12 +57,14 @@ function getWebviewContent(context, webview) {
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.js"></script>
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-graphviz/3.1.0/d3-graphviz.min.js"></script>
 				<script src="https://unpkg.com/@hpcc-js/wasm/dist/index.min.js" type="javascript/worker"></script> 
+
+				<link href="${stylesResetUri}" rel="stylesheet">
+				<link href="${stylesMainUri}" rel="stylesheet">
 				<title>Vis</title>
 		</head>
 		<body>
 
 				<script>
-					console.log("hi")
 					var dataGlobal = "${dataUri}";
 					d3.json(dataGlobal).then(function(data) {
 						console.log(data)
