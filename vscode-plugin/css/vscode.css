@@ -88,3 +88,7 @@ input::placeholder,
 textarea::placeholder {
 	color: var(--vscode-input-placeholderForeground);
 }
+
+text {
+    fill: var(--vscode-foreground);
+}
