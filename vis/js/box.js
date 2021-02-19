@@ -326,7 +326,9 @@ class StructureVis {
         // having links go across different force graphs seems a bit troublesome...
         // so this is a hacky workaround for now
         // we can also count the number of nodes... connected and fade them out if they're too far away
-        // 
+        
+        // TODO we should highlight packages that are related to the current package with a highlighting idiom 
+
         if (vis.viewLevel == "package") {
             vis.links
                 .attr("x1", d => d.source.x)
