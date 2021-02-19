@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="dir_5b2f207596a515af77f0fe88ac232465" kind="dir">
+    <compoundname>birds</compoundname>
+    <innerfile refid="Bird_8java">Bird.java</innerfile>
+    <innerfile refid="Chicken_8java">Chicken.java</innerfile>
+    <innerfile refid="Duck_8java">Duck.java</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/birds/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="interfaceorg_1_1felines_1_1Animal" kind="interface" prot="public">
+    <compoundname>org::felines::Animal</compoundname>
+    <basecompoundref refid="interfaceorg_1_1felines_1_1AnimalSuper" prot="public" virt="non-virtual">org.felines.AnimalSuper</basecompoundref>
+    <derivedcompoundref refid="classorg_1_1felines_1_1Cat" prot="public" virt="non-virtual">org.felines.Cat</derivedcompoundref>
+    <derivedcompoundref refid="classorg_1_1felines_1_1Feline" prot="public" virt="non-virtual">org.felines.Feline</derivedcompoundref>
+    <derivedcompoundref refid="classorg_1_1felines_1_1Tiger" prot="public" virt="non-virtual">org.felines.Tiger</derivedcompoundref>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>org.felines.Feline</label>
+        <link refid="classorg_1_1felines_1_1Feline"/>
+        <childnode refid="0" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>org.felines.Tiger</label>
+        <link refid="classorg_1_1felines_1_1Tiger"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="0" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>org.felines.Cat</label>
+        <link refid="classorg_1_1felines_1_1Cat"/>
+        <childnode refid="0" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>org.felines.AnimalSuper</label>
+        <link refid="interfaceorg_1_1felines_1_1AnimalSuper"/>
+      </node>
+      <node id="0">
+        <label>org.felines.Animal</label>
+        <link refid="interfaceorg_1_1felines_1_1Animal"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>org.felines.AnimalSuper</label>
+        <link refid="interfaceorg_1_1felines_1_1AnimalSuper"/>
+      </node>
+      <node id="5">
+        <label>org.felines.Animal</label>
+        <link refid="interfaceorg_1_1felines_1_1Animal"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/felines/Animal.java" line="3" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/felines/Animal.java" bodystart="3" bodyend="4"/>
+    <listofallmembers>
+      <member refid="interfaceorg_1_1felines_1_1AnimalSuper_1a78fc757eeaee3740183bca82fef80193" prot="public" virt="non-virtual"><scope>org::felines::Animal</scope><name>action</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="classorg_1_1DogManager" kind="class" prot="public">
+    <compoundname>org::DogManager</compoundname>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classorg_1_1DogManager_1a0ecff3afda50e600f5137f027ce0043f" prot="private" static="no" mutable="no">
+        <type><ref refid="classorg_1_1animals_1_1Dog" kindref="compound">Dog</ref></type>
+        <definition>Dog org.DogManager.dog</definition>
+        <argsstring></argsstring>
+        <name>dog</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" line="7" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" bodystart="7" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classorg_1_1DogManager_1a6283d979f086855a547a797e870cf583" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>org.DogManager.DogManager</definition>
+        <argsstring>(Dog aDog)</argsstring>
+        <name>DogManager</name>
+        <param>
+          <type><ref refid="classorg_1_1animals_1_1Dog" kindref="compound">Dog</ref></type>
+          <declname>aDog</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" line="8" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" bodystart="8" bodyend="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1DogManager_1afd6c9eb73e630233d72ba9e0c32b0136" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.DogManager.doStuff</definition>
+        <argsstring>()</argsstring>
+        <name>doStuff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" line="12" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" bodystart="12" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1DogManager_1a2238eeab7ace8739a569ba7a384d08c7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.DogManager.barkBark</definition>
+        <argsstring>(Dog dog)</argsstring>
+        <name>barkBark</name>
+        <param>
+          <type><ref refid="classorg_1_1animals_1_1Dog" kindref="compound">Dog</ref></type>
+          <declname>dog</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" line="25" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" bodystart="25" bodyend="32"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" line="5" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/DogManager.java" bodystart="5" bodyend="34"/>
+    <listofallmembers>
+      <member refid="classorg_1_1DogManager_1a2238eeab7ace8739a569ba7a384d08c7" prot="public" virt="non-virtual"><scope>org::DogManager</scope><name>barkBark</name></member>
+      <member refid="classorg_1_1DogManager_1a0ecff3afda50e600f5137f027ce0043f" prot="private" virt="non-virtual"><scope>org::DogManager</scope><name>dog</name></member>
+      <member refid="classorg_1_1DogManager_1a6283d979f086855a547a797e870cf583" prot="public" virt="non-virtual"><scope>org::DogManager</scope><name>DogManager</name></member>
+      <member refid="classorg_1_1DogManager_1afd6c9eb73e630233d72ba9e0c32b0136" prot="public" virt="non-virtual"><scope>org::DogManager</scope><name>doStuff</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

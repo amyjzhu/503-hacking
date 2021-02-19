@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="namespaceorg_1_1birds" kind="namespace">
+    <compoundname>org::birds</compoundname>
+    <innerclass refid="classorg_1_1birds_1_1Bird" prot="public">org::birds::Bird</innerclass>
+    <innerclass refid="classorg_1_1birds_1_1Chicken" prot="public">org::birds::Chicken</innerclass>
+    <innerclass refid="classorg_1_1birds_1_1Duck" prot="public">org::birds::Duck</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/birds/Bird.java" line="1" column="1"/>
+  </compounddef>
+</doxygen>

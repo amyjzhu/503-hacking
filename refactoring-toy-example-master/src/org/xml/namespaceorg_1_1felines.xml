@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="namespaceorg_1_1felines" kind="namespace">
+    <compoundname>org::felines</compoundname>
+    <innerclass refid="interfaceorg_1_1felines_1_1Animal" prot="public">org::felines::Animal</innerclass>
+    <innerclass refid="interfaceorg_1_1felines_1_1AnimalSuper" prot="public">org::felines::AnimalSuper</innerclass>
+    <innerclass refid="classorg_1_1felines_1_1Cat" prot="public">org::felines::Cat</innerclass>
+    <innerclass refid="classorg_1_1felines_1_1Feline" prot="public">org::felines::Feline</innerclass>
+    <innerclass refid="classorg_1_1felines_1_1Tiger" prot="public">org::felines::Tiger</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/felines/Animal.java" line="1" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.5">
+  <compounddef id="classorg_1_1reptile_1_1Reptile" kind="class" prot="public">
+    <compoundname>org::reptile::Reptile</compoundname>
+    <basecompoundref refid="classorg_1_1reptile_1_1AnimalMarilho" prot="public" virt="non-virtual">org.reptile.AnimalMarilho</basecompoundref>
+    <derivedcompoundref refid="classorg_1_1reptile_1_1TurtleMarinha" prot="public" virt="non-virtual">org.reptile.TurtleMarinha</derivedcompoundref>
+    <derivedcompoundref refid="classorg_1_1reptile_1_1TurtleTerrarium" prot="public" virt="non-virtual">org.reptile.TurtleTerrarium</derivedcompoundref>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classorg_1_1reptile_1_1Reptile_1a9d853c3ae7ab6992c5c2cd79d2f3d3d5" prot="protected" static="no" mutable="no">
+        <type>int</type>
+        <definition>int org.reptile.Reptile.age</definition>
+        <argsstring></argsstring>
+        <name>age</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" line="5" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" bodystart="5" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classorg_1_1reptile_1_1Reptile_1a7c13aa29269096f1b8251cc06ad5e17b" prot="protected" static="no" mutable="no">
+        <type>int</type>
+        <definition>int org.reptile.Reptile.name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" line="6" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Reptile_1a4a3c9dc363b9f0c78880629f59f1ce18" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int org.reptile.Reptile.hashCode</definition>
+        <argsstring>()</argsstring>
+        <name>hashCode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" line="9" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" bodystart="9" bodyend="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Reptile_1a3d64ec835d69c98d2e541cac5c11a33a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int org.reptile.Reptile.getName</definition>
+        <argsstring>()</argsstring>
+        <name>getName</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" line="19" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" bodystart="19" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classorg_1_1reptile_1_1Reptile_1a848dcdb54b4f633bececf773300efd0c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void org.reptile.Reptile.setName</definition>
+        <argsstring>(int name)</argsstring>
+        <name>setName</name>
+        <param>
+          <type>int</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" line="23" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" bodystart="23" bodyend="25"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="65">
+        <label>org.reptile.TurtleTerrarium</label>
+        <link refid="classorg_1_1reptile_1_1TurtleTerrarium"/>
+        <childnode refid="62" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="63">
+        <label>org.reptile.AnimalMarilho</label>
+        <link refid="classorg_1_1reptile_1_1AnimalMarilho"/>
+      </node>
+      <node id="62">
+        <label>org.reptile.Reptile</label>
+        <link refid="classorg_1_1reptile_1_1Reptile"/>
+        <childnode refid="63" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="64">
+        <label>org.reptile.TurtleMarinha</label>
+        <link refid="classorg_1_1reptile_1_1TurtleMarinha"/>
+        <childnode refid="62" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="67">
+        <label>org.reptile.AnimalMarilho</label>
+        <link refid="classorg_1_1reptile_1_1AnimalMarilho"/>
+      </node>
+      <node id="66">
+        <label>org.reptile.Reptile</label>
+        <link refid="classorg_1_1reptile_1_1Reptile"/>
+        <childnode refid="67" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" line="3" column="1" bodyfile="/scratch/vsahil/SEclass/503-hacking/refactoring-toy-example-master/src/org/reptile/Reptile.java" bodystart="3" bodyend="29"/>
+    <listofallmembers>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1aa59c3f24e3591c0d2a1e16c44efd8c0c" prot="protected" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>action</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a9d853c3ae7ab6992c5c2cd79d2f3d3d5" prot="protected" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>age</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a9f7a4e3c44df27faeb2414d876b5ac2c" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>AnimalMarilho</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a3a776431ac6c9c794326bcb47378ec68" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>getAction</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a3d64ec835d69c98d2e541cac5c11a33a" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>getName</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a865f47174d80d0f9c790f249f6c87054" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>getSpead</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a4a3c9dc363b9f0c78880629f59f1ce18" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>hashCode</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a7c13aa29269096f1b8251cc06ad5e17b" prot="protected" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>name</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a5b8a5ca870bc8f41b84580e4f31c1128" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>setAction</name></member>
+      <member refid="classorg_1_1reptile_1_1Reptile_1a848dcdb54b4f633bececf773300efd0c" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>setName</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a3d818012f10d55793cf4ed4c67cb9407" prot="public" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>setSpead</name></member>
+      <member refid="classorg_1_1reptile_1_1AnimalMarilho_1a38ff48d6ac69a2b424c129119f9a4f4f" prot="protected" virt="non-virtual"><scope>org::reptile::Reptile</scope><name>spead</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
