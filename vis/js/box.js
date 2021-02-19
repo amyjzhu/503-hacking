@@ -34,7 +34,7 @@ class StructureVis {
         this.zoomLevel = 1;
 
         // this.transitionPoints = [0.25];
-        this.transitionPoints = [0.075, 0.5];
+        this.transitionPoints = [1.48, 9.875];
         this.initialized = 0;
 
         this.view = _config.view || "default"
@@ -127,7 +127,8 @@ class StructureVis {
                     .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
                     .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallestBoxWidth / 2, 2) + Math.pow(vis.smallestBoxHeight / 2, 2))))
                     .force("center", d => {
-                        return  d3.forceCenter(clsInfo.x + vis.smallBoxWidth / 2, clsInfo.y + vis.smallBoxWidth / 2);})
+                        return d3.forceCenter(clsInfo.x + vis.smallBoxWidth / 2, clsInfo.y + vis.smallBoxWidth / 2);
+                    })
                     .on('tick', () => vis.methodTicked(vis));
             }
             mapping.cls = vis.methodsByClass[cls];
@@ -190,6 +191,7 @@ class StructureVis {
             // colour coded by group
             .style("fill", d => vis.viewLevel == "package" ? vis.colourScale(d.group) : "none")
             .style("stroke", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group))
+            .style("stroke-opacity", vis.viewLevel == "method" ? 0.5 : 1)
             .transition()
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
         console.log(boxes)
@@ -210,6 +212,7 @@ class StructureVis {
             .attr("height", vis.smallBoxHeight)
             .style("fill", d => vis.viewLevel == "class" ? vis.colourScale(d.group) : "none")
             .style("stroke", d => vis.viewLevel == "method" ? vis.colourScale(d.group) : "none")
+            .style("stroke-opacity", vis.viewLevel == "method" ? 0.5 : 1)
             .transition()
             .style("visibility", d => { console.log(d.views); return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
 
@@ -252,6 +255,29 @@ class StructureVis {
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
         vis.classTexts.exit().remove();
 
+        var methodTexts = vis.perMethodGroup.selectAll(".title-text").data(d => [d]);
+        methodTexts = methodTexts.enter().append("text")
+            .attr("class", "title-text")
+            .merge(methodTexts)
+            .attr("dx", 1)
+            .attr("dy", "0.8em")
+            // .transition()
+            .text(d => vis.viewLevel == "method" ? d.id : "")
+            .style("font-size", "5px")
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
+        vis.classTexts.exit().remove();
+
+        var methodBodyTexts = vis.perMethodGroup.selectAll(".body-text").data(d => d.text.split("\n"));
+        methodBodyTexts = methodBodyTexts.enter().append("text")
+            .attr("class", "body-text")
+            .merge(methodBodyTexts)
+            .attr("dx", 6)
+            .attr("dy", (d,i) => `${5 + i * 1}em`)
+            // .transition()
+            .text(d => vis.viewLevel == "method" ? d : "")
+            .style("font-size", "2px")
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
+        vis.classTexts.exit().remove();
 
         // TODO this might be tricky with visibility
         vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => d.source + d.target);
@@ -324,8 +350,8 @@ class StructureVis {
         let vis = this;
 
         // TODO hacky, need to fix this impl later for extensibility
-        var viewThreshold = vis.transitionPoints[0] * (vis.maxZoom - vis.minZoom);
-        var viewThresholdMethod = vis.transitionPoints[1] * (vis.maxZoom - vis.minZoom);
+        var viewThreshold = vis.transitionPoints[0];
+        var viewThresholdMethod = vis.transitionPoints[1];
 
         if (vis.zoomLevel >= viewThreshold && vis.zoomLevel <= viewThresholdMethod && vis.viewLevel != "class") {
             vis.simulation.stop();
@@ -413,8 +439,8 @@ class StructureVis {
             .append("line")
             .attr("x1", 0)
             .attr("x2", 50)
-            .attr("y1", d => vis.zoomBarHeight - vis.zoomScale(d * (vis.maxZoom - vis.minZoom)))
-            .attr("y2", d => vis.zoomBarHeight - vis.zoomScale(d * (vis.maxZoom - vis.minZoom)))
+            .attr("y1", d => vis.zoomBarHeight - vis.zoomScale(d))
+            .attr("y2", d => vis.zoomBarHeight - vis.zoomScale(d))
             .style("stroke", "black")
             .style("stroke-width", 2);
 

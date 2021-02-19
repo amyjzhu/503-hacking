@@ -18,6 +18,9 @@ d3.json("data.json").then(data => {
         pkg.classes.forEach(cls => {
             classGroups.push({id: cls.name, group: idx + 1, pkg: pkg.name, type: "class", views: cls.views || []})
         })
+
+        // right now we inherit views from classes
+        // TODO we may want to change this later
         pkg.classes.forEach(cls => {
             cls.methods.forEach(method => {
                 methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", cls: cls.name, text: method.text || "", views: cls.views || []})

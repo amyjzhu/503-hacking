@@ -7,11 +7,13 @@
 	}, {
 		"name": "Visitor",
 		"methods": [{
-			"name": "visit", 
+			"name": "visit(count)", 
+			"text": "count.visit();",
 			"uses": []
 			}, {
-			 "name": "visitBinary",
-			 "uses": ["visit"]
+			 "name": "visitBinary(count1, count2)",
+			 "text": "count1.visit() + count2.visit();",
+			 "uses": ["visit(count)"]
 			}],
 		"uses": ["Count", "Misc"]
 	}],
@@ -21,11 +23,13 @@
 	"classes": [{
 		"name": "Server",
 		"methods": [{
-			"name": "bind", 
+			"name": "bind(port)", 
+			"text": "Socket socket = os.bind(port); \n return socket;",
 			"uses": []
 			}, {
-			 "name": "receive",
-			 "uses": ["bind"]
+			 "name": "listen()",
+			 "text": "Socket socket = bind(PORT_NUM); \n Message msg = socket.listen(); \n return msg;",
+			 "uses": ["bind(port)"]
 			}],
 		"uses": ["Client", "RPC", "Misc"],
 		"views": ["RPC"]
