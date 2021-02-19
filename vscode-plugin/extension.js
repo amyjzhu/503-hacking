@@ -31,6 +31,12 @@ function getWebviewContent(context, webview) {
 	const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'main.js');
 	const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
 
+	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'box.js');
+	const boxUri = webview.asWebviewUri(boxPathOnDisk);
+
+	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'data.json');
+	const dataUri = webview.asWebviewUri(dataPathOnDisk);
+
 	// Local path to css styles
 	// const styleResetPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css');
 	// const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css');
@@ -48,10 +54,27 @@ function getWebviewContent(context, webview) {
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.js"></script>
 				<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-graphviz/3.1.0/d3-graphviz.min.js"></script>
+				<script src="https://unpkg.com/@hpcc-js/wasm/dist/index.min.js" type="javascript/worker"></script> 
 				<title>Vis</title>
 		</head>
 		<body>
+
+				<script>
+					console.log("hi")
+					var dataGlobal = "${dataUri}";
+					d3.json(dataGlobal).then(function(data) {
+						console.log(data)
+					  })
+					  .catch(function(error) {
+						console.log(error)
+					  });
+				</script>
+
+				<div id="button-area"></div>
+    			<svg id="vis" width="1200" height="800"></svg>
+				
 				<script src="${scriptUri}"></script>
+				<script src="${boxUri}"></script>
 		</body>
 		</html>`;
   }

@@ -1,0 +1,73 @@
+[{
+	"name": "core",
+	"classes": [{
+		"name": "Count",
+		"methods": [],
+		"uses": ["Visitor", "Client", "RPC", "Misc"]
+	}, {
+		"name": "Visitor",
+		"methods": [{
+			"name": "visit", 
+			"uses": []
+			}, {
+			 "name": "visitBinary",
+			 "uses": ["visit"]
+			}],
+		"uses": ["Count", "Misc"]
+	}],
+	"uses": ["net", "util", "parse"]
+}, {
+	"name": "net",
+	"classes": [{
+		"name": "Server",
+		"methods": [{
+			"name": "bind", 
+			"uses": []
+			}, {
+			 "name": "receive",
+			 "uses": ["bind"]
+			}],
+		"uses": ["Client", "RPC", "Misc"],
+		"views": ["RPC"]
+	}, {
+		"name": "Client",
+		"methods": [],
+		"uses": ["Server", "RPC"],
+		"views": ["RPC"]
+	}, {
+		"name": "RPC",
+		"methods": [],
+		"uses": [],
+		"views": ["RPC"]
+	}],
+	"uses": ["core", "util"],
+	"views": ["RPC"]
+}, {
+	"name": "util",
+	"classes": [{
+		"name": "Misc",
+		"methods": [],
+		"uses": []
+	}],
+	"uses": ["net", "core"]
+}, {
+	"name": "parse",
+	"classes": [{
+		"name": "Lex",
+		"methods": [],
+		"uses": ["Parse"]
+	}, {
+		"name": "Parse",
+		"methods": [],
+		"uses": ["Desugar"]
+	}, {
+		"name": "Desugar",
+		"methods": [],
+		"uses": ["Lower"]
+	}, {
+		"name": "Lower",
+		"methods": [],
+		"uses": ["Count"]
+	}],
+	"uses": ["core"]
+}]
