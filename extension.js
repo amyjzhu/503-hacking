@@ -10,7 +10,7 @@ function activate(context) {
 		vscode.commands.registerCommand('codemap.d3', function () {
 			const panel = vscode.window.createWebviewPanel(
 				'codemap', // Identifies the type of the webview. Used internally
-				'A D3 View', // Title of the panel displayed to the user
+				'Codemap', // Title of the panel displayed to the user
 				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
 				{enableScripts: true,} // Webview options
 			);
@@ -30,17 +30,17 @@ function activate(context) {
 
 function getWebviewContent(context, webview) {
 	// Local path to main script run in the webview
-	const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'js/main.js');
+	const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'index.js');
 	const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
 
-	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'js/box.js');
+	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'box.js');
 	const boxUri = webview.asWebviewUri(boxPathOnDisk);
 
-	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'data.json');
+	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'data.json');
 	const dataUri = webview.asWebviewUri(dataPathOnDisk);
 
 	// Local path to css styles
-	const styleResetPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'reset.css');
+	const styleResetPath = vscode.Uri.joinPath(context.extensionUri, 'vis', 'css', 'reset.css');
 	const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
 
 	// Uri to load styles into webview
@@ -63,15 +63,8 @@ function getWebviewContent(context, webview) {
 				<title>Vis</title>
 		</head>
 		<body>
-
 				<script>
 					var dataGlobal = "${dataUri}";
-					d3.json(dataGlobal).then(function(data) {
-						console.log(data)
-					  })
-					  .catch(function(error) {
-						console.log(error)
-					  });
 				</script>
 
 				<div id="button-area"></div>

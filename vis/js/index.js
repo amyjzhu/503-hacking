@@ -1,5 +1,5 @@
 
-d3.json("data.json").then(data => {
+d3.json(dataGlobal).then(data => {
     console.log(data)
 
     // this is kind of just temp. data processing stuff for a prototype
