@@ -6,4 +6,6 @@ public class Chicken extends Bird {
 		System.out.println("cackle");
 	}
 
+	private class PrivateChicken {
+	}
 }
