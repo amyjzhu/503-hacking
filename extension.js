@@ -6,6 +6,7 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
+	// Registers a command (named codemap.d3) that shows the visualization in D3.
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.d3', function () {
 			const panel = vscode.window.createWebviewPanel(
@@ -19,6 +20,8 @@ function activate(context) {
 		})
 	);
 
+	// Registers a command (named codemap.server) that calls a terminal command.
+	// TODO Replace with Doxygen command.
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.server', function () {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
