@@ -6,6 +6,14 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
+
+	// Tracks the current file open in the editor.
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(function(editor) {
+		if(editor){
+			console.log(editor.document.fileName);
+		}
+	}));
+
 	// Registers a command (named codemap.d3) that shows the visualization in D3.
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.d3', function () {
