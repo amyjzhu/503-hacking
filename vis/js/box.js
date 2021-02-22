@@ -43,7 +43,7 @@ class StructureVis {
         this.view = _config.view || "default"
         this.viewLevel = _config.view || "package"
         // this.viewLevel = _config.view || "class"
-        this.classesOnly = false;
+        this.classesOnly = true;
         this.initVis();
     }
 
@@ -251,7 +251,7 @@ class StructureVis {
             .attr("height", vis.smallestBoxHeight)
             .style("fill", d => vis.viewLevel == "method" ? vis.colourScale(d.group) : "none")
             .transition()
-            .style("visibility", d => { console.log(d.views); return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
+            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
 
         vis.chart.select(".zoom-text")
             .merge(vis.zoomText)
@@ -302,7 +302,7 @@ class StructureVis {
             // .transition()
             .text(d => vis.viewLevel == "method" ? d.text : "")
             .style("font-size", "2px")
-            .style("visibility", d => { console.log(d.views); return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
+            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
         vis.classTexts.exit().remove();
 
         // TODO this might be tricky with visibility
