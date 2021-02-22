@@ -6,14 +6,7 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
-	// Tracks the current file open in the editor.
-	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(function(editor) {
-		if(editor){
-			console.log(editor.document.fileName);
-		}
-	}));
-
+	
 	// Registers a command (named codemap.view) that shows the visualization in D3.
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.view', function () {
@@ -23,6 +16,11 @@ function activate(context) {
 				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
 				{enableScripts: true,} // Webview options
 			);
+
+			if(vscode.window.activeTextEditor) {
+				console.log(vscode.window.activeTextEditor.document.fileName);
+			}
+
 			panel.webview.html = getWebviewContent(context, panel.webview);
 		})
 	);
