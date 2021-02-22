@@ -6,17 +6,10 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
-	// Tracks the current file open in the editor.
-	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(function(editor) {
-		if(editor){
-			console.log(editor.document.fileName);
-		}
-	}));
-
-	// Registers a command (named codemap.d3) that shows the visualization in D3.
+	
+	// Registers a command (named codemap.view) that shows the visualization in D3.
 	context.subscriptions.push(
-		vscode.commands.registerCommand('codemap.d3', function () {
+		vscode.commands.registerCommand('codemap.view', function () {
 			const panel = vscode.window.createWebviewPanel(
 				'codemap', // Identifies the type of the webview. Used internally
 				'Codemap', // Title of the panel displayed to the user
@@ -24,14 +17,18 @@ function activate(context) {
 				{enableScripts: true,} // Webview options
 			);
 
+			if(vscode.window.activeTextEditor) {
+				console.log(vscode.window.activeTextEditor.document.fileName);
+			}
+
 			panel.webview.html = getWebviewContent(context, panel.webview);
 		})
 	);
 
-	// Registers a command (named codemap.server) that calls a terminal command.
+	// Registers a command (named codemap.parse) that calls a terminal command.
 	// TODO Replace with Doxygen command.
 	context.subscriptions.push(
-		vscode.commands.registerCommand('codemap.server', function () {
+		vscode.commands.registerCommand('codemap.parse', function () {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
 			terminal.sendText("pwd");
 			terminal.show();
