@@ -1,4 +1,5 @@
 
+
 d3.json(dataGlobal).then(data => {
     console.log(data)
 
@@ -23,7 +24,7 @@ d3.json(dataGlobal).then(data => {
         // TODO we may want to change this later
         pkg.classes.forEach(cls => {
             cls.methods.forEach(method => {
-                methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", cls: cls.name, text: method.text || "", views: cls.views || []})
+                methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", cls: cls.name, text: method.text || "", views: cls.views || []}) // assuming we borrow from class views here
             })
         })
     })
@@ -51,8 +52,13 @@ d3.json(dataGlobal).then(data => {
     // var data = {packages: [], classes: [], packageLinks: [], classLinks: [], data: []} // original data
     var visData = {packages: pkgGroups, classes: classGroups, packageLinks: packageLinks, classLinks: classLinks, methods: methodGroups, methodLinks: methodLinks, data: data};
 
-    var vis = new StructureVis({parentElement: "#vis", data: visData})
+    var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "core"})
+    vis.classOnClick = getPathOnClick;
 
     // TODO we should also have a different views data structure to help us filter elements
 
 })
+
+let getPathOnClick = (d) => {
+    console.log(`${d.pkg}/${d.id}.java`)
+}
