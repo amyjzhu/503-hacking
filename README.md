@@ -11,9 +11,9 @@ The root directory contains the Visual Studio Code plugin framework. `package.js
 # VSCode Plugin
 Using VSCode, you can test the plugin by running a new instance of VSCode with the plugin via "F5".
 
-There is two commands:
-- `codemap.d3` to launch the d3 view.
-- `codemap.server` to launch / connect to the background server and acquire the data.
+There are two commands:
+- `codemap.view` to visualize the currently opened class.
+- `codemap.parse` to parse the source files in the current project.
 
 ## Why do you not use Typescript?
 Because the skeleton example didn't work out of the box, and I couldn't get it to work properly.

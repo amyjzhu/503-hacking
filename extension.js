@@ -14,24 +14,23 @@ function activate(context) {
 		}
 	}));
 
-	// Registers a command (named codemap.d3) that shows the visualization in D3.
+	// Registers a command (named codemap.view) that shows the visualization in D3.
 	context.subscriptions.push(
-		vscode.commands.registerCommand('codemap.d3', function () {
+		vscode.commands.registerCommand('codemap.view', function () {
 			const panel = vscode.window.createWebviewPanel(
 				'codemap', // Identifies the type of the webview. Used internally
 				'Codemap', // Title of the panel displayed to the user
 				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
 				{enableScripts: true,} // Webview options
 			);
-
 			panel.webview.html = getWebviewContent(context, panel.webview);
 		})
 	);
 
-	// Registers a command (named codemap.server) that calls a terminal command.
+	// Registers a command (named codemap.parse) that calls a terminal command.
 	// TODO Replace with Doxygen command.
 	context.subscriptions.push(
-		vscode.commands.registerCommand('codemap.server', function () {
+		vscode.commands.registerCommand('codemap.parse', function () {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
 			terminal.sendText("pwd");
 			terminal.show();

@@ -10,19 +10,19 @@
     "Visualization"
   ],
   "activationEvents": [
-    "onCommand:codemap.d3",
-    "onCommand:codemap.server"
+    "onCommand:codemap.view",
+    "onCommand:codemap.parse"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "codemap.d3",
-        "title": "Displays the visualization of your source code"
+        "command": "codemap.view",
+        "title": "Visualize the current class"
       },
       {
-        "command": "codemap.server",
-        "title": "Launch or connect to the background server to receive the data"
+        "command": "codemap.parse",
+        "title": "Parse the project files"
       }
     ]
   },
