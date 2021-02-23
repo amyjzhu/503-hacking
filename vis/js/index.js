@@ -1,10 +1,6 @@
-d3.json("data.json").then(data => {
-    createVis(data);
+d3.text(dataGlobal).then(data => {
+    createVis(parseInput(data));
 })
-
-// d3.text(dataGlobal).then(data => {
-//     createVis(parseInput(data));
-// })
 
 let setUpData = (data) => {
     console.log(data)
@@ -56,7 +52,7 @@ let createVis = (data) => {
     // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
     var vis = new StructureVis({parentElement: "#vis", data: visData, 
     // centeredOnPackage: "packagecore", 
-    centeredOnClass: "classVisitor",
+    centeredOnClass: "classDogManager",
     classesOnly: true});
 
     vis.classOnClick = getPathOnClick;
