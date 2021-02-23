@@ -62,7 +62,14 @@ let createVis = (data) => {
 }
 
 let getPathOnClick = (d) => {
-    console.log(`${d.pkg}/${d.id}.java`)
+    var clickee = `${d.pkg}/${d.id}.java`
+    console.log(clickee)
+
+    // Sending messages to the plugin
+    vscode.postMessage({
+        command: 'alert',
+        text: clickee
+    })
 }
 
 // Example of message passing to receive messages from the plugin

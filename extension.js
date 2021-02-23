@@ -31,6 +31,19 @@ function activate(context) {
 			currentClass = currentClass.split('.').slice(0, -1).join('.')
 			panel.webview.html = getWebviewContent(context, panel.webview, currentClass);
 
+			// Receiving messages from the visualization
+			panel.webview.onDidReceiveMessage(
+				message => {
+				  switch (message.command) {
+					case 'alert':
+					  vscode.window.showErrorMessage(message.text);
+					  return;
+				  }
+				},
+				undefined,
+				context.subscriptions
+			  );
+
 			// Send a message to our webview.
 			// You can send any JSON serializable data.
 			// panel.webview.postMessage({ command: 'refactor' });
@@ -88,6 +101,9 @@ function getWebviewContent(context, webview, centerOn) {
 				<script>
 					var dataGlobal = "${dataUri}";
 					var centerOnGlobal = "class${centerOn}";
+
+					// TODO Should not be global. For security reasons, you must keep the VS Code API object private and make sure it is never leaked into the global scope.
+					const vscode = acquireVsCodeApi();
 				</script>
 
 				<div id="button-area"></div>
