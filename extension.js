@@ -21,7 +21,9 @@ function activate(context) {
 				console.log(vscode.window.activeTextEditor.document.fileName);
 			}
 
-			panel.webview.html = getWebviewContent(context, panel.webview);
+			// Send a message to our webview.
+			// You can send any JSON serializable data.
+			// panel.webview.postMessage({ command: 'refactor' });
 		})
 	);
 
