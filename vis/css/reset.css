@@ -28,3 +28,20 @@ img {
 	max-width: 100%;
 	height: auto;
 }
+
+#button-area {
+    height: 40px;
+    /* background-color: red; */
+}
+
+#container {
+    /* background-color: yellow; */
+    position: absolute;
+    top: 40px;
+    bottom: 0px;
+    width:100%;
+}
+
+.content {
+    color:#fff;
+}

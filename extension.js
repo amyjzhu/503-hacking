@@ -69,7 +69,7 @@ function getWebviewContent(context, webview) {
 				<script src="https://unpkg.com/@hpcc-js/wasm/dist/index.min.js" type="javascript/worker"></script> 
 
 				<link href="${stylesResetUri}" rel="stylesheet">
-				<link href="${stylesMainUri}" rel="stylesheet">
+				
 				<title>Vis</title>
 		</head>
 		<body>
@@ -78,7 +78,10 @@ function getWebviewContent(context, webview) {
 				</script>
 
 				<div id="button-area"></div>
-    			<svg id="vis" width="1200" height="800"></svg>
+    
+				<div id="container">
+					<svg id="vis"></svg>
+				</div>
 				
 				<script src="${scriptUri}"></script>
 				<script src="${boxUri}"></script>

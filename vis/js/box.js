@@ -3,16 +3,19 @@ class StructureVis {
     constructor(_config) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 1200,
-            containerHeight: _config.containerHeight || 800,
         }
         this.config.margin = _config.margin || { top: 60, bottom: 20, right: 20, left: 50 }
         this.data = _config.data;
 
-        this.width = this.config.containerWidth - this.config.margin.left - this.config.margin.right;
-        this.height = this.config.containerHeight - this.config.margin.top - this.config.margin.bottom;
-
+        var parentDiv = document.getElementById("container");
         this.svg = d3.select(this.config.parentElement);
+        
+        this.svg.attr("height", parentDiv.clientHeight);
+        this.svg.attr("width", parentDiv.clientWidth);
+
+        this.width = parentDiv.clientWidth
+        this.height = parentDiv.clientHeight
+
         this.chart = this.svg.append("g");
 
         this.forceStrength = _config.forceStrength || 0.25
