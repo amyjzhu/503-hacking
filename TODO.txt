@@ -4,6 +4,7 @@
 # Plugin
 - Allow only one visualization panel open at any given time
 - Add shortcut to visualization
+- Make codemap.parse actually code the parsing script or call the terminal commands
 
 # Visualization
 - Remove "Zoom In"
