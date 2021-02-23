@@ -52,7 +52,7 @@ let createVis = (data) => {
     // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
     var vis = new StructureVis({parentElement: "#vis", data: visData, 
     // centeredOnPackage: "packagecore", 
-    centeredOnClass: "classDogManager",
+    centeredOnClass: centerOnGlobal,
     classesOnly: true});
 
     vis.classOnClick = getPathOnClick;

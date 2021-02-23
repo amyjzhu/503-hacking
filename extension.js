@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const path = require('path');
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -10,6 +11,14 @@ function activate(context) {
 	// Registers a command (named codemap.view) that shows the visualization in D3.
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.view', function () {
+			
+			var activeTextEditor = vscode.window.activeTextEditor
+
+			if(!activeTextEditor) {
+				vscode.window.showInformationMessage("You need to have an active editor open")
+				return;
+			}
+
 			const panel = vscode.window.createWebviewPanel(
 				'codemap', // Identifies the type of the webview. Used internally
 				'Codemap', // Title of the panel displayed to the user
@@ -17,9 +26,10 @@ function activate(context) {
 				{enableScripts: true,} // Webview options
 			);
 
-			if(vscode.window.activeTextEditor) {
-				console.log(vscode.window.activeTextEditor.document.fileName);
-			}
+			
+			var currentClass = path.basename(activeTextEditor.document.fileName)
+			currentClass = currentClass.split('.').slice(0, -1).join('.')
+			panel.webview.html = getWebviewContent(context, panel.webview, currentClass);
 
 			// Send a message to our webview.
 			// You can send any JSON serializable data.
@@ -38,7 +48,7 @@ function activate(context) {
 	);
 }
 
-function getWebviewContent(context, webview) {
+function getWebviewContent(context, webview, centerOn) {
 	// Local path to main script run in the webview
 	const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'index.js');
 	const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
@@ -56,8 +66,8 @@ function getWebviewContent(context, webview) {
 	// Local path to css styles
 	const styleResetPath = vscode.Uri.joinPath(context.extensionUri, 'vis', 'css', 'reset.css');
 	const stylesResetUri = webview.asWebviewUri(styleResetPath);
-	const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
-	const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+	// const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
+	// const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
 
 	return `<!DOCTYPE html>
 		<html lang="en">
@@ -77,6 +87,7 @@ function getWebviewContent(context, webview) {
 		<body>
 				<script>
 					var dataGlobal = "${dataUri}";
+					var centerOnGlobal = "class${centerOn}";
 				</script>
 
 				<div id="button-area"></div>
