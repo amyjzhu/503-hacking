@@ -1,1 +1,13 @@
+- Fix location of parsed.txt. It needs to be in the toy project.
+- Jfeechart
+
+# Plugin
 - Allow only one visualization panel open at any given time
+- Add shortcut to visualization
+
+# Visualization
+- Remove "Zoom In"
+- Tweak zoom levels to be able to show all the classes on the screen
+- Adapt rectangle shape to fit class and method names
+- Fix methods appearing outside of the class
+- Fix classes clusters being light years apart
