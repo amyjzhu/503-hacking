@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const path = require('path');
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -10,6 +11,14 @@ function activate(context) {
 	// Registers a command (named codemap.view) that shows the visualization in D3.
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.view', function () {
+			
+			var activeTextEditor = vscode.window.activeTextEditor
+
+			if(!activeTextEditor) {
+				vscode.window.showInformationMessage("You need to have an active editor open")
+				return;
+			}
+
 			const panel = vscode.window.createWebviewPanel(
 				'codemap', // Identifies the type of the webview. Used internally
 				'Codemap', // Title of the panel displayed to the user
@@ -17,11 +26,27 @@ function activate(context) {
 				{enableScripts: true,} // Webview options
 			);
 
-			if(vscode.window.activeTextEditor) {
-				console.log(vscode.window.activeTextEditor.document.fileName);
-			}
+			
+			var currentClass = path.basename(activeTextEditor.document.fileName)
+			currentClass = currentClass.split('.').slice(0, -1).join('.')
+			panel.webview.html = getWebviewContent(context, panel.webview, currentClass);
 
-			panel.webview.html = getWebviewContent(context, panel.webview);
+			// Receiving messages from the visualization
+			panel.webview.onDidReceiveMessage(
+				message => {
+				  switch (message.command) {
+					case 'alert':
+					  vscode.window.showErrorMessage(message.text);
+					  return;
+				  }
+				},
+				undefined,
+				context.subscriptions
+			  );
+
+			// Send a message to our webview.
+			// You can send any JSON serializable data.
+			// panel.webview.postMessage({ command: 'refactor' });
 		})
 	);
 
@@ -36,24 +61,26 @@ function activate(context) {
 	);
 }
 
-function getWebviewContent(context, webview) {
+function getWebviewContent(context, webview, centerOn) {
 	// Local path to main script run in the webview
 	const scriptPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'index.js');
 	const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
 
 	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'box.js');
 	const boxUri = webview.asWebviewUri(boxPathOnDisk);
+	
+	const adapterPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'adapter.js');
+	const adapterUri = webview.asWebviewUri(adapterPathOnDisk);
 
-	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'data.json');
+	// Local path for the data file
+	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'parsed.txt');
 	const dataUri = webview.asWebviewUri(dataPathOnDisk);
 
 	// Local path to css styles
 	const styleResetPath = vscode.Uri.joinPath(context.extensionUri, 'vis', 'css', 'reset.css');
-	const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
-
-	// Uri to load styles into webview
 	const stylesResetUri = webview.asWebviewUri(styleResetPath);
-	const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+	// const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
+	// const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
 
 	return `<!DOCTYPE html>
 		<html lang="en">
@@ -67,19 +94,27 @@ function getWebviewContent(context, webview) {
 				<script src="https://unpkg.com/@hpcc-js/wasm/dist/index.min.js" type="javascript/worker"></script> 
 
 				<link href="${stylesResetUri}" rel="stylesheet">
-				<link href="${stylesMainUri}" rel="stylesheet">
+				
 				<title>Vis</title>
 		</head>
 		<body>
 				<script>
 					var dataGlobal = "${dataUri}";
+					var centerOnGlobal = "class${centerOn}";
+
+					// TODO Should not be global. For security reasons, you must keep the VS Code API object private and make sure it is never leaked into the global scope.
+					const vscode = acquireVsCodeApi();
 				</script>
 
 				<div id="button-area"></div>
-    			<svg id="vis" width="1200" height="800"></svg>
+    
+				<div id="container">
+					<svg id="vis"></svg>
+				</div>
 				
 				<script src="${scriptUri}"></script>
 				<script src="${boxUri}"></script>
+				<script src="${adapterUri}"></script>
 		</body>
 		</html>`;
   }

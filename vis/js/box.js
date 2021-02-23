@@ -3,16 +3,19 @@ class StructureVis {
     constructor(_config) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 1200,
-            containerHeight: _config.containerHeight || 800,
         }
         this.config.margin = _config.margin || { top: 60, bottom: 20, right: 20, left: 50 }
         this.data = _config.data;
 
-        this.width = this.config.containerWidth - this.config.margin.left - this.config.margin.right;
-        this.height = this.config.containerHeight - this.config.margin.top - this.config.margin.bottom;
-
+        var parentDiv = document.getElementById("container");
         this.svg = d3.select(this.config.parentElement);
+        
+        this.svg.attr("height", parentDiv.clientHeight);
+        this.svg.attr("width", parentDiv.clientWidth);
+
+        this.width = parentDiv.clientWidth
+        this.height = parentDiv.clientHeight
+
         this.chart = this.svg.append("g");
 
         this.forceStrength = _config.forceStrength || 0.25
@@ -33,12 +36,17 @@ class StructureVis {
         this.maxZoom = 20;
         this.zoomLevel = 1;
 
+        this.centeredOn = _config.centeredOnPackage || _config.centeredOnClass;
+
         // this.transitionPoints = [0.25];
-        this.transitionPoints = [1.48, 9.875];
+        // this.transitionPoints = [1.48, 9.875];
+        this.transitionPoints = [1.01, 9.875];
         this.initialized = 0;
 
         this.view = _config.view || "default"
         this.viewLevel = _config.view || "package"
+        // this.viewLevel = _config.view || "class"
+        this.classesOnly = _config.classesOnly || false;
         this.initVis();
     }
 
@@ -57,6 +65,7 @@ class StructureVis {
         vis.boxData = vis.data.packages.concat(vis.data.classes).concat(vis.data.methods);
 
         vis.visArea = vis.chart.append("g");
+        vis.zoomText = vis.chart.append("text").attr("class", "zoom-prompt");
 
         vis.linkArea = vis.visArea.append("g").attr("class", "links")
             .attr("stroke", "#999")
@@ -81,6 +90,8 @@ class StructureVis {
             return -Math.pow(vis.boxHeight, 2.2) * vis.forceStrength;
         }
 
+
+
         vis.simulation = d3.forceSimulation()
             .velocityDecay(0.18)
             .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
@@ -90,6 +101,23 @@ class StructureVis {
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .on('tick', () => vis.ticked(vis));
         vis.simulation.stop();
+
+        console.log(vis.centeredOn);
+        // center an item, if valid
+        if (vis.centeredOn != undefined) {
+            let center = vis.boxData.find(f => f.type + f.id  == vis.centeredOn);
+            
+            center.fx = vis.center.x;
+            center.fy = vis.center.y;
+
+            if (center.type == "class") {
+                let centerPkg = vis.boxData.find(f => `package${center.pkg}` == f.type + f.id);
+                centerPkg.fx = vis.center.x - vis.boxWidth/2 + vis.smallBoxWidth / 2;
+                centerPkg.fy = vis.center.y - vis.boxHeight/2 + vis.smallBoxHeight / 2;
+            }
+        }
+
+        console.log(vis.data.packages);
 
         // let's also make simulations per class
         vis.perPkgSimulations = Object.keys(vis.classesByPackage).map(pkg => {
@@ -193,7 +221,7 @@ class StructureVis {
             .style("stroke", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group))
             .style("stroke-opacity", vis.viewLevel == "method" ? 0.5 : 1)
             .transition()
-            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden");
         console.log(boxes)
 
         // classes
@@ -208,6 +236,7 @@ class StructureVis {
             .append("rect")
             .attr("class", "class-box")
             .merge(vis.classRects)
+            .on("click", vis.classOnClick)
             .attr("width", vis.smallBoxWidth)
             .attr("height", vis.smallBoxHeight)
             .style("fill", d => vis.viewLevel == "class" ? vis.colourScale(d.group) : "none")
@@ -232,9 +261,16 @@ class StructureVis {
             .attr("height", vis.smallestBoxHeight)
             .style("fill", d => vis.viewLevel == "method" ? vis.colourScale(d.group) : "none")
             .transition()
-            .style("visibility", d => { console.log(d.views); return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
+            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
 
-
+        vis.chart.select(".zoom-text")
+            .merge(vis.zoomText)
+            .attr("dx", vis.center.x)
+            .attr("dy", vis.center.y)
+            .style("font-size", 40)
+            // .transition()
+            .text("Zoom In")
+            .style("visibility", vis.viewLevel == "package" && vis.classesOnly ? "visible" : "hidden");
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
@@ -242,7 +278,7 @@ class StructureVis {
             .attr("dx", 12)
             .attr("dy", ".35em")
             .text(d => d.id)
-            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden");
         texts.exit().remove();
 
         vis.classTexts = vis.perClassGroup.selectAll("text").data(d => [d]);
@@ -267,16 +303,16 @@ class StructureVis {
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
         vis.classTexts.exit().remove();
 
-        var methodBodyTexts = vis.perMethodGroup.selectAll(".body-text").data(d => d.text.split("\n"));
+        var methodBodyTexts = vis.perMethodGroup.selectAll(".body-text").data(d => d.text.split("\n").map(t => { return { text: t, views: d.views } }));
         methodBodyTexts = methodBodyTexts.enter().append("text")
             .attr("class", "body-text")
             .merge(methodBodyTexts)
             .attr("dx", 6)
-            .attr("dy", (d,i) => `${5 + i * 1}em`)
+            .attr("dy", (d, i) => `${5 + i * 1}em`)
             // .transition()
-            .text(d => vis.viewLevel == "method" ? d : "")
+            .text(d => vis.viewLevel == "method" ? d.text : "")
             .style("font-size", "2px")
-            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
+            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
         vis.classTexts.exit().remove();
 
         // TODO this might be tricky with visibility
@@ -291,7 +327,7 @@ class StructureVis {
         if (vis.initialized == 0) {
             vis.simulation.nodes(vis.boxData).restart()
                 // this lower line is optional
-                .force("link", d3.forceLink(vis.linkData).id(d => d.type + d.id));
+                .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id));
 
             vis.initialized = 1;
         }
@@ -326,7 +362,7 @@ class StructureVis {
         // having links go across different force graphs seems a bit troublesome...
         // so this is a hacky workaround for now
         // we can also count the number of nodes... connected and fade them out if they're too far away
-        
+
         // TODO we should highlight packages that are related to the current package with a highlighting idiom 
 
         if (vis.viewLevel == "package") {
@@ -335,7 +371,8 @@ class StructureVis {
                 .attr("y1", d => d.source.y)
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y)
-                .style("visibility", d => vis.view == "default" || (d.source.views.includes(vis.view) && d.target.views.includes(vis.view)) ? "visible" : "hidden");
+                .style("visibility", d => vis.view == "default" || (d.source.views.includes(vis.view) && d.target.views.includes(vis.view)) ?
+                    (vis.classesOnly ? "hidden" : "visible") : "hidden");
 
         } else {
             vis.links
