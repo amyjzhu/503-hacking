@@ -34,11 +34,19 @@ function activate(context) {
 			// Receiving messages from the visualization
 			panel.webview.onDidReceiveMessage(
 				message => {
-				  switch (message.command) {
-					case 'alert':
-					  vscode.window.showErrorMessage(message.text);
-					  return;
-				  }
+					switch (message.command) {
+					case 'open':
+						if(message.text.includes('files_in_main_directory/')) {
+							message.text = 'DogManager.java'
+						}
+
+						var workspace = vscode.workspace.workspaceFolders[0].uri;
+						var file = vscode.Uri.joinPath(workspace, 'src', 'org', message.text);
+						
+						console.log(file);
+						vscode.window.showTextDocument(file);
+						return;
+					}
 				},
 				undefined,
 				context.subscriptions
