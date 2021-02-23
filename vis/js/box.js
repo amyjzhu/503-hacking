@@ -36,7 +36,7 @@ class StructureVis {
         this.maxZoom = 20;
         this.zoomLevel = 1;
 
-        this.centeredPackage = _config.centeredOn;
+        this.centeredOn = _config.centeredOnPackage || _config.centeredOnClass;
 
         // this.transitionPoints = [0.25];
         // this.transitionPoints = [1.48, 9.875];
@@ -46,7 +46,7 @@ class StructureVis {
         this.view = _config.view || "default"
         this.viewLevel = _config.view || "package"
         // this.viewLevel = _config.view || "class"
-        this.classesOnly = true;
+        this.classesOnly = _config.classesOnly || false;
         this.initVis();
     }
 
@@ -102,12 +102,19 @@ class StructureVis {
             .on('tick', () => vis.ticked(vis));
         vis.simulation.stop();
 
-        console.log(vis.centeredPackage);
+        console.log(vis.centeredOn);
         // center an item, if valid
-        if (vis.centeredPackage != undefined) {
-            let center = vis.data.packages.find(f => f.id == vis.centeredPackage);
+        if (vis.centeredOn != undefined) {
+            let center = vis.boxData.find(f => f.type + f.id  == vis.centeredOn);
+            
             center.fx = vis.center.x;
             center.fy = vis.center.y;
+
+            if (center.type == "class") {
+                let centerPkg = vis.boxData.find(f => `package${center.pkg}` == f.type + f.id);
+                centerPkg.fx = vis.center.x - vis.boxWidth/2 + vis.smallBoxWidth / 2;
+                centerPkg.fy = vis.center.y - vis.boxHeight/2 + vis.smallBoxHeight / 2;
+            }
         }
 
         console.log(vis.data.packages);

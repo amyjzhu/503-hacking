@@ -1,10 +1,10 @@
-// d3.json(dataGlobal).then(data => {
-//     createVis(data);
-// })
-
-d3.text(dataGlobal).then(data => {
-    createVis(parseInput(data));
+d3.json("data.json").then(data => {
+    createVis(data);
 })
+
+// d3.text(dataGlobal).then(data => {
+//     createVis(parseInput(data));
+// })
 
 let setUpData = (data) => {
     console.log(data)
@@ -53,8 +53,12 @@ let setUpData = (data) => {
 let createVis = (data) => {
     var visData = setUpData(data);    
 
-    var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
-    // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "core"})
+    // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
+    var vis = new StructureVis({parentElement: "#vis", data: visData, 
+    // centeredOnPackage: "packagecore", 
+    centeredOnClass: "classVisitor",
+    classesOnly: true});
+
     vis.classOnClick = getPathOnClick;
 
     // TODO we should also have a different views data structure to help us filter elements
