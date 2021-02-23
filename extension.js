@@ -43,16 +43,18 @@ function getWebviewContent(context, webview) {
 
 	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'box.js');
 	const boxUri = webview.asWebviewUri(boxPathOnDisk);
+	
+	const adapterPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'adapter.js');
+	const adapterUri = webview.asWebviewUri(adapterPathOnDisk);
 
-	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'data.json');
+	// Local path for the data file
+	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'parsed.txt');
 	const dataUri = webview.asWebviewUri(dataPathOnDisk);
 
 	// Local path to css styles
 	const styleResetPath = vscode.Uri.joinPath(context.extensionUri, 'vis', 'css', 'reset.css');
-	const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
-
-	// Uri to load styles into webview
 	const stylesResetUri = webview.asWebviewUri(styleResetPath);
+	const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
 	const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
 
 	return `<!DOCTYPE html>
@@ -80,6 +82,7 @@ function getWebviewContent(context, webview) {
 				
 				<script src="${scriptUri}"></script>
 				<script src="${boxUri}"></script>
+				<script src="${adapterUri}"></script>
 		</body>
 		</html>`;
   }
