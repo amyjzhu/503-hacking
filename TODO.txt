@@ -1,5 +1,5 @@
 - Fix location of parsed.txt. It needs to be in the toy project.
-- Jfeechart
+- Integrate Jfeechart
 
 # Plugin
 - Add shortcut to visualization
