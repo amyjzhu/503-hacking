@@ -45,6 +45,7 @@ function activate(context) {
 						
 						console.log(file);
 						vscode.window.showTextDocument(file);
+						panel.dispose();
 						return;
 					}
 				},
