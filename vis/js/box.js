@@ -19,13 +19,13 @@ class StructureVis {
         this.chart = this.svg.append("g");
 
         this.forceStrength = _config.forceStrength || 0.25
-        this.boxWidth = 200;
-        this.boxHeight = 100;
+        this.boxWidth = 300;
+        this.boxHeight = 200;
         this.smallBoxWidth = this.boxWidth / 3;
-        this.smallBoxHeight = this.boxHeight / 3;
+        this.smallBoxHeight = this.boxHeight / 4;
 
-        this.smallestBoxHeight = this.smallBoxHeight / 2;
-        this.smallestBoxWidth = this.smallBoxWidth / 2;
+        this.smallestBoxHeight = this.smallBoxHeight / 3;
+        this.smallestBoxWidth = this.smallBoxWidth / 2.5;
 
         // this.colours = ["red", "blue", "yellow", "green"]\
         // TODO we should make the colours get lighter or darker by level
@@ -351,7 +351,18 @@ class StructureVis {
 
     methodTicked(vis) {
         vis.perMethodGroup
-            .attr("transform", d => `translate(${d.x}, ${d.y})`);
+            .attr("transform", d => {
+                let cls = vis.boxData.find(box => box.id == d.cls && box.type == "class");
+                let width = cls.x + vis.smallBoxWidth - vis.smallestBoxWidth;
+                let height = cls.y + vis.smallBoxHeight - vis.smallestBoxHeight;
+                
+                // either where we are, or the max coordinate (far edge)
+                // either where we are, or the min coordinate (close edge)
+                // TODO fix the fact that one is anchored to a corner
+                d.x = Math.max(cls.x, Math.min(width, d.x));
+                d.y = Math.max(cls.y, Math.min(height, d.y));
+                return `translate(${d.x}, ${d.y})`;   
+            });
 
         vis.updateLinks();
     }
