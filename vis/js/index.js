@@ -1,10 +1,6 @@
-d3.json("data.json").then(data => {
-    createVis(data);
+d3.text(dataGlobal).then(data => {
+    createVis(parseInput(data));
 })
-
-// d3.text(dataGlobal).then(data => {
-//     createVis(parseInput(data));
-// })
 
 let setUpData = (data) => {
     console.log(data)
@@ -56,7 +52,7 @@ let createVis = (data) => {
     // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
     var vis = new StructureVis({parentElement: "#vis", data: visData, 
     // centeredOnPackage: "packagecore", 
-    centeredOnClass: "classVisitor",
+    centeredOnClass: centerOnGlobal,
     classesOnly: true});
 
     vis.classOnClick = getPathOnClick;
@@ -66,5 +62,24 @@ let createVis = (data) => {
 }
 
 let getPathOnClick = (d) => {
-    console.log(`${d.pkg}/${d.id}.java`)
+    var file = `${d.pkg}/${d.id}.java`
+    console.log(file)
+
+    // Sending messages to the plugin
+    vscode.postMessage({
+        command: 'open',
+        text: file
+    })
 }
+
+// Example of message passing to receive messages from the plugin
+window.addEventListener('message', event => {
+
+    const message = event.data; // The JSON data our extension sent
+
+    switch (message.command) {
+        case 'refactor':
+            console.log("It works")
+            break;
+    }
+});
