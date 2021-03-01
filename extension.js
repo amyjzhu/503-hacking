@@ -53,7 +53,7 @@ function activate(context) {
 				context.subscriptions
 			  );
 
-			// Send a message to our webview.
+			// Send a message to the visualization.
 			// You can send any JSON serializable data.
 			// panel.webview.postMessage({ command: 'refactor' });
 		})
@@ -82,7 +82,7 @@ function getWebviewContent(context, webview, centerOn) {
 	const adapterUri = webview.asWebviewUri(adapterPathOnDisk);
 
 	// Local path for the data file
-	const dataPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'parsed.txt');
+	const dataPathOnDisk = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'parsed.txt');
 	const dataUri = webview.asWebviewUri(dataPathOnDisk);
 
 	// Local path to css styles

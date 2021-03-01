@@ -6,7 +6,7 @@
 - Sahil: XML Parser
 
 # General
-- [ ] **TS** Fix location of parsed.txt. It needs to be in the toy project.
+- [x] Fix location of parsed.txt. It needs to be in the toy project.
 - [x] Run Doxygen on Jfreechart and add results to the project. Also add the parsing script.
 
 # User study
