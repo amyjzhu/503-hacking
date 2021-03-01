@@ -15,3 +15,4 @@
 - [ ] Adapt rectangle shape to fit class and method names
 - [ ] Fix methods appearing outside of the class
 - [ ] Fix classes clusters being light years apart
+- [ ] Highlighting: when you over an element, the edges and nodes it's connected to are highlighted.
