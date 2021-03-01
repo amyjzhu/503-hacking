@@ -1,4 +1,5 @@
 
+
 - [ ] Fix location of parsed.txt. It needs to be in the toy project.
 - [ ] Run Doxygen on Jfreechart and add results to the project. Also add the parsing script.
 
@@ -6,13 +7,13 @@
 - [ ] Look at how user studies are done in the visualization community and reframe our study tasks in that way.
 
 # Plugin
-- [ ] Add shortcut to visualization
+- [x] Add shortcut to visualization
 - [ ] Make codemap.parse actually code the parsing script or call the terminal commands)
 
 # Visualization
 - [ ] Remove "Zoom In"
 - [ ] Tweak zoom levels to be able to show all the classes on the screen
 - [ ] Adapt rectangle shape to fit class and method names
-- [ ] Fix methods appearing outside of the class
+- [x] Fix methods appearing outside of the class
 - [ ] Fix classes clusters being light years apart
 - [ ] Highlighting: when you over an element, the edges and nodes it's connected to are highlighted.
