@@ -18,8 +18,8 @@ Figs 3 and 4 definitely demonstrate that you have a working prototype, and you
 seem to be pretty nearly code complete, so nice work there.
 
 Pro-tip: 
-- you can make your **TODO a .md and use -[ ] to make an unchecked box and -[x] a checked one** and I'm pretty sure github still renders them nicely.
-- And *then*, you include the change to **TODO.md as part of the commit that implements that TODO item** and it's all very satisfying and tidy.
+- [x] you can make your **TODO a .md and use -[ ] to make an unchecked box and -[x] a checked one** and I'm pretty sure github still renders them nicely.
+- [x] And *then*, you include the change to **TODO.md as part of the commit that implements that TODO item** and it's all very satisfying and tidy.
 
 ## Feb 17 - Related Work and Methodology
 ### introduction 1/1 
