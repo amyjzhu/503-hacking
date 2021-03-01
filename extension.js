@@ -82,7 +82,7 @@ function getWebviewContent(context, webview, centerOn) {
 	const adapterUri = webview.asWebviewUri(adapterPathOnDisk);
 
 	// Local path for the data file
-	const dataPathOnDisk = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'parsed.txt');
+	const dataPathOnDisk = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'data.codemap');
 	const dataUri = webview.asWebviewUri(dataPathOnDisk);
 
 	// Local path to css styles
