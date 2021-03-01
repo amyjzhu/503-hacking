@@ -1,5 +1,11 @@
 
+# Who does what (03/02)
+- Thomas: Plugin and Visualization tasks.
+- Amy: Visualization
+- Audrey: Tinker with D3 and Parser
+- Sahil: Parsing Jfreechart
 
+# General
 - [ ] Fix location of parsed.txt. It needs to be in the toy project.
 - [ ] Run Doxygen on Jfreechart and add results to the project. Also add the parsing script.
 
