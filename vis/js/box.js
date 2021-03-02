@@ -40,12 +40,13 @@ class StructureVis {
 
         // this.transitionPoints = [0.25];
         // this.transitionPoints = [1.48, 9.875];
-        this.transitionPoints = [1.01, 9.875];
+        // this.transitionPoints = [1.01, 9.875];
+        this.transitionPoints = [.99, 9.875];
         this.initialized = 0;
 
         this.view = _config.view || "default"
-        this.viewLevel = _config.view || "package"
-        // this.viewLevel = _config.view || "class"
+        // this.viewLevel = _config.view || "package"
+        this.viewLevel = _config.view || "class"
         this.classesOnly = _config.classesOnly || false;
         this.initVis();
     }
@@ -99,7 +100,8 @@ class StructureVis {
             .force('charge', d3.forceManyBody().strength(charge))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
-            .on('tick', () => vis.ticked(vis));
+            .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
+            .on('tick', () => vis.fastTick(vis));
         vis.simulation.stop();
 
         console.log(vis.centeredOn);
@@ -263,14 +265,14 @@ class StructureVis {
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
 
-        vis.chart.select(".zoom-text")
-            .merge(vis.zoomText)
-            .attr("dx", vis.center.x)
-            .attr("dy", vis.center.y)
-            .style("font-size", 40)
-            // .transition()
-            .text("Zoom In")
-            .style("visibility", vis.viewLevel == "package" && vis.classesOnly ? "visible" : "hidden");
+        // vis.chart.select(".zoom-text")
+        //     .merge(vis.zoomText)
+        //     .attr("dx", vis.center.x)
+        //     .attr("dy", vis.center.y)
+        //     .style("font-size", 40)
+        //     // .transition()
+        //     .text("Zoom In")
+        //     .style("visibility", vis.viewLevel == "package" && vis.classesOnly ? "visible" : "hidden");
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
@@ -324,14 +326,29 @@ class StructureVis {
 
         vis.links.exit().remove();
 
-        if (vis.initialized == 0) {
-            vis.simulation.nodes(vis.boxData).restart()
-                // this lower line is optional
-                .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id));
+        if (vis.initialized == 0) {    
+            // Instantly move packages to final destination
+            vis.simulation.nodes(vis.boxData).restart();
+            for (var i = 0; i < 20; i++) {
+                vis.simulation.tick();
+            }
+            vis.simulation.stop();
+            vis.ticked(vis);
+                
+            vis.perPkgSimulations.forEach(sim => {
+                if (sim.sim == undefined) {
+                    sim.sim = sim.simFn();
+                    sim.sim.nodes(sim.cls).restart();
+                }
+            })
 
             vis.initialized = 1;
         }
 
+    }
+
+    fastTick(vis) {
+        vis.boxGroups.each(d => d.x = d.originalX);
     }
 
     ticked(vis) {
@@ -407,13 +424,13 @@ class StructureVis {
             vis.simulation.stop();
             vis.viewLevel = "class";
 
-            vis.perPkgSimulations.forEach(sim => {
-                if (sim.sim == undefined) {
-                    // now we need to create it, if it's the first time...
-                    sim.sim = sim.simFn();
-                    sim.sim.nodes(sim.cls).restart();
-                }
-            })
+            // vis.perPkgSimulations.forEach(sim => {
+            //     if (sim.sim == undefined) {
+            //         // now we need to create it, if it's the first time...
+            //         sim.sim = sim.simFn();
+            //         sim.sim.nodes(sim.cls).restart();
+            //     }
+            // })
 
             vis.perClassSimulations.forEach(sim => {
                 if (sim.sim != undefined) {
