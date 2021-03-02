@@ -21,7 +21,7 @@
 - [ ] **SV** Parse local package dependencies and imported dependencies from XML
 
 # Visualization
-- [ ] **AZ** Remove "Zoom In"
+- [x] Remove "Zoom In"
 - [ ] Tweak zoom levels to be able to show all the classes on the screen
 - [ ] Adapt rectangle shape to fit class and method names
 - [x] Fix methods appearing outside of the class
