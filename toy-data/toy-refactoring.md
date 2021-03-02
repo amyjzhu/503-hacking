@@ -1,1 +1,0 @@
-Toy example project ~20 classes: https://github.com/danilofes/refactoring-toy-example

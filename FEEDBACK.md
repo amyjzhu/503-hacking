@@ -1,5 +1,26 @@
 # Feedback
 
+## Feb 22 Code Complete & Initial Results
+
+### replicable implementation details 4/4
+This section is easy to follow and concisely written.
+
+One thing that's **unclear to me is how highlighting is used specifically**: is it
+it for fully connected clusters? Or for clusters that are only reachable from
+the rest of the graph via a smaller number of connections (so they're
+somewhat isolated subgraphs)?  I don't think this is quite deduction-worthy because this seems more like a bonus than a core necessary feature.
+
+### working implementation or pilot study 6/6
+Oh I didn't understand that your user study before was made up, thanks for
+clarifying.
+
+Figs 3 and 4 definitely demonstrate that you have a working prototype, and you
+seem to be pretty nearly code complete, so nice work there.
+
+Pro-tip: 
+- [x] you can make your **TODO a .md and use -[ ] to make an unchecked box and -[x] a checked one** and I'm pretty sure github still renders them nicely.
+- [x] And *then*, you include the change to **TODO.md as part of the commit that implements that TODO item** and it's all very satisfying and tidy.
+
 ## Feb 17 - Related Work and Methodology
 ### introduction 1/1 
 Nice intro: clearly explains the motivation and use case, introduces terms precisely. I'm surprised that you don't touch on this directly (though you *almost* do) - wouldn't this type of tooling also be useful for the initial engineers who implement the source code to design it better in the first place? "A classic problem in graph visualizations is what to do when there is too much data. We need to solve this problem in the context of program comprehension." => yeah this is interesting. what are typical solutions? 
