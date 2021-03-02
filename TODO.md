@@ -8,6 +8,7 @@
 # General
 - [x] Fix location of parsed.txt. It needs to be in the toy project.
 - [x] Run Doxygen on Jfreechart and add results to the project. Also add the parsing script.
+- [ ] **AS** Make shell script calling DOxygen and Python parser
 
 # User study
 - [ ] **TS/AZ** Look at how user studies are done in the visualization community and reframe our study tasks in that way.
