@@ -102,7 +102,7 @@ class StructureVis {
             .force('charge', d3.forceManyBody().strength(charge))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
-            // .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
+            .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
             .on('tick', () => vis.fastTick(vis));
         vis.simulation.stop();
 
@@ -353,10 +353,10 @@ class StructureVis {
 
         if (vis.initialized == 0) {
             // Instantly move packages to final destination
-            // vis.simulation.nodes(vis.boxData).restart();
+            vis.simulation.nodes(vis.boxData).restart();
 
-            vis.simulation.nodes(vis.boxData).restart()
-                .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
+            // vis.simulation.nodes(vis.boxData).restart()
+                // .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
 
             for (var i = 0; i < 20; i++) {
                 vis.simulation.tick();
