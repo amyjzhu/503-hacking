@@ -9,7 +9,7 @@ class StructureVis {
 
         var parentDiv = document.getElementById("container");
         this.svg = d3.select(this.config.parentElement);
-        
+
         this.svg.attr("height", parentDiv.clientHeight);
         this.svg.attr("width", parentDiv.clientWidth);
 
@@ -48,6 +48,8 @@ class StructureVis {
         // this.viewLevel = _config.view || "package"
         this.viewLevel = _config.view || "class"
         this.classesOnly = _config.classesOnly || false;
+        this.currentlyHighlighted = [];
+
         this.initVis();
     }
 
@@ -100,22 +102,22 @@ class StructureVis {
             .force('charge', d3.forceManyBody().strength(charge))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
-            .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
+            // .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
             .on('tick', () => vis.fastTick(vis));
         vis.simulation.stop();
 
         console.log(vis.centeredOn);
         // center an item, if valid
         if (vis.centeredOn != undefined) {
-            let center = vis.boxData.find(f => f.type + f.id  == vis.centeredOn);
-            
+            let center = vis.boxData.find(f => f.type + f.id == vis.centeredOn);
+
             center.fx = vis.center.x;
             center.fy = vis.center.y;
 
             if (center.type == "class") {
                 let centerPkg = vis.boxData.find(f => `package${center.pkg}` == f.type + f.id);
-                centerPkg.fx = vis.center.x - vis.boxWidth/2 + vis.smallBoxWidth / 2;
-                centerPkg.fy = vis.center.y - vis.boxHeight/2 + vis.smallBoxHeight / 2;
+                centerPkg.fx = vis.center.x - vis.boxWidth / 2 + vis.smallBoxWidth / 2;
+                centerPkg.fy = vis.center.y - vis.boxHeight / 2 + vis.smallBoxHeight / 2;
             }
         }
 
@@ -221,16 +223,20 @@ class StructureVis {
             // colour coded by group
             .style("fill", d => vis.viewLevel == "package" ? vis.colourScale(d.group) : "none")
             .style("stroke", d => vis.viewLevel == "package" ? "none" : vis.colourScale(d.group))
-            .style("stroke-opacity", vis.viewLevel == "method" ? 0.5 : 1)
+            .style("stroke-opacity", vis.viewLevel == "method" ? 0.6 : 1)
+            .on("mouseover", d => vis.addHighlighting(d))
+            .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
-            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden");
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1);
+
         console.log(boxes)
 
         // classes
         var classGroupsSelect = vis.boxArea.selectAll(".classGroup").data(vis.boxData.filter(d => d.type == "package"), d => { return d.type + d.id });
         vis.classGroups = classGroupsSelect.enter().append("g").attr("class", "classGroup").merge(classGroupsSelect);
 
-        vis.perClassGroup = vis.classGroups.selectAll("g").data(pkg => { console.log(vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id)); return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id) }, d => d.type + d.id);
+        vis.perClassGroup = vis.classGroups.selectAll("g").data(pkg => {  return vis.boxData.filter(d => d.type == "class" && d.pkg == pkg.id) }, d => d.type + d.id);
         vis.perClassGroup = vis.perClassGroup.enter().append("g").merge(vis.perClassGroup);
 
         vis.classRects = vis.perClassGroup.selectAll("rect").data(d => [d]);
@@ -244,8 +250,11 @@ class StructureVis {
             .style("fill", d => vis.viewLevel == "class" ? vis.colourScale(d.group) : "none")
             .style("stroke", d => vis.viewLevel == "method" ? vis.colourScale(d.group) : "none")
             .style("stroke-opacity", vis.viewLevel == "method" ? 0.5 : 1)
+            .on("mouseover", d => vis.addHighlighting(d))
+            .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
-            .style("visibility", d => { console.log(d.views); return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
+            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1);
 
         // methods
         var methodGroupsSelect = vis.boxArea.selectAll(".methodGroup").data(vis.boxData.filter(d => d.type == "class"), d => { return d.type + d.id });
@@ -262,8 +271,12 @@ class StructureVis {
             .attr("width", vis.smallestBoxWidth)
             .attr("height", vis.smallestBoxHeight)
             .style("fill", d => vis.viewLevel == "method" ? vis.colourScale(d.group) : "none")
+            .on("mouseover", d => vis.addHighlighting(d))
+            .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
-            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
+            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1);
+
 
         // vis.chart.select(".zoom-text")
         //     .merge(vis.zoomText)
@@ -280,7 +293,11 @@ class StructureVis {
             .attr("dx", 12)
             .attr("dy", ".35em")
             .text(d => d.id)
-            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden");
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
+            .style("opacity", d => !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1)
+            .style("pointer-events", "none");
+
+
         texts.exit().remove();
 
         vis.classTexts = vis.perClassGroup.selectAll("text").data(d => [d]);
@@ -290,7 +307,9 @@ class StructureVis {
             .attr("dy", ".35em")
             // .transition()
             .text(d => vis.viewLevel == "package" ? "" : d.id)
-            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1)
+            .style("pointer-events", "none");
         vis.classTexts.exit().remove();
 
         var methodTexts = vis.perMethodGroup.selectAll(".title-text").data(d => [d]);
@@ -302,10 +321,12 @@ class StructureVis {
             // .transition()
             .text(d => vis.viewLevel == "method" ? d.id : "")
             .style("font-size", "5px")
-            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden");
+            .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1)
+            .style("pointer-events", "none");
         vis.classTexts.exit().remove();
 
-        var methodBodyTexts = vis.perMethodGroup.selectAll(".body-text").data(d => d.text.split("\n").map(t => { return { text: t, views: d.views } }));
+        var methodBodyTexts = vis.perMethodGroup.selectAll(".body-text").data(d => d.text.split("\n").map(t => { return { text: t, views: d.views, id: d.type + d.id } }));
         methodBodyTexts = methodBodyTexts.enter().append("text")
             .attr("class", "body-text")
             .merge(methodBodyTexts)
@@ -314,27 +335,35 @@ class StructureVis {
             // .transition()
             .text(d => vis.viewLevel == "method" ? d.text : "")
             .style("font-size", "2px")
-            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" });
+            .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.id) ? 0.5 : 1)
+            .style("pointer-events", "none");
+
         vis.classTexts.exit().remove();
 
         // TODO this might be tricky with visibility
-        vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => d.source + d.target);
+        console.log(vis.linkData);
+        vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => { vis.viewLevel == "package" ? d.source.id + d.target.id : d.source + d.target});
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
             .attr("stroke", "#999")
-            .attr("stroke-opacity", 0.6);
+            .attr("stroke-opacity", d => !d.highlighted && vis.currentlyHighlighted.length != 0 ? 0.5 : 0.9);
 
         vis.links.exit().remove();
 
-        if (vis.initialized == 0) {    
+        if (vis.initialized == 0) {
             // Instantly move packages to final destination
-            vis.simulation.nodes(vis.boxData).restart();
+            // vis.simulation.nodes(vis.boxData).restart();
+
+            vis.simulation.nodes(vis.boxData).restart()
+                .force("link", d3.forceLink(vis.data.packageLinks).id(d => d.type + d.id))
+
             for (var i = 0; i < 20; i++) {
                 vis.simulation.tick();
             }
             vis.simulation.stop();
             vis.ticked(vis);
-                
+
             vis.perPkgSimulations.forEach(sim => {
                 if (sim.sim == undefined) {
                     sim.sim = sim.simFn();
@@ -372,13 +401,13 @@ class StructureVis {
                 let cls = vis.boxData.find(box => box.id == d.cls && box.type == "class");
                 let width = cls.x + vis.smallBoxWidth - vis.smallestBoxWidth;
                 let height = cls.y + vis.smallBoxHeight - vis.smallestBoxHeight;
-                
+
                 // either where we are, or the max coordinate (far edge)
                 // either where we are, or the min coordinate (close edge)
                 // TODO fix the fact that one is anchored to a corner
                 d.x = Math.max(cls.x, Math.min(width, d.x));
                 d.y = Math.max(cls.y, Math.min(height, d.y));
-                return `translate(${d.x}, ${d.y})`;   
+                return `translate(${d.x}, ${d.y})`;
             });
 
         vis.updateLinks();
@@ -400,7 +429,8 @@ class StructureVis {
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y)
                 .style("visibility", d => vis.view == "default" || (d.source.views.includes(vis.view) && d.target.views.includes(vis.view)) ?
-                    (vis.classesOnly ? "hidden" : "visible") : "hidden");
+                    (vis.classesOnly ? "hidden" : "visible") : "hidden")
+
 
         } else {
             vis.links
@@ -409,7 +439,7 @@ class StructureVis {
                 .attr("x2", d => vis.boxData.find(data => d.target == data.type + data.id).x)
                 .attr("y2", d => vis.boxData.find(data => d.target == data.type + data.id).y)
                 .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.type + data.id).views.includes(vis.view)
-                    && vis.boxData.find(data => d.target == data.type + data.id).views.includes(vis.view)) ? "visible" : "hidden");
+                    && vis.boxData.find(data => d.target == data.type + data.id).views.includes(vis.view)) ? "visible" : "hidden")
         }
     }
 
@@ -514,6 +544,57 @@ class StructureVis {
         vis.updateZoomLevel();
     }
 
+    addHighlighting(item) {
+        let vis = this;
+
+        let findAllRec = (visited, todo) => {
+            if (todo.length == 0) {
+                return visited;
+            }
+            let item = todo[0];
+
+            // TODO this is actually unidirectional
+            // (but we don't display the arrows)
+            // (and we should in the future)
+            let connected;
+            if (vis.viewLevel == "package") {
+                connected = vis.linkData.filter(d => (d.source.type + d.source.id) == item);
+                connected.forEach(x => x.highlighted = true);
+                console.log(vis.linkData.filter(x => x.highlighted));
+                connected = connected.map(d => d.target.type + d.target.id);
+                
+            } else {
+                connected = vis.linkData.filter(d => d.source == item);
+                connected.forEach(x => x.highlighted = true);
+                connected = connected.map(d => d.target);
+            }
+
+            // TODO there has to be an explicit connection
+            // right now, containment doesn't mean dependency
+            // necessary to express inter-level dependencies
+            // else we can say "if you contain this method, you should be highlighted too"
+            let diff = connected.filter(x => !visited.includes(x));
+
+            return findAllRec(visited.concat([item]), todo.slice(1).concat(diff));
+
+        }
+
+        vis.currentlyHighlighted = findAllRec([], [item.type + item.id]);
+
+        vis.render();
+        vis.updateLinks();
+    }
+
+    removeHighlighting() {
+        let vis = this;
+        // clear
+        vis.currentlyHighlighted = [];
+        vis.linkData.forEach(x => x.highlighted = false);
+        vis.render();
+        vis.updateLinks();
+
+    }
+
     updateZoomLevel() {
         let vis = this;
 
@@ -546,5 +627,21 @@ class StructureVis {
             .text(d => `View ${d}`)
             .attr("value", d => d)
             .on("click", d => { vis.view = d; vis.render(); vis.updateLinks(); });
+    }
+
+    // credits: richard maloney 2006
+    getTintedColor(color, v) {
+        if (color.length > 6) { color = color.substring(1, color.length) }
+        var rgb = parseInt(color, 16);
+        var r = Math.abs(((rgb >> 16) & 0xFF) + v); if (r > 255) r = r - (r - 255);
+        var g = Math.abs(((rgb >> 8) & 0xFF) + v); if (g > 255) g = g - (g - 255);
+        var b = Math.abs((rgb & 0xFF) + v); if (b > 255) b = b - (b - 255);
+        r = Number(r < 0 || isNaN(r)) ? 0 : ((r > 255) ? 255 : r).toString(16);
+        if (r.length == 1) r = '0' + r;
+        g = Number(g < 0 || isNaN(g)) ? 0 : ((g > 255) ? 255 : g).toString(16);
+        if (g.length == 1) g = '0' + g;
+        b = Number(b < 0 || isNaN(b)) ? 0 : ((b > 255) ? 255 : b).toString(16);
+        if (b.length == 1) b = '0' + b;
+        return "#" + r + g + b;
     }
 }

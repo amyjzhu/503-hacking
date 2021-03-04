@@ -1,0 +1,77 @@
+[{
+	"name": "core",
+	"classes": [{
+		"name": "Count",
+		"methods": [],
+		"uses": ["Visitor", "Client", "RPC", "Misc"]
+	}, {
+		"name": "Visitor",
+		"methods": [{
+			"name": "visit(count)", 
+			"text": "count.visit();",
+			"uses": []
+			}, {
+			 "name": "visitBinary(count1, count2)",
+			 "text": "count1.visit() + count2.visit();",
+			 "uses": ["visit(count)"]
+			}],
+		"uses": ["Count", "Misc"]
+	}],
+	"uses": ["net", "util", "parse"]
+}, {
+	"name": "net",
+	"classes": [{
+		"name": "Server",
+		"methods": [{
+			"name": "bind(port)", 
+			"text": "Socket socket = os.bind(port); \n return socket;",
+			"uses": []
+			}, {
+			 "name": "listen()",
+			 "text": "Socket socket = bind(PORT_NUM); \n Message msg = socket.listen(); \n return msg;",
+			 "uses": ["bind(port)"]
+			}],
+		"uses": ["Client", "RPC", "Misc"],
+		"views": ["RPC"]
+	}, {
+		"name": "Client",
+		"methods": [],
+		"uses": ["Server", "RPC"],
+		"views": ["RPC"]
+	}, {
+		"name": "RPC",
+		"methods": [],
+		"uses": [],
+		"views": ["RPC"]
+	}],
+	"uses": ["core", "util"],
+	"views": ["RPC"]
+}, {
+	"name": "util",
+	"classes": [{
+		"name": "Misc",
+		"methods": [],
+		"uses": []
+	}],
+	"uses": ["net", "core"]
+}, {
+	"name": "parse",
+	"classes": [{
+		"name": "Lex",
+		"methods": [],
+		"uses": ["Parse"]
+	}, {
+		"name": "Parse",
+		"methods": [],
+		"uses": ["Desugar"]
+	}, {
+		"name": "Desugar",
+		"methods": [],
+		"uses": ["Lower"]
+	}, {
+		"name": "Lower",
+		"methods": [],
+		"uses": ["Count"]
+	}],
+	"uses": ["core"]
+}]
