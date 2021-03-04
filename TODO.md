@@ -8,6 +8,7 @@
 # General
 - [x] Fix location of parsed.txt. It needs to be in the toy project.
 - [x] Run Doxygen on Jfreechart and add results to the project. Also add the parsing script.
+- [ ] **AS** Make shell script calling DOxygen and Python parser
 
 # User study
 - [ ] **TS/AZ** Look at how user studies are done in the visualization community and reframe our study tasks in that way.
@@ -21,7 +22,7 @@
 - [ ] **SV** Parse local package dependencies and imported dependencies from XML
 
 # Visualization
-- [ ] **AZ** Remove "Zoom In"
+- [x] Remove "Zoom In"
 - [ ] Tweak zoom levels to be able to show all the classes on the screen
 - [ ] Adapt rectangle shape to fit class and method names
 - [x] Fix methods appearing outside of the class
