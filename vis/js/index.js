@@ -73,13 +73,13 @@ let getPathOnClick = (d) => {
 }
 
 // Example of message passing to receive messages from the plugin
-window.addEventListener('message', event => {
+// window.addEventListener('message', event => {
 
-    const message = event.data; // The JSON data our extension sent
+//     const message = event.data; // The JSON data our extension sent
 
-    switch (message.command) {
-        case 'refactor':
-            console.log("It works")
-            break;
-    }
-});
+//     switch (message.command) {
+//         case 'refactor':
+//             console.log("It works")
+//             break;
+//     }
+// });
