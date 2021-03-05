@@ -1,4 +1,5 @@
 
+// Parses "*.codemap" files into an internal representation.
 
 let parseInput = text => {
     // make this a valid JSON
