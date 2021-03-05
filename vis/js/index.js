@@ -13,16 +13,16 @@ let setUpData = (data) => {
     var methodGroups = [];
     data.forEach((pkg, idx) => {
         // not sre if these groups an be zero-indexed
-        pkgGroups.push({id: pkg.name, group: idx + 1, type: "package", views: pkg.views || []});
+        pkgGroups.push({id: pkg.name, group: idx + 1, type: "package", views: pkg.views || [], container: ""});
         pkg.classes.forEach(cls => {
-            classGroups.push({id: cls.name, group: idx + 1, pkg: pkg.name, type: "class", views: cls.views || []})
+            classGroups.push({id: cls.name, group: idx + 1, container: pkg.name, type: "class", views: cls.views || []})
         })
 
         // right now we inherit views from classes
         // TODO we may want to change this later
         pkg.classes.forEach(cls => {
             cls.methods.forEach(method => {
-                methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", cls: cls.name, text: method.text || "", views: cls.views || []}) 
+                methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", container: cls.name, text: method.text || "", views: cls.views || []}) 
             })
         })
     })
@@ -43,7 +43,7 @@ let setUpData = (data) => {
     console.log(methodGroups);
 
     // var data = {packages: [], classes: [], packageLinks: [], classLinks: [], data: []} // original data
-    return {packages: pkgGroups, classes: classGroups, packageLinks: packageLinks, classLinks: classLinks, methods: methodGroups, methodLinks: methodLinks, data: data};
+    return {data: pkgGroups.concat(classGroups).concat(methodGroups), links: packageLinks.concat(classLinks).concat(methodLinks)};
 }
 
 let createVis = (data) => {
