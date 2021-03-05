@@ -11,7 +11,7 @@
 - [ ] **AS** Make shell script calling DOxygen and Python parser
 
 # User study
-- [ ] **TS/AZ** Look at how user studies are done in the visualization community and reframe our study tasks in that way.
+- [x] Look at how user studies are done in the visualization community and reframe our study tasks in that way.
 - [ ] **AZ** Draft the operational protocol for participants and primary investigators
 
 # Plugin
