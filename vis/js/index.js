@@ -52,8 +52,8 @@ let createVis = (data) => {
     // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
     var vis = new StructureVis({parentElement: "#vis", data: visData, 
     // centeredOnPackage: "packagecore", 
-    centeredOnClass: "classSnake",
-    classesOnly: false});
+    centeredOnClass: centerOnGlobal,
+    classesOnly: true});
 
     vis.classOnClick = getPathOnClick;
 
@@ -73,13 +73,13 @@ let getPathOnClick = (d) => {
 }
 
 // Example of message passing to receive messages from the plugin
-window.addEventListener('message', event => {
+// window.addEventListener('message', event => {
 
-    const message = event.data; // The JSON data our extension sent
+//     const message = event.data; // The JSON data our extension sent
 
-    switch (message.command) {
-        case 'refactor':
-            console.log("It works")
-            break;
-    }
-});
+//     switch (message.command) {
+//         case 'refactor':
+//             console.log("It works")
+//             break;
+//     }
+// });
