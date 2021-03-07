@@ -73,11 +73,22 @@ public class ResolveMethodReferences {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        if (args.length != 1 && args.length != 2) {
+            System.out.println("ERROR: expected either one or two arguments.");
+            System.out.println("Usage: ResolveMethodReferences project_source_dir [json_output_filename]");
+            System.out.println("By default, json_output_filename will be \"data.json\".");
+            return;
+        }
+        String sourceDir = args[0];
+        String dataFile = "data.json";
+        if (args.length == 2) {
+            dataFile = args[1];
+        }
+//        System.out.println("Working Directory = " + System.getProperty("user.dir"));
         TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
-        TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File("../toy-data/refactoring-toy-example-master/src"));
+        TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File(sourceDir));
 
-        ArrayList<String> fileNames = getJavaFiles("../toy-data/refactoring-toy-example-master/src");
+        ArrayList<String> fileNames = getJavaFiles(sourceDir);
         for (String name : fileNames) {
             System.out.println(name);
         }
@@ -133,7 +144,7 @@ public class ResolveMethodReferences {
         JSONObject allData = new JSONObject();
         allData.put("classNames", classNamesList);
         allData.put("classData", classList);
-        try (FileWriter file = new FileWriter("data.json")) {
+        try (FileWriter file = new FileWriter(dataFile)) {
             file.write(allData.toString(2));
             file.flush();
         } catch (IOException e) {
