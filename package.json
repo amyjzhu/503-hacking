@@ -24,6 +24,14 @@
         "command": "codemap.parse",
         "title": "Parse the project files"
       }
+    ], 
+    "keybindings": [
+      {
+        "command": "codemap.view",
+        "key": "ctrl+alt+v",
+        "mac": "ctrl+cmd+v",
+        "when": "editorTextFocus"
+      }
     ]
   },
   "scripts": {

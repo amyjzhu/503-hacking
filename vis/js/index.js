@@ -1,7 +1,3 @@
-// d3.json(dataGlobal).then(data => {
-//     createVis(data);
-// })
-
 d3.text(dataGlobal).then(data => {
     createVis(parseInput(data));
 })
@@ -17,16 +13,16 @@ let setUpData = (data) => {
     var methodGroups = [];
     data.forEach((pkg, idx) => {
         // not sre if these groups an be zero-indexed
-        pkgGroups.push({id: pkg.name, group: idx + 1, type: "package", views: pkg.views || []});
+        pkgGroups.push({id: pkg.name, group: idx + 1, type: "package", views: pkg.views || [], container: ""});
         pkg.classes.forEach(cls => {
-            classGroups.push({id: cls.name, group: idx + 1, pkg: pkg.name, type: "class", views: cls.views || []})
+            classGroups.push({id: cls.name, group: idx + 1, container: pkg.name, type: "class", views: cls.views || []})
         })
 
         // right now we inherit views from classes
         // TODO we may want to change this later
         pkg.classes.forEach(cls => {
             cls.methods.forEach(method => {
-                methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", cls: cls.name, text: method.text || "", views: cls.views || []}) 
+                methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", container: cls.name, text: method.text || "", views: cls.views || []}) 
             })
         })
     })
@@ -47,14 +43,18 @@ let setUpData = (data) => {
     console.log(methodGroups);
 
     // var data = {packages: [], classes: [], packageLinks: [], classLinks: [], data: []} // original data
-    return {packages: pkgGroups, classes: classGroups, packageLinks: packageLinks, classLinks: classLinks, methods: methodGroups, methodLinks: methodLinks, data: data};
+    return {data: pkgGroups.concat(classGroups).concat(methodGroups), links: packageLinks.concat(classLinks).concat(methodLinks)};
 }
 
 let createVis = (data) => {
     var visData = setUpData(data);    
 
-    var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
-    // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "core"})
+    // var vis = new StructureVis({parentElement: "#vis", data: visData, centeredOn: "felines"})
+    var vis = new StructureVis({parentElement: "#vis", data: visData, 
+    // centeredOnPackage: "packagecore", 
+    centeredOnClass: centerOnGlobal,
+    classesOnly: true});
+
     vis.classOnClick = getPathOnClick;
 
     // TODO we should also have a different views data structure to help us filter elements
@@ -62,5 +62,24 @@ let createVis = (data) => {
 }
 
 let getPathOnClick = (d) => {
-    console.log(`${d.pkg}/${d.id}.java`)
+    var file = `${d.pkg}/${d.id}.java`
+    console.log(file)
+
+    // Sending messages to the plugin
+    vscode.postMessage({
+        command: 'open',
+        text: file
+    })
 }
+
+// Example of message passing to receive messages from the plugin
+// window.addEventListener('message', event => {
+
+//     const message = event.data; // The JSON data our extension sent
+
+//     switch (message.command) {
+//         case 'refactor':
+//             console.log("It works")
+//             break;
+//     }
+// });
