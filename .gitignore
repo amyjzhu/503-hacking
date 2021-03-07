@@ -5,3 +5,5 @@ node_modules
 .vscode/extensions.json
 
 .vscode/settings.json
+*.iml
+.idea
