@@ -21,7 +21,7 @@ The file `src/main/java/org/codemap/parser/ResolveMethodReferences.java` contain
 If you don't want to produce the whole jar file, you can run
 
 ```
-mvn exec:java -Dexec.mainClass="org.codemap.parser.ResolveMethodReferences" sources_dir [data_file]
+mvn exec:java -Dexec.mainClass="org.codemap.parser.ResolveMethodReferences" -Dexec.args="sources_dir [data_file]"
 ```
 
 instead. This has the added benefit of not having to figure out the classpath, since Maven will do it for you.
