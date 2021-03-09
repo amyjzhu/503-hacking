@@ -1,5 +1,5 @@
 # General
-- [ ] **AS** Make shell script calling the Java Parser
+- [x] **AS** Make shell script calling the Java Parser
 - [x] Fix location of parsed.txt. It needs to be in the toy project.
 - [x] Run Doxygen on Jfreechart and add results to the project. Also add the parsing script.
 
