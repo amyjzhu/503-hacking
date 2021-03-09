@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.nio.file.Path;
 import java.nio.file.Files;
@@ -12,7 +13,13 @@ import java.nio.file.Paths;
 import java.lang.SecurityException;
 import java.io.IOException;
 
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.TypeParameter;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
@@ -56,12 +63,95 @@ public class ResolveMethodReferences {
         return classInfo;
     }
 
+    public static void initializeMethodModifiers(JSONObject methodDeclInfo) {
+        methodDeclInfo.put("abstract", false);
+        methodDeclInfo.put("default", false);
+        methodDeclInfo.put("final", false);
+        methodDeclInfo.put("native", false);
+        methodDeclInfo.put("static", false);
+        methodDeclInfo.put("strictfp", false);
+        methodDeclInfo.put("synchronized", false);
+    }
+
     public static JSONObject getMethodDeclarationInfo(MethodDeclaration method) {
         JSONObject methodDeclInfo = new JSONObject();
         // In the future, I would like to do something more fancy but this will have
         // to do
-        methodDeclInfo.put("signature", method.getDeclarationAsString());
+        methodDeclInfo.put("declaration", method.getDeclarationAsString());
+        initializeMethodModifiers(methodDeclInfo);
+        try {
+            ResolvedMethodDeclaration rmd = method.resolve();
+            methodDeclInfo.put("signature", rmd.getQualifiedSignature());
+            methodDeclInfo.put("return", rmd.getReturnType().describe());
+
+            methodDeclInfo.put("static", rmd.isStatic());
+            methodDeclInfo.put("abstract", rmd.isAbstract());
+            if (rmd.isAbstract()) {
+                methodDeclInfo.put("visibility", "public");
+            }
+        } catch (UnsolvedSymbolException e) {
+            System.out.println("Could not solve symbol " + e.getName());
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+
         methodDeclInfo.put("name", method.getName());
+        NodeList<Modifier> modifiers = method.getModifiers();
+        for (Modifier mod : modifiers) {
+            switch (mod.getKeyword()) {
+                case PUBLIC:
+                    methodDeclInfo.put("visibility", "public");
+                    break;
+                case PROTECTED:
+                    methodDeclInfo.put("visibility", "protected");
+                    break;
+                case PRIVATE:
+                    methodDeclInfo.put("visibility", "private");
+                    break;
+                case ABSTRACT:
+                    methodDeclInfo.put("abstract", true);
+                    break;
+                case DEFAULT:
+                    methodDeclInfo.put("default", true);
+                    break;
+                case FINAL:
+                    methodDeclInfo.put("final", true);
+                    break;
+                case NATIVE:
+                    methodDeclInfo.put("native", true);
+                    break;
+                case STATIC:
+                    methodDeclInfo.put("static", true);
+                    break;
+                case STRICTFP:
+                    methodDeclInfo.put("strictfp", true);
+                    break;
+                case SYNCHRONIZED:
+                    methodDeclInfo.put("synchronized", true);
+                    break;
+                default:
+                    break;
+            }
+        }
+        NodeList<Parameter> params = method.getParameters();
+        JSONArray paramsArray = new JSONArray();
+        for (Parameter p : params) {
+            try {
+                paramsArray.put(p.resolve().describeType());
+            } catch (UnsolvedSymbolException e) {
+                paramsArray.put(e.getName());
+                System.out.println("Unsolved symbol exception for parameter of type " + e.getName());
+            }
+
+        }
+        methodDeclInfo.put("parameters", paramsArray);
+        NodeList<TypeParameter> typeParams = method.getTypeParameters();
+        JSONArray typeParamsArray = new JSONArray();
+        for (TypeParameter tp : typeParams) {
+            typeParamsArray.put(tp.asString());
+        }
+        methodDeclInfo.put("typeParameters", typeParamsArray);
         return methodDeclInfo;
     }
 
@@ -85,13 +175,16 @@ public class ResolveMethodReferences {
             dataFile = args[1];
         }
 //        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        TypeSolver reflectionTypeSolver = new ReflectionTypeSolver();
+        // Apparently for org.xml.sax (which is a part of the JDK), the reflection
+        // type solver doesn't recognize it as being a part of the JDK, so you have
+        // to say that you want jreOnly=false
+        TypeSolver reflectionTypeSolver = new ReflectionTypeSolver(false);
         TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File(sourceDir));
 
         ArrayList<String> fileNames = getJavaFiles(sourceDir);
-        for (String name : fileNames) {
-            System.out.println(name);
-        }
+//        for (String name : fileNames) {
+//            System.out.println(name);
+//        }
 //        reflectionTypeSolver.setParent(javaParserTypeSolver);
 
         CombinedTypeSolver combinedSolver = new CombinedTypeSolver();
@@ -101,14 +194,16 @@ public class ResolveMethodReferences {
         JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedSolver);
 
         StaticJavaParser.getConfiguration()
-                        .setSymbolResolver(symbolSolver);
+                        .setSymbolResolver(symbolSolver)
+                        .setLanguageLevel(com.github.javaparser.ParserConfiguration.LanguageLevel.JAVA_11);
 
         JSONArray classList = new JSONArray();
         JSONArray classNamesList = new JSONArray();
 //        JSONObject classToDeclaredMethods = new JSONObject();
 
-
+        AtomicReference<Integer> numErrors = new AtomicReference<>(0);
         for (String fileName : fileNames) {
+            System.out.println(fileName);
             CompilationUnit cu = StaticJavaParser.parse(new File(fileName));
             cu.findAll(ClassOrInterfaceDeclaration.class).forEach(clazzOrInterface -> {
                 JSONObject classInfo = getClassInfo(fileName, clazzOrInterface);
@@ -121,12 +216,23 @@ public class ResolveMethodReferences {
                             JSONArray calledMethodsArray = new JSONArray();
                             md.findAll(MethodCallExpr.class)
                               .forEach(mce -> {
-                                  JSONObject mceInfo = getMethodCallInfo(mce);
-                                  if (!calledMethods.contains((String) mceInfo.get("signature"))) {
-                                      calledMethods.add((String) mceInfo.get("signature"));
-                                      calledMethodsArray.put(mceInfo);
+                                  try {
+                                      JSONObject mceInfo = getMethodCallInfo(mce);
+                                      if (!calledMethods.contains((String) mceInfo.get("signature"))) {
+                                          calledMethods.add((String) mceInfo.get("signature"));
+                                          calledMethodsArray.put(mceInfo);
+                                      }
+//                                      System.out.println(clazzOrInterface.resolve().getQualifiedName() + "@" + md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
+                                  } catch (com.github.javaparser.resolution.UnsolvedSymbolException e) {
+                                      System.out.println("Error occurred in file " + fileName);
+                                      e.printStackTrace();
+                                      numErrors.set(numErrors.get() + 1);
+                                  } catch (java.lang.RuntimeException e) {
+                                      System.out.println("Error occurred in file " + fileName);
+                                      System.out.println(e.getMessage());
+                                      e.printStackTrace();
+                                      numErrors.set(numErrors.get() + 1);
                                   }
-                                  System.out.println(clazzOrInterface.resolve().getQualifiedName() + "@" + md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
 
                               });
                             methodInfo.put("calls", calledMethodsArray);
@@ -141,6 +247,7 @@ public class ResolveMethodReferences {
 //                System.out.println(md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
 //            }));
         }
+        System.out.println("Number of errors: " + numErrors.toString());
         JSONObject allData = new JSONObject();
         allData.put("classNames", classNamesList);
         allData.put("classData", classList);
