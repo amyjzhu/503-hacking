@@ -1,0 +1,345 @@
+{
+  "classData": [
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
+      "methods": [{
+        "signature": " void action()",
+        "calls": [],
+        "name": "action"
+      }],
+      "className": "org.felines.AnimalSuper"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Feline.java",
+      "methods": [
+        {
+          "signature": "public int getAge()",
+          "calls": [],
+          "name": "getAge"
+        },
+        {
+          "signature": "public void setAge(int age)",
+          "calls": [],
+          "name": "setAge"
+        },
+        {
+          "signature": "public int getName()",
+          "calls": [],
+          "name": "getName"
+        },
+        {
+          "signature": "public void setName(int name)",
+          "calls": [],
+          "name": "setName"
+        },
+        {
+          "signature": "public void meow()",
+          "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
+          "name": "meow"
+        },
+        {
+          "signature": "public void action()",
+          "calls": [],
+          "name": "action"
+        }
+      ],
+      "className": "org.felines.Feline"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Cat.java",
+      "methods": [
+        {
+          "signature": "public void sleep()",
+          "calls": [{"signature": "org.felines.Cat.sleepNight()"}],
+          "name": "sleep"
+        },
+        {
+          "signature": "private void sleepNight()",
+          "calls": [],
+          "name": "sleepNight"
+        }
+      ],
+      "className": "org.felines.Cat"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Tiger.java",
+      "methods": [
+        {
+          "signature": "public int getSpeed()",
+          "calls": [],
+          "name": "getSpeed"
+        },
+        {
+          "signature": "public void setSpeed(int speed)",
+          "calls": [],
+          "name": "setSpeed"
+        }
+      ],
+      "className": "org.felines.Tiger"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Animal.java",
+      "methods": [],
+      "className": "org.felines.Animal"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Poodle.java",
+      "methods": [],
+      "className": "org.animals.Poodle"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/CowRenamed.java",
+      "methods": [
+        {
+          "signature": "public void moo()",
+          "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
+          "name": "moo"
+        },
+        {
+          "signature": "public void eat()",
+          "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
+          "name": "eat"
+        }
+      ],
+      "className": "org.animals.CowRenamed"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Labrador.java",
+      "methods": [],
+      "className": "org.animals.Labrador"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Dog.java",
+      "methods": [
+        {
+          "signature": "public int getAge()",
+          "calls": [],
+          "name": "getAge"
+        },
+        {
+          "signature": "public String sayWoof()",
+          "calls": [],
+          "name": "sayWoof"
+        },
+        {
+          "signature": "public void takeABreath()",
+          "calls": [
+            {"signature": "java.io.PrintStream.println(java.lang.String)"},
+            {"signature": "org.animals.Dog.sayWoof()"},
+            {"signature": "org.birds.Chicken.cackle()"}
+          ],
+          "name": "takeABreath"
+        }
+      ],
+      "className": "org.animals.Dog"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/AnimalMarilho.java",
+      "methods": [
+        {
+          "signature": "public int getSpead()",
+          "calls": [],
+          "name": "getSpead"
+        },
+        {
+          "signature": "public void setSpead(int spead)",
+          "calls": [],
+          "name": "setSpead"
+        },
+        {
+          "signature": "public String getAction()",
+          "calls": [],
+          "name": "getAction"
+        },
+        {
+          "signature": "public void setAction(String action)",
+          "calls": [],
+          "name": "setAction"
+        }
+      ],
+      "className": "org.reptile.AnimalMarilho"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Snake.java",
+      "methods": [
+        {
+          "signature": "public int getAge()",
+          "calls": [],
+          "name": "getAge"
+        },
+        {
+          "signature": "public void setAge(int age)",
+          "calls": [],
+          "name": "setAge"
+        },
+        {
+          "signature": "public int getName()",
+          "calls": [],
+          "name": "getName"
+        },
+        {
+          "signature": "public void setName(int name)",
+          "calls": [],
+          "name": "setName"
+        },
+        {
+          "signature": "public String getAction()",
+          "calls": [],
+          "name": "getAction"
+        },
+        {
+          "signature": "public void setAction(String action)",
+          "calls": [],
+          "name": "setAction"
+        }
+      ],
+      "className": "org.reptile.Snake"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Reptile.java",
+      "methods": [
+        {
+          "signature": "public int hashCode()",
+          "calls": [{"signature": "java.lang.String.hashCode()"}],
+          "name": "hashCode"
+        },
+        {
+          "signature": "public int getName()",
+          "calls": [],
+          "name": "getName"
+        },
+        {
+          "signature": "public void setName(int name)",
+          "calls": [],
+          "name": "setName"
+        }
+      ],
+      "className": "org.reptile.Reptile"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleTerrarium.java",
+      "methods": [
+        {
+          "signature": "public int getAge()",
+          "calls": [],
+          "name": "getAge"
+        },
+        {
+          "signature": "public void setAge(int age)",
+          "calls": [],
+          "name": "setAge"
+        },
+        {
+          "signature": "public boolean equals(Object obj)",
+          "calls": [
+            {"signature": "java.lang.Object.getClass()"},
+            {"signature": "java.lang.String.equals(java.lang.Object)"}
+          ],
+          "name": "equals"
+        }
+      ],
+      "className": "org.reptile.TurtleTerrarium"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java",
+      "methods": [
+        {
+          "signature": "public int getAge()",
+          "calls": [],
+          "name": "getAge"
+        },
+        {
+          "signature": "public void setAge(int age)",
+          "calls": [],
+          "name": "setAge"
+        },
+        {
+          "signature": "public boolean equals(Object obj)",
+          "calls": [
+            {"signature": "java.lang.Object.getClass()"},
+            {"signature": "java.lang.String.equals(java.lang.Object)"}
+          ],
+          "name": "equals"
+        }
+      ],
+      "className": "org.reptile.TurtleMarinha"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Bird.java",
+      "methods": [{
+        "signature": "public void layEgg()",
+        "calls": [],
+        "name": "layEgg"
+      }],
+      "className": "org.birds.Bird"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Chicken.java",
+      "methods": [{
+        "signature": "public void cackle()",
+        "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
+        "name": "cackle"
+      }],
+      "className": "org.birds.Chicken"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Chicken.java",
+      "methods": [],
+      "className": "org.birds.Chicken.PrivateChicken"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Duck.java",
+      "methods": [{
+        "signature": "public void quack()",
+        "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
+        "name": "quack"
+      }],
+      "className": "org.birds.Duck"
+    },
+    {
+      "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/DogManager.java",
+      "methods": [
+        {
+          "signature": "public void doStuff()",
+          "calls": [
+            {"signature": "org.DogManager.barkBark(org.animals.Dog)"},
+            {"signature": "org.animals.Dog.getAge()"},
+            {"signature": "java.io.PrintStream.println(int)"},
+            {"signature": "org.animals.Dog.takeABreath()"}
+          ],
+          "name": "doStuff"
+        },
+        {
+          "signature": "public void barkBark(Dog dog)",
+          "calls": [
+            {"signature": "java.io.PrintStream.println(java.lang.String)"},
+            {"signature": "org.animals.Dog.takeABreath()"}
+          ],
+          "name": "barkBark"
+        }
+      ],
+      "className": "org.DogManager"
+    }
+  ],
+  "classNames": [
+    "org.felines.AnimalSuper",
+    "org.felines.Feline",
+    "org.felines.Cat",
+    "org.felines.Tiger",
+    "org.felines.Animal",
+    "org.animals.Poodle",
+    "org.animals.CowRenamed",
+    "org.animals.Labrador",
+    "org.animals.Dog",
+    "org.reptile.AnimalMarilho",
+    "org.reptile.Snake",
+    "org.reptile.Reptile",
+    "org.reptile.TurtleTerrarium",
+    "org.reptile.TurtleMarinha",
+    "org.birds.Bird",
+    "org.birds.Chicken",
+    "org.birds.Chicken.PrivateChicken",
+    "org.birds.Duck",
+    "org.DogManager"
+  ]
+}
