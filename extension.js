@@ -77,9 +77,6 @@ function getWebviewContent(context, webview, centerOn) {
 
 	const boxPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'box.js');
 	const boxUri = webview.asWebviewUri(boxPathOnDisk);
-	
-	const adapterPathOnDisk = vscode.Uri.joinPath(context.extensionUri, 'vis', 'js', 'adapter.js');
-	const adapterUri = webview.asWebviewUri(adapterPathOnDisk);
 
 	// Local path for the data file
 	const dataPathOnDisk = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'data.codemap');
@@ -123,7 +120,6 @@ function getWebviewContent(context, webview, centerOn) {
 				
 				<script src="${scriptUri}"></script>
 				<script src="${boxUri}"></script>
-				<script src="${adapterUri}"></script>
 		</body>
 		</html>`;
   }
