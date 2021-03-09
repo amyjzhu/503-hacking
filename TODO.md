@@ -17,7 +17,7 @@
 
 # Parser
 - [ ] **AS** In parser, ignore all calls not from the same namespace
-- [ ] **AS** Fix parser bugs
+- [x] **AS** Fix parser bugs
 - [x] Parse local package dependencies and imported dependencies from XML
 - [x] New parser using JavaParser
 
