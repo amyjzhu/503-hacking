@@ -79,7 +79,7 @@ function getWebviewContent(context, webview, centerOn) {
 	const boxUri = webview.asWebviewUri(boxPathOnDisk);
 
 	// Local path for the data file
-	const dataPathOnDisk = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'data.codemap');
+	const dataPathOnDisk = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'data.json');
 	const dataUri = webview.asWebviewUri(dataPathOnDisk);
 
 	// Local path to css styles
@@ -105,7 +105,7 @@ function getWebviewContent(context, webview, centerOn) {
 		</head>
 		<body>
 				<script>
-					var dataGlobal = "${dataUri}";
+					var dataPathGlobal = "${dataUri}";
 					var centerOnGlobal = "class${centerOn}";
 
 					// TODO Should not be global. For security reasons, you must keep the VS Code API object private and make sure it is never leaked into the global scope.
