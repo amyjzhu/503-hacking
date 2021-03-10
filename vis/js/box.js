@@ -268,11 +268,11 @@ class StructureVis {
             .append("rect")
             .attr("class", "level2-box")
             .merge(vis.level3Rects)
-            .attr("width", vis.smallestBoxWidth)
-            .attr("height", d => { 
+            .attr("width", d => { 
                 // TODO this should approximate it, but we need to check afterwards
                 return Math.max(d.text.split("\n").map(s => s.length)) * 2 // for 2px;
-            }) // vis.smallestBoxHeight)
+            })//vis.smallestBoxWidth)
+            .attr("height",  vis.smallestBoxHeight)
             .style("fill", d => vis.viewLevel == vis.level3 ? vis.colourScale(d.group) : "none")
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
