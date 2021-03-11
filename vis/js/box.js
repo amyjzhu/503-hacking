@@ -87,7 +87,7 @@ class StructureVis {
         vis.level2ByLevel1 = {};
         vis.boxData.filter(x => x.type == vis.level1).map(p => p.id).forEach(id => {
             vis.level2ByLevel1[id] = vis.boxData.filter(c => c.type == vis.level2 && c.container == id);
-        });
+        }); // { package1: [class1, class2], package2: [class3]}
 
         vis.level3ByLevel2 = {};
         vis.boxData.filter(x => x.type == vis.level2).map(c => c.id).forEach(id => {
@@ -268,8 +268,11 @@ class StructureVis {
             .append("rect")
             .attr("class", "level2-box")
             .merge(vis.level3Rects)
-            .attr("width", vis.smallestBoxWidth)
-            .attr("height", vis.smallestBoxHeight)
+            .attr("width", d => { 
+                // TODO this should approximate it, but we need to check afterwards
+                return Math.max(d.text.split("\n").map(s => s.length)) * 2 // for 2px;
+            })//vis.smallestBoxWidth)
+            .attr("height",  vis.smallestBoxHeight)
             .style("fill", d => vis.viewLevel == vis.level3 ? vis.colourScale(d.group) : "none")
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))

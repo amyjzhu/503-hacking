@@ -25,7 +25,7 @@ let initializeVisualization = (data) => {
 // Transform JSON to flat representations: nodes, links, hierarchy
 let processJson = ({classData, classNames}) => {
 
-    console.log(classData)
+    console.log({classData})
 
     let classNodes = classData.map(item => ({
         fqn: item.className, 
@@ -53,10 +53,26 @@ let processJson = ({classData, classNames}) => {
     });
 
     let links = methodLinks
-    let hierarchy = {}
 
-    console.log(nodes)
-    console.log(links)
+    let methodContainers = classData.flatMap(itemClass => {
+        return itemClass.methods.flatMap(itemMethod => ({
+            parent: itemClass.className,
+            child: getMethodFqn(itemClass.className, itemMethod.name),
+            type: 'method'
+        }));
+    });
+
+    let classContainers = classNames.map(className => ({ // includes private classses!
+        parent: getPackage(className),
+        child: className, 
+        type: 'class'
+    }));
+
+    let hierarchy = methodContainers.concat(classContainers);
+
+    console.log({nodes})
+    console.log({links})
+    console.log({hierarchy})
 
     return {nodes: nodes, links: links, hierarchy: hierarchy}
 
@@ -123,8 +139,12 @@ function getShortName(fullQualifiedName) {
 }
 
 // Converts a fully qualified class name and method name to a method FQN.
-function getMethodFqn(fqnClass, methodName){
-    return fqnClass + "." + methodName + "()";
+function getMethodFqn(classFqn, methodName){
+    return classFqn + "." + methodName + "()";
+}
+
+function getPackage(classFqn) {
+    return classFqn.substring(0, classFqn.lastIndexOf("."))
 }
 
 // ----------------------------------------------------------------------------
