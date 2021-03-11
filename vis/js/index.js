@@ -47,7 +47,11 @@ let processJson = ({classData, classNames}) => {
         return itemClass.methods.flatMap(itemMethod => {
             return itemMethod.calls.flatMap(callee => ({
                 source: getMethodFqn(itemClass.className, itemMethod.name),
-                target: callee.signature
+                target: callee.signature,
+                // TODO: type is actually superfluous since we can just check if
+                // the source and target are currently visible
+                // but this incurs more performance issues so...
+                type: 'method'
             }));
         });
     });

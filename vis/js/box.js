@@ -69,18 +69,23 @@ class StructureVis {
         // propagate groups downwards
         // we need to use numbers for groups because there will be a lot of groups
         let groupMap = {};
-        let level1 = vis.data.hierarchy.filter(d => d.type == vis.level2);
-        level1 = level1.map((p, i) => { groupMap[p.parent] = i; return { fqn: p.parent, group: i, type: vis.level1 } })
+        let level1 = vis.data.hierarchy.filter(d => d.type == vis.level2).map(p => p.parent);
+        level1 = Array.from(new Set(level1));
+        level1 = level1.map((p, index) => { groupMap[p] = index; return { fqn: p, group: index, type: vis.level1 } })
 
+        console.log({level1})
+        console.log({groupMap})
         // we add the package data here
         vis.boxData = vis.data.nodes.concat(level1);
         
         vis.boxData.forEach(datum => {
-            datum.group = groupMap[datum.parent];
+            if (datum.type != vis.level1) {
+                datum.group = groupMap[datum.parent];
+            }
         })
 
         vis.colourScale = d3.scaleOrdinal()
-            .domain([1, 2, 3, 4])
+            .domain(Object.keys(groupMap))
             .range(vis.colours)
 
 
@@ -130,7 +135,7 @@ class StructureVis {
             .force('charge', d3.forceManyBody().strength(charge))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
-            .on('tick', () => vis.fastTick(vis));
+            .on('tick', () => vis.fastTick(vis.boxGroups));
         vis.level1Simulation.stop();
 
         console.log(vis.centeredOn);
@@ -164,7 +169,7 @@ class StructureVis {
                     .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallBoxHeight, 2) * vis.forceStrength))
                     .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallBoxWidth / 2, 2) + Math.pow(vis.smallBoxHeight / 2, 2))))
                     .force("center", d3.forceCenter(level1Info.x + vis.boxWidth / 2, level1Info.y + vis.boxHeight / 2))
-                    .on('tick', () => vis.level2Ticked(vis));
+                    .on('tick', () => vis.fastTick(vis));
             }
             mapping.assoc = vis.level2ByLevel1[level1];
             return mapping;
@@ -187,7 +192,7 @@ class StructureVis {
                     .force("center", d => {
                         return d3.forceCenter(level2Info.x + vis.smallBoxWidth / 2, level2Info.y + vis.smallBoxWidth / 2);
                     })
-                    .on('tick', () => vis.level3Ticked(vis));
+                    .on('tick', () => vis.fastTick(vis));
             }
             mapping.assoc = vis.level3ByLevel2[level2];
             return mapping;
@@ -210,6 +215,7 @@ class StructureVis {
         // include that info in data so the render() can use it
 
         vis.linkData = vis.data.links.filter(x => x.type == vis.viewLevel)
+        console.log(vis.linkData)
 
 
         vis.render();
@@ -380,16 +386,35 @@ class StructureVis {
                 if (sim.sim == undefined) {
                     sim.sim = sim.simFn();
                     sim.sim.nodes(sim.assoc).restart();
+                    for (i = 0; i < 100; i++) {
+                        sim.sim.tick();
+                    }
+                    sim.sim.stop();
+                    vis.level2Ticked(vis);
                 }
             })
+
+    
+            vis.level3Simulations.forEach(sim => {
+                if (sim.sim == undefined) {
+                    // now we need to create it, if it's the first time...
+                    sim.sim = sim.simFn();
+                    sim.sim.nodes(sim.assoc).restart();
+                    for (i = 0; i < 100; i++) {
+                        sim.sim.tick();
+                    }
+                    sim.sim.stop();
+                    vis.level3Ticked(vis);
+                }
+            });
 
             vis.initialized = 1;
         }
 
     }
 
-    fastTick(vis) {
-        vis.boxGroups.each(d => d.x = d.originalX);
+    fastTick(selection) {
+        selection.each(d => d.x = d.originalX);
     }
 
     ticked(vis) {
@@ -434,6 +459,7 @@ class StructureVis {
 
         // TODO we should highlight packages that are related to the current package with a highlighting idiom 
 
+        // TODO this will cause errors if the target is not in the graph. Should be okay to ignore.
         if (vis.viewLevel == vis.level1) {
             vis.links
                 .attr("x1", d => d.source.x)
@@ -446,12 +472,12 @@ class StructureVis {
 
         } else {
             vis.links
-                .attr("x1", d => vis.boxData.find(data => d.source == data.type + data.fqn).x)
-                .attr("y1", d => vis.boxData.find(data => d.source == data.type + data.fqn).y)
-                .attr("x2", d => vis.boxData.find(data => d.target == data.type + data.fqn).x)
-                .attr("y2", d => vis.boxData.find(data => d.target == data.type + data.fqn).y)
-                .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.type + data.fqn).views.includes(vis.view)
-                    && vis.boxData.find(data => d.target == data.type + data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
+                .attr("x1", d => vis.boxData.find(data => d.source ==  data.fqn).x)
+                .attr("y1", d => vis.boxData.find(data => d.source ==  data.fqn).y)
+                .attr("x2", d => vis.boxData.find(data => d.target ==  data.fqn).x)
+                .attr("y2", d => vis.boxData.find(data => d.target ==  data.fqn).y)
+                .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
+                    && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         }
     }
 
@@ -474,11 +500,11 @@ class StructureVis {
             //     }
             // })
 
-            vis.level3Simulations.forEach(sim => {
-                if (sim.sim != undefined) {
-                    sim.sim.stop();
-                }
-            })
+            // vis.level3Simulations.forEach(sim => {
+            //     if (sim.sim != undefined) {
+            //         sim.sim.stop();
+            //     }
+            // })
 
             vis.update();
             vis.updateLinks();
@@ -486,17 +512,17 @@ class StructureVis {
         } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel != vis.level1) {
             vis.level1Simulation.stop();
 
-            vis.level2Simulations.forEach(sim => {
-                if (sim.sim != undefined) {
-                    sim.sim.stop();
-                }
-            })
+            // vis.level2Simulations.forEach(sim => {
+            //     if (sim.sim != undefined) {
+            //         sim.sim.stop();
+            //     }
+            // })
 
-            vis.level3Simulations.forEach(sim => {
-                if (sim.sim != undefined) {
-                    sim.sim.stop();
-                }
-            })
+            // vis.level3Simulations.forEach(sim => {
+            //     if (sim.sim != undefined) {
+            //         sim.sim.stop();
+            //     }
+            // })
 
             vis.viewLevel = vis.level1;
             vis.update();
@@ -504,19 +530,19 @@ class StructureVis {
         } else if (vis.zoomLevel >= viewThresholdlevel3 && vis.viewLevel != vis.level3) {
             vis.level1Simulation.stop();
 
-            vis.level3Simulations.forEach(sim => {
-                if (sim.sim == undefined) {
-                    // now we need to create it, if it's the first time...
-                    sim.sim = sim.simFn();
-                    sim.sim.nodes(sim.assoc).restart();
-                }
-            });
+            // vis.level3Simulations.forEach(sim => {
+            //     if (sim.sim == undefined) {
+            //         // now we need to create it, if it's the first time...
+            //         sim.sim = sim.simFn();
+            //         sim.sim.nodes(sim.assoc).restart();
+            //     }
+            // });
 
-            vis.level2Simulations.forEach(sim => {
-                if (sim.sim != undefined) {
-                    sim.sim.stop();
-                }
-            });
+            // vis.level2Simulations.forEach(sim => {
+            //     if (sim.sim != undefined) {
+            //         sim.sim.stop();
+            //     }
+            // });
 
             vis.viewLevel = vis.level3;
             vis.update();
