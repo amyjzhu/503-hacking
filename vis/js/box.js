@@ -73,19 +73,11 @@ class StructureVis {
         level1 = Array.from(new Set(level1));
         level1 = level1.map((p, index) => { groupMap[p] = index; return { fqn: p, group: index, type: vis.level1 } })
 
-        console.log({level1})
-        console.log({groupMap})
         // we add the package data here
         vis.boxData = vis.data.nodes.concat(level1);
         
-        vis.boxData.forEach(datum => {
-            if (datum.type != vis.level1) {
-                datum.group = groupMap[datum.parent];
-            }
-        })
-
         vis.colourScale = d3.scaleOrdinal()
-            .domain(Object.keys(groupMap))
+            .domain(Object.values(groupMap))
             .range(vis.colours)
 
 
@@ -107,7 +99,20 @@ class StructureVis {
             let child = vis.boxData.findIndex(child => child.fqn == d.child);
             vis.boxData[child].container = d.parent;
         })
+        
+        vis.boxData.forEach(datum => {
+            if (datum.type == vis.level2) {
+                datum.group = groupMap[datum.container];
+            }
 
+            // This would be simpler if we inherit the colour from the
+            // class in the SVG step TODO
+            if (datum.type == vis.level3) {
+                let container = vis.boxData.find(d => d.fqn == datum.container);
+                datum.group = container.group;
+            }
+
+        })
 
         console.log(vis.boxData)
 
@@ -132,7 +137,7 @@ class StructureVis {
             .velocityDecay(0.18)
             .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
             .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
-            .force('charge', d3.forceManyBody().strength(charge))
+            .force('charge', d3.forceManyBody().strength(-Math.pow(vis.boxHeight, 0.6)))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .on('tick', () => vis.fastTick(vis.boxGroups));
