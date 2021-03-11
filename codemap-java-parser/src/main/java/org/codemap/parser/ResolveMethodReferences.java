@@ -30,10 +30,12 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import org.apache.commons.cli.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ResolveMethodReferences {
+    private static int minPackageMatchThreshold = 2;
     public static ArrayList<String> getJavaFiles(String sourceDir) {
         ArrayList<String> fileNames = new ArrayList<>();
         try (Stream<Path> paths = Files.walk(Paths.get(sourceDir))) {
@@ -155,25 +157,92 @@ public class ResolveMethodReferences {
         return methodDeclInfo;
     }
 
-    public static JSONObject getMethodCallInfo(MethodCallExpr mce) {
+    public static boolean sharePackagePrefix(String className, String methodName) {
+        String[] splitClassName = className.split("\\.");
+        String[] splitMethodName = methodName.split("\\.");
+        int minLength = Math.min(splitClassName.length, splitMethodName.length);
+//        System.out.println("minLength: " + minLength);
+//        System.out.println(className + ", " + methodName);
+        if (minLength > 0) {
+//            boolean matchedSoFar = true;
+            for (int i = 0; i < minLength; i++) {
+                if (!splitClassName[i].equals(splitMethodName[i])) {
+                    return false;
+                }
+                if (i == minPackageMatchThreshold - 1) {
+                    // If we get here, we obviously haven't found any non-matches thus far
+//                    System.out.println("Matched: " + className + ", " + methodName + " with threshold " + Integer.toString(minPackageMatchThreshold));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static JSONObject getMethodCallInfo(MethodCallExpr mce, String className) {
         JSONObject methodCallInfo = new JSONObject();
         // TODO: add more info
-        methodCallInfo.put("signature", mce.resolve().getQualifiedSignature());
+        ResolvedMethodDeclaration rmd = mce.resolve();
+        String signature = rmd.getQualifiedSignature();
+        if (sharePackagePrefix(className, signature)) {
+            methodCallInfo.put("signature", signature);
+        } else {
+            methodCallInfo.put("signature", "");
+        }
         return methodCallInfo;
     }
 
+    private static Options getOptions() {
+        Options options = new Options();
+        options.addOption("t", "threshold", true, "The minimum threshold for the number of package prefixes to match for it to be considered in the same package. For example, with a match threshold of 2, \"org.codemap.parser.ResolveMethodReferences\" would be considered to be in the same package as any other entity that begins with \"org.codemap\".");
+        options.addOption("h", "help", false, "Print usage and exit.");
+        return options;
+    }
+
+    private static void printHelp(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("java org.codemap.parser.ResolveMethodReferences [options] <project_source_dir> [<json_output_filename>]", options);
+    }
+
     public static void main(String[] args) throws Exception {
-        if (args.length != 1 && args.length != 2) {
-            System.out.println("ERROR: expected either one or two arguments.");
-            System.out.println("Usage: ResolveMethodReferences project_source_dir [json_output_filename]");
-            System.out.println("By default, json_output_filename will be \"data.json\".");
+        Options options = getOptions();
+        CommandLineParser parser = new DefaultParser();
+        String sourceDir;
+        String dataFile = "data.json";
+        try {
+            CommandLine line = parser.parse(options, args);
+            String[] leftoverArgs = line.getArgs();
+            if (line.hasOption("h")) {
+                printHelp(options);
+                return;
+            }
+            if (leftoverArgs.length != 1 && leftoverArgs.length != 2) {
+                System.out.println("ERROR: expected either one or two arguments.");
+//                System.out.println("Usage: ResolveMethodReferences project_source_dir [json_output_filename]");
+//                System.out.println("By default, json_output_filename will be \"data.json\".");
+                printHelp(options);
+                return;
+            }
+
+            if (line.hasOption("t")) {
+                minPackageMatchThreshold = Integer.parseInt(line.getOptionValue("t"));
+            }
+            sourceDir = leftoverArgs[0];
+            if (leftoverArgs.length == 2) {
+                dataFile = leftoverArgs[1];
+            }
+        } catch (ParseException e) {
+            System.out.println("Error parsing command line args.");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             return;
         }
-        String sourceDir = args[0];
-        String dataFile = "data.json";
-        if (args.length == 2) {
-            dataFile = args[1];
-        }
+
+//        String sourceDir = args[0];
+//        String dataFile = "data.json";
+//        if (args.length == 2) {
+//            dataFile = args[1];
+//        }
 //        System.out.println("Working Directory = " + System.getProperty("user.dir"));
         // Apparently for org.xml.sax (which is a part of the JDK), the reflection
         // type solver doesn't recognize it as being a part of the JDK, so you have
@@ -202,6 +271,7 @@ public class ResolveMethodReferences {
 //        JSONObject classToDeclaredMethods = new JSONObject();
 
         AtomicReference<Integer> numErrors = new AtomicReference<>(0);
+        AtomicReference<Integer> numMethodCalls = new AtomicReference<>(0);
         for (String fileName : fileNames) {
             System.out.println(fileName);
             CompilationUnit cu = StaticJavaParser.parse(new File(fileName));
@@ -217,8 +287,9 @@ public class ResolveMethodReferences {
                             md.findAll(MethodCallExpr.class)
                               .forEach(mce -> {
                                   try {
-                                      JSONObject mceInfo = getMethodCallInfo(mce);
-                                      if (!calledMethods.contains((String) mceInfo.get("signature"))) {
+                                      JSONObject mceInfo = getMethodCallInfo(mce, (String) classInfo.get("className"));
+                                      String sig = (String) mceInfo.get("signature");
+                                      if (sig.length() > 0 && !calledMethods.contains((String) mceInfo.get("signature"))) {
                                           calledMethods.add((String) mceInfo.get("signature"));
                                           calledMethodsArray.put(mceInfo);
                                       }
@@ -236,6 +307,7 @@ public class ResolveMethodReferences {
 
                               });
                             methodInfo.put("calls", calledMethodsArray);
+                            numMethodCalls.set(numMethodCalls.get() + calledMethodsArray.length());
                             methodsList.put(methodInfo);
                         });
                 classInfo.put("methods", methodsList);
@@ -248,6 +320,7 @@ public class ResolveMethodReferences {
 //            }));
         }
         System.out.println("Number of errors: " + numErrors.toString());
+        System.out.println("Number of method calls: " + numMethodCalls.toString());
         JSONObject allData = new JSONObject();
         allData.put("classNames", classNamesList);
         allData.put("classData", classList);

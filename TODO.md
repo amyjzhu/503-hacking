@@ -16,7 +16,8 @@
 - [x] Add shortcut to visualization
 
 # Parser
-- [ ] **AS** In parser, ignore all calls not from the same namespace
+- [ ] **AS** Refactor parser and clean up code
+- [x] **AS** In parser, ignore all calls not from the same namespace
 - [x] **AS** Fix parser bugs
 - [x] Parse local package dependencies and imported dependencies from XML
 - [x] New parser using JavaParser

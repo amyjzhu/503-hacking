@@ -18,13 +18,27 @@ mvn clean compile assembly:single
 This produces a jar file `codemap-java-parser/target/codemap-java-parser-1.0-SNAPSHOT-jar-with-dependencies.jar`.
 
 ## Dependencies
-Requires Maven, `org.json` (for JSON file creation), and `JavaParser` (for Java parsing).
+Requires Maven, `org.json` (for JSON file creation), and `JavaParser` (for Java parsing). Additionally, `commons-cli` is used to parse command line options and produce the usage output.
 
 # Usage
 The file `src/main/java/org/codemap/parser/ResolveMethodReferences.java` contains the main method and takes the following arguments:
 
-1. `sources_dir`: the path to the root of all the source files for the Java project, e.g. `src/main/java`.
+1. `sources_dir`: the path to the root of all the source files for the Java project, e.g. `src/main/java`. This should _not_ include the beginning of the package name, e.g., do not include the `org` directory for a package called `org.myorg.package`.
 2. `data_file`: (optional) the destination for the output JSON file.
+
+There are also some optional flags, which are summed up here:
+
+```
+usage: java org.codemap.parser.ResolveMethodReferences [options]
+            <sources_dir> [<data_file>]
+ -h,--help              Print usage and exit.
+ -t,--threshold <arg>   The minimum threshold for the number of package
+                        prefixes to match for it to be considered in the
+                        same package. For example, with a match threshold
+                        of 2, "org.codemap.parser.ResolveMethodReferences"
+                        would be considered to be in the same package as
+                        any other entity that begins with "org.codemap".
+```
 
 ## Executing the main method
 
