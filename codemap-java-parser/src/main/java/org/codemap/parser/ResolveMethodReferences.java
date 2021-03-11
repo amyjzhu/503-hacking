@@ -31,6 +31,8 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import org.apache.commons.cli.*;
+import org.codemap.parser.utils.ClassInfo;
+import org.codemap.parser.utils.MethodDeclarationInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -58,38 +60,28 @@ public class ResolveMethodReferences {
 
 
     public static JSONObject getClassInfo(String fileName, ClassOrInterfaceDeclaration classOrInterface) {
-        JSONObject classInfo = new JSONObject();
+//        JSONObject classInfo = new JSONObject();
+        ClassInfo ci = new ClassInfo();
         String qualifiedName = classOrInterface.resolve().getQualifiedName();
-        classInfo.put("className", qualifiedName);
-        classInfo.put("fileName", fileName);
-        return classInfo;
-    }
-
-    public static void initializeMethodModifiers(JSONObject methodDeclInfo) {
-        methodDeclInfo.put("abstract", false);
-        methodDeclInfo.put("default", false);
-        methodDeclInfo.put("final", false);
-        methodDeclInfo.put("native", false);
-        methodDeclInfo.put("static", false);
-        methodDeclInfo.put("strictfp", false);
-        methodDeclInfo.put("synchronized", false);
+        ci.setClassName(qualifiedName);
+//        classInfo.put("className", qualifiedName);
+        ci.setFileName(fileName);
+//        classInfo.put("fileName", fileName);
+        return ci.getInfo();
     }
 
     public static JSONObject getMethodDeclarationInfo(MethodDeclaration method) {
-        JSONObject methodDeclInfo = new JSONObject();
-        // In the future, I would like to do something more fancy but this will have
-        // to do
-        methodDeclInfo.put("declaration", method.getDeclarationAsString());
-        initializeMethodModifiers(methodDeclInfo);
+        MethodDeclarationInfo mdi = new MethodDeclarationInfo();
+        mdi.setDeclaration(method.getDeclarationAsString());
         try {
             ResolvedMethodDeclaration rmd = method.resolve();
-            methodDeclInfo.put("signature", rmd.getQualifiedSignature());
-            methodDeclInfo.put("return", rmd.getReturnType().describe());
+            mdi.setSignature(rmd.getQualifiedSignature());
+            mdi.setReturn(rmd.getReturnType().describe());
 
-            methodDeclInfo.put("static", rmd.isStatic());
-            methodDeclInfo.put("abstract", rmd.isAbstract());
+            mdi.setStatic(rmd.isStatic());
+            mdi.setAbstract(rmd.isAbstract());
             if (rmd.isAbstract()) {
-                methodDeclInfo.put("visibility", "public");
+                mdi.setVisibility("public");
             }
         } catch (UnsolvedSymbolException e) {
             System.out.println("Could not solve symbol " + e.getName());
@@ -98,80 +90,79 @@ public class ResolveMethodReferences {
         }
 
 
-        methodDeclInfo.put("name", method.getName());
+        mdi.setName(method.getName().asString());
         NodeList<Modifier> modifiers = method.getModifiers();
         for (Modifier mod : modifiers) {
             switch (mod.getKeyword()) {
                 case PUBLIC:
-                    methodDeclInfo.put("visibility", "public");
+                    mdi.setVisibility("public");
                     break;
                 case PROTECTED:
-                    methodDeclInfo.put("visibility", "protected");
+                    mdi.setVisibility("protected");
                     break;
                 case PRIVATE:
-                    methodDeclInfo.put("visibility", "private");
+                    mdi.setVisibility("private");
                     break;
                 case ABSTRACT:
-                    methodDeclInfo.put("abstract", true);
+                    mdi.setAbstract(true);
                     break;
                 case DEFAULT:
-                    methodDeclInfo.put("default", true);
+                    mdi.setDefault(true);
                     break;
                 case FINAL:
-                    methodDeclInfo.put("final", true);
+                    mdi.setFinal(true);
                     break;
                 case NATIVE:
-                    methodDeclInfo.put("native", true);
+                    mdi.setNative(true);
                     break;
                 case STATIC:
-                    methodDeclInfo.put("static", true);
+                    mdi.setStatic(true);
                     break;
                 case STRICTFP:
-                    methodDeclInfo.put("strictfp", true);
+                    mdi.setStrictfp(true);
                     break;
                 case SYNCHRONIZED:
-                    methodDeclInfo.put("synchronized", true);
+                    mdi.setSynchronized(true);
                     break;
                 default:
                     break;
             }
         }
         NodeList<Parameter> params = method.getParameters();
-        JSONArray paramsArray = new JSONArray();
+//        JSONArray paramsArray = new JSONArray();
         for (Parameter p : params) {
             try {
-                paramsArray.put(p.resolve().describeType());
+//                paramsArray.put(p.resolve().describeType());
+                mdi.addParameter(p.resolve().describeType());
             } catch (UnsolvedSymbolException e) {
-                paramsArray.put(e.getName());
+//                paramsArray.put(e.getName());
+                mdi.addParameter(e.getName());
                 System.out.println("Unsolved symbol exception for parameter of type " + e.getName());
             }
 
         }
-        methodDeclInfo.put("parameters", paramsArray);
+//        mdi.addAllParameters(paramsArray);
         NodeList<TypeParameter> typeParams = method.getTypeParameters();
-        JSONArray typeParamsArray = new JSONArray();
+//        JSONArray typeParamsArray = new JSONArray();
         for (TypeParameter tp : typeParams) {
-            typeParamsArray.put(tp.asString());
+//            typeParamsArray.put(tp.asString());
+            mdi.addTypeParameter(tp.asString());
         }
-        methodDeclInfo.put("typeParameters", typeParamsArray);
-        return methodDeclInfo;
+//        mdi.addAllTypeParameters(typeParamsArray);
+        return mdi.getMethodInfo();
     }
 
     public static boolean sharePackagePrefix(String className, String methodName) {
         String[] splitClassName = className.split("\\.");
         String[] splitMethodName = methodName.split("\\.");
         int minLength = Math.min(splitClassName.length, splitMethodName.length);
-//        System.out.println("minLength: " + minLength);
-//        System.out.println(className + ", " + methodName);
         if (minLength > 0) {
-//            boolean matchedSoFar = true;
             for (int i = 0; i < minLength; i++) {
                 if (!splitClassName[i].equals(splitMethodName[i])) {
                     return false;
                 }
                 if (i == minPackageMatchThreshold - 1) {
                     // If we get here, we obviously haven't found any non-matches thus far
-//                    System.out.println("Matched: " + className + ", " + methodName + " with threshold " + Integer.toString(minPackageMatchThreshold));
                     return true;
                 }
             }
@@ -218,8 +209,6 @@ public class ResolveMethodReferences {
             }
             if (leftoverArgs.length != 1 && leftoverArgs.length != 2) {
                 System.out.println("ERROR: expected either one or two arguments.");
-//                System.out.println("Usage: ResolveMethodReferences project_source_dir [json_output_filename]");
-//                System.out.println("By default, json_output_filename will be \"data.json\".");
                 printHelp(options);
                 return;
             }
@@ -238,12 +227,6 @@ public class ResolveMethodReferences {
             return;
         }
 
-//        String sourceDir = args[0];
-//        String dataFile = "data.json";
-//        if (args.length == 2) {
-//            dataFile = args[1];
-//        }
-//        System.out.println("Working Directory = " + System.getProperty("user.dir"));
         // Apparently for org.xml.sax (which is a part of the JDK), the reflection
         // type solver doesn't recognize it as being a part of the JDK, so you have
         // to say that you want jreOnly=false
@@ -251,10 +234,6 @@ public class ResolveMethodReferences {
         TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File(sourceDir));
 
         ArrayList<String> fileNames = getJavaFiles(sourceDir);
-//        for (String name : fileNames) {
-//            System.out.println(name);
-//        }
-//        reflectionTypeSolver.setParent(javaParserTypeSolver);
 
         CombinedTypeSolver combinedSolver = new CombinedTypeSolver();
         combinedSolver.add(reflectionTypeSolver);
@@ -268,8 +247,6 @@ public class ResolveMethodReferences {
 
         JSONArray classList = new JSONArray();
         JSONArray classNamesList = new JSONArray();
-//        JSONObject classToDeclaredMethods = new JSONObject();
-
         AtomicReference<Integer> numErrors = new AtomicReference<>(0);
         AtomicReference<Integer> numMethodCalls = new AtomicReference<>(0);
         for (String fileName : fileNames) {
@@ -314,10 +291,6 @@ public class ResolveMethodReferences {
                 classNamesList.put(classInfo.get("className"));
                 classList.put(classInfo);
             });
-//            cu.findAll(MethodCallExpr.class).forEach(mce -> System.out.println(mce.resolve().getQualifiedSignature()));
-//            cu.findAll(MethodDeclaration.class).forEach(md -> md.findAll(MethodCallExpr.class).forEach(mce -> {
-//                System.out.println(md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
-//            }));
         }
         System.out.println("Number of errors: " + numErrors.toString());
         System.out.println("Number of method calls: " + numMethodCalls.toString());
@@ -329,6 +302,7 @@ public class ResolveMethodReferences {
             file.flush();
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
