@@ -1,5 +1,5 @@
 # General
-- [x] **AS** Make shell script calling the Java Parser
+- [x] Make shell script calling the Java Parser
 - [x] Fix location of parsed.txt. It needs to be in the toy project.
 - [x] Run Doxygen on Jfreechart and add results to the project. Also add the parsing script.
 
@@ -22,11 +22,12 @@
 - [x] New parser using JavaParser
 
 # Visualization
+- [ ] Distance function
 - [ ] **TS** Integrate new parser datafile format
-- [ ] **TS** Adapt rectangle shape to fit class and method names
-- [ ] **AZ** Highlighting: when you over an element, the edges and nodes it's connected to are highlighted.
+- [ ] Links between classes for high-level view
 - [ ] The furthest zoom should fit all classes in the viewport
 - [ ] Fix classes clusters being light years apart
-- [ ] Distance function
+- [x] Highlighting: when you over an element, the edges and nodes it's connected to are highlighted.
+- [x] Adapt rectangle shape to fit class and method names
 - [x] Fix methods appearing outside of the class
 - [x] Remove "Zoom In"
