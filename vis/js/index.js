@@ -6,14 +6,14 @@ d3.json(dataPathGlobal).then(jsonData => {
     console.log(data);
     // nodes, list, groups
 
-    // initializeVisualization(data);
+    initializeVisualization(data);
 })
 
 let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
         data: data, 
-        centeredOnClass: centerOnGlobal,
+        centeredOnClass: "classorg.jfree.data.xy.YWithXInterval",
         classesOnly: true
      });
 
