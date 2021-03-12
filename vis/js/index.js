@@ -32,6 +32,7 @@ let processJson = ({classData, classNames}) => {
     let classNodes = classData.map(item => ({
         fqn: item.className, 
         name: getShortName(item.className), 
+        filePath: item.fileName,
         type: "class"
     }));
 
