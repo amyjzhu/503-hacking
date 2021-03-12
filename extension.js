@@ -27,8 +27,10 @@ function activate(context) {
 			);
 
 			
-			var currentClass = path.basename(activeTextEditor.document.fileName)
-			currentClass = currentClass.split('.').slice(0, -1).join('.')
+			var currentClass = activeTextEditor.document.fileName
+			console.log(currentClass)
+			// currentClass = currentClass.split('.').slice(0, -1).join('.')
+			// console.log(currentClass)
 			panel.webview.html = getWebviewContent(context, panel.webview, currentClass);
 
 			// Receiving messages from the visualization

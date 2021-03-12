@@ -14,7 +14,7 @@ let initializeVisualization = (data) => {
         parentElement: "#vis", 
         data: data, 
         // centeredOnClass: "classorg.jfree.data.xy.YWithXInterval",
-        centeredOnClass: "classorg.reptile.Snake",
+        centeredOnClass: centerOnGlobal,
         classesOnly: false,
         highlighting: false
      });

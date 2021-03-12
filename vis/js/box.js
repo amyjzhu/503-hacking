@@ -158,7 +158,7 @@ class StructureVis {
         console.log(vis.centeredOn);
         // center an item, if valid
         if (vis.centeredOn != undefined) {
-            let center = vis.boxData.find(f => f.type + f.fqn == vis.centeredOn);
+            let center = vis.boxData.find(f => f.type + f.filePath == vis.centeredOn);
 
             center.fx = vis.center.x;
             center.fy = vis.center.y;

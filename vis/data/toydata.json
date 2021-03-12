@@ -1,7 +1,7 @@
 {
     "classData": [
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
         "methods": [{
           "synchronized": false,
           "static": false,
@@ -22,7 +22,7 @@
         "className": "org.felines.AnimalSuper"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Feline.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Feline.java",
         "methods": [
           {
             "synchronized": false,
@@ -130,7 +130,7 @@
         "className": "org.felines.Feline"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Cat.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Cat.java",
         "methods": [
           {
             "synchronized": false,
@@ -170,7 +170,7 @@
         "className": "org.felines.Cat"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Tiger.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Tiger.java",
         "methods": [
           {
             "synchronized": false,
@@ -210,17 +210,17 @@
         "className": "org.felines.Tiger"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Animal.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Animal.java",
         "methods": [],
         "className": "org.felines.Animal"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Poodle.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Poodle.java",
         "methods": [],
         "className": "org.animals.Poodle"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/CowRenamed.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/CowRenamed.java",
         "methods": [
           {
             "synchronized": false,
@@ -260,12 +260,12 @@
         "className": "org.animals.CowRenamed"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Labrador.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Labrador.java",
         "methods": [],
         "className": "org.animals.Labrador"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Dog.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Dog.java",
         "methods": [
           {
             "synchronized": false,
@@ -305,7 +305,7 @@
         "className": "org.animals.Dog"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/AnimalMarilho.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/AnimalMarilho.java",
         "methods": [
           {
             "synchronized": false,
@@ -379,7 +379,7 @@
         "className": "org.reptile.AnimalMarilho"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Snake.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Snake.java",
         "methods": [
           {
             "synchronized": false,
@@ -487,7 +487,7 @@
         "className": "org.reptile.Snake"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Reptile.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Reptile.java",
         "methods": [
           {
             "synchronized": false,
@@ -544,7 +544,7 @@
         "className": "org.reptile.Reptile"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleTerrarium.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleTerrarium.java",
         "methods": [
           {
             "synchronized": false,
@@ -601,7 +601,7 @@
         "className": "org.reptile.TurtleTerrarium"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java",
         "methods": [
           {
             "synchronized": false,
@@ -658,7 +658,7 @@
         "className": "org.reptile.TurtleMarinha"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Bird.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Bird.java",
         "methods": [{
           "synchronized": false,
           "static": false,
@@ -679,7 +679,7 @@
         "className": "org.birds.Bird"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Chicken.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Chicken.java",
         "methods": [{
           "synchronized": false,
           "static": false,
@@ -700,12 +700,12 @@
         "className": "org.birds.Chicken"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Chicken.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Chicken.java",
         "methods": [],
         "className": "org.birds.Chicken.PrivateChicken"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Duck.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Duck.java",
         "methods": [{
           "synchronized": false,
           "static": false,
@@ -726,7 +726,7 @@
         "className": "org.birds.Duck"
       },
       {
-        "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/DogManager.java",
+        "fileName": "/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/DogManager.java",
         "methods": [
           {
             "synchronized": false,
