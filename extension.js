@@ -65,7 +65,7 @@ function activate(context) {
 		vscode.commands.registerCommand('codemap.parse', function () {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
 
-			const scriptPath = vscode.Uri.joinPath(context.extensionUri, 'parse.sh').path
+			const scriptPath = vscode.Uri.joinPath(context.extensionUri, 'parsing', 'parse.sh').path
 			console.info(scriptPath)
 
 			vscode.window.showInputBox(options = {
