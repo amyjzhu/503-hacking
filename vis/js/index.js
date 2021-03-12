@@ -150,13 +150,12 @@ let processJson = ({classData, classNames}) => {
 }
 
 let getPathOnClick = (d) => {
-    var file = `${d.pkg}/${d.id}.java`
-    console.log(file)
+    console.log(d.filePath)
 
     // Sending messages to the plugin
     vscode.postMessage({
         command: 'open',
-        text: file
+        filePath: d.filePath
     })
 }
 

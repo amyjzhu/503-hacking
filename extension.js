@@ -38,15 +38,11 @@ function activate(context) {
 				message => {
 					switch (message.command) {
 					case 'open':
-						if(message.text.includes('files_in_main_directory/')) {
-							message.text = 'DogManager.java'
-						}
-
-						var workspace = vscode.workspace.workspaceFolders[0].uri;
-						var file = vscode.Uri.joinPath(workspace, 'src', 'org', message.text);
+						// var workspace = vscode.workspace.workspaceFolders[0].uri;
+						// var file = vscode.Uri.joinPath(workspace, 'src', 'org', message.text);
 						
-						console.log(file);
-						vscode.window.showTextDocument(file);
+						const fileUri = vscode.Uri.file(message.filePath)
+						vscode.window.showTextDocument(fileUri);
 						panel.dispose();
 						return;
 					}
