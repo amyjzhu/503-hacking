@@ -253,7 +253,7 @@ class StructureVis {
             }));
 
 
-        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.type + d.fqn });
+        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.fqn });
         vis.boxGroups = vis.boxGroupsSelect.enter().append("g").attr("class", "boxgroups").merge(vis.boxGroupsSelect);
 
         var boxes = vis.boxGroups.selectAll("rect").data(d => [d]);
@@ -272,7 +272,7 @@ class StructureVis {
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1);
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
         // classes
         var level2GroupSelect = vis.boxArea.selectAll(".level2-group").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.type + d.fqn });
@@ -296,7 +296,7 @@ class StructureVis {
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1);
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
         // methods
         var level3GroupsSelect = vis.boxArea.selectAll(".level3Group").data(vis.boxData.filter(d => d.type == vis.level2), d => { return d.type + d.fqn });
@@ -321,7 +321,7 @@ class StructureVis {
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1);
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
@@ -344,7 +344,7 @@ class StructureVis {
             // .transition()
             .text(d => vis.viewLevel == vis.level1 ? "" : d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
         vis.level2Texts.exit().remove();
 
@@ -359,7 +359,7 @@ class StructureVis {
             .style("font-size", "5px")
             .style("font-family", "monospace")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
         vis.level2Texts.exit().remove();
 
@@ -619,10 +619,11 @@ class StructureVis {
             // (and we should in the future)
             let connected;
             if (vis.viewLevel == vis.level1) {
-                connected = vis.linkData.filter(d => (d.source.type + d.source.fqn) == item);
+                // TODO need to check this new logic with packages
+                connected = vis.linkData.filter(d => (d.source.fqn) == item);
                 connected.forEach(x => x.highlighted = true);
                 console.log(vis.linkData.filter(x => x.highlighted));
-                connected = connected.map(d => d.target.type + d.target.fqn);
+                connected = connected.map(d => d.target.fqn);
 
             } else {
                 connected = vis.linkData.filter(d => d.source == item);
@@ -634,13 +635,15 @@ class StructureVis {
             // right now, containment doesn't mean dependency
             // necessary to express inter-level dependencies
             // else we can say "if you contain this method, you should be highlighted too"
+            // go through and add the containers of all the connected
             let diff = connected.filter(x => !visited.includes(x));
 
             return findAllRec(visited.concat([item]), todo.slice(1).concat(diff));
 
         }
 
-        vis.currentlyHighlighted = findAllRec([], [item.type + item.fqn]);
+        console.log(item)
+        vis.currentlyHighlighted = findAllRec([], [item.fqn]);
 
         vis.render();
         vis.updateLinks();
