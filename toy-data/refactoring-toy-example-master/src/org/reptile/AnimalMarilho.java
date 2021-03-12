@@ -23,6 +23,11 @@ public class AnimalMarilho {
 
 	public void setAction(String action) {
 		this.action = action;
+		int speed = getSpeed();
+		Reptile reptile = new Reptile();
+		System.out.println(reptile.getName() + reptile.hashCode());
+		Dog dog = new Dog();
+		dog.takeABreath();
 	}
 
 }
