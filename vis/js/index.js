@@ -68,11 +68,20 @@ let processJson = ({classData, classNames}) => {
         }));
     });
 
-    let classContainers = classNames.map(className => ({ // includes private classses!
-        parent: getPackage(className),
-        child: className, 
-        type: 'class'
-    }));
+    let classContainers = classNames.map(fqnClassName => {
+        let parent = getPackage(fqnClassName);
+
+        // Remove parents that are classes until we find a package.
+        while (isClass(parent)) {
+            parent = getPackage(parent)    
+        }
+
+        return {
+            parent: parent,
+            child: fqnClassName, 
+            type: 'class'
+        }
+    });
 
     let hierarchy = methodContainers.concat(classContainers);
 
@@ -151,6 +160,14 @@ function getMethodFqn(classFqn, methodName){
 
 function getPackage(classFqn) {
     return classFqn.substring(0, classFqn.lastIndexOf("."))
+}
+
+// Verifies if a FQN is a class or a package. Returns true if it's a class.
+function isClass(classFqn) {
+    let splitFqn = classFqn.split('.');
+    let maybeAClass = splitFqn[splitFqn.length - 1]; // The last element is either a package or a class.
+    return maybeAClass.charCodeAt(0) >= 65 && maybeAClass.charCodeAt(0) <= 90
+    // Alternate implementation: look if the candidate is an element of data.classNames. Set operations are O(1).
 }
 
 // ----------------------------------------------------------------------------
