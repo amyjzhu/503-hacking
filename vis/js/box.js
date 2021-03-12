@@ -26,10 +26,11 @@ class StructureVis {
 
         this.smallestBoxHeight = this.smallBoxHeight / 3;
         this.smallestBoxWidth = this.smallBoxWidth / 2.5;
+        this.highlightingEnabled = _config.highlighting;
 
         // this.colours = ["red", "blue", "yellow", "green"]\
         // TODO we should make the colours get lighter or darker by level
-        this.colours = d3.schemeRdYlGn;
+        this.colours = d3.interpolateRdYlGn;
 
         this.zoomBarHeight = 300;
         this.minZoom = 0.25;
@@ -75,10 +76,14 @@ class StructureVis {
 
         // we add the package data here
         vis.boxData = vis.data.nodes.concat(level1);
-        
-        vis.colourScale = d3.scaleOrdinal()
-            .domain(Object.values(groupMap))
-            .range(vis.colours[Object.keys(groupMap).length])
+
+        console.log({ groupMap })
+        console.log(vis.colours)
+        vis.colourScale = d3.scaleLinear()
+            .domain([0, Object.values(groupMap).length])
+            .range([0, 1])
+
+        vis.getColour = d => vis.colours(vis.colourScale(d))
 
 
         // TODO make a level1, level2, level3 array for reuse
@@ -99,7 +104,7 @@ class StructureVis {
             let child = vis.boxData.findIndex(child => child.fqn == d.child);
             vis.boxData[child].container = d.parent;
         })
-        
+
         vis.boxData.forEach(datum => {
             if (datum.type == vis.level2) {
                 datum.group = groupMap[datum.container];
@@ -107,9 +112,16 @@ class StructureVis {
 
             // This would be simpler if we inherit the colour from the
             // class in the SVG step TODO
+            let secondPass = [];
             if (datum.type == vis.level3) {
                 let container = vis.boxData.find(d => d.fqn == datum.container);
-                datum.group = container.group;
+                if (container == undefined) {
+                    // do it on a second pass
+                    // TODO - complete second pass
+                    secondPass.push(datum)
+                } else {
+                    datum.group = container.group;
+                }
             }
 
         })
@@ -253,8 +265,8 @@ class StructureVis {
             .attr("width", vis.boxWidth)
             .attr("height", vis.boxHeight)
             // colour coded by group
-            .style("fill", d => vis.viewLevel == vis.level1 ? vis.colourScale(d.group) : "none")
-            .style("stroke", d => vis.viewLevel == vis.level1 ? "none" : vis.colourScale(d.group))
+            .style("fill", d => vis.viewLevel == vis.level1 ? vis.getColour(d.group) : "none")
+            .style("stroke", d => vis.viewLevel == vis.level1 ? "none" : vis.getColour(d.group))
             .style("stroke-opacity", vis.viewLevel == vis.level3 ? 0.6 : 1)
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
@@ -277,8 +289,8 @@ class StructureVis {
             .on("click", vis.classOnClick)
             .attr("width", vis.smallBoxWidth)
             .attr("height", vis.smallBoxHeight)
-            .style("fill", d => vis.viewLevel == vis.level2 ? vis.colourScale(d.group) : "none")
-            .style("stroke", d => vis.viewLevel == vis.level3 ? vis.colourScale(d.group) : "none")
+            .style("fill", d => vis.viewLevel == vis.level2 ? vis.getColour(d.group) : "none")
+            .style("stroke", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
             .style("stroke-opacity", vis.viewLevel == vis.level3 ? 0.5 : 1)
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
@@ -303,7 +315,7 @@ class StructureVis {
                 return d.text == undefined ? vis.smallestBoxWidth : Math.max(d.text.split("\n").map(s => s.length)) * 2 // for 2px;
             })//vis.smallestBoxWidth)
             .attr("height", vis.smallestBoxHeight)
-            .style("fill", d => vis.viewLevel == vis.level3 ? vis.colourScale(d.group) : "none")
+            .style("fill", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
@@ -399,7 +411,7 @@ class StructureVis {
                 }
             })
 
-    
+
             vis.level3Simulations.forEach(sim => {
                 if (sim.sim == undefined) {
                     // now we need to create it, if it's the first time...
@@ -477,10 +489,10 @@ class StructureVis {
 
         } else {
             vis.links
-                .attr("x1", d => vis.boxData.find(data => d.source ==  data.fqn).x)
-                .attr("y1", d => vis.boxData.find(data => d.source ==  data.fqn).y)
-                .attr("x2", d => vis.boxData.find(data => d.target ==  data.fqn).x)
-                .attr("y2", d => vis.boxData.find(data => d.target ==  data.fqn).y)
+                .attr("x1", d => vis.boxData.find(data => d.source == data.fqn).x)
+                .attr("y1", d => vis.boxData.find(data => d.source == data.fqn).y)
+                .attr("x2", d => vis.boxData.find(data => d.target == data.fqn).x)
+                .attr("y2", d => vis.boxData.find(data => d.target == data.fqn).y)
                 .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
                     && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         }
@@ -590,6 +602,8 @@ class StructureVis {
     addHighlighting(item) {
         let vis = this;
 
+        if (!vis.highlightingEnabled) return;
+
         let findAllRec = (visited, todo) => {
             if (todo.length == 0) {
                 return visited;
@@ -630,6 +644,7 @@ class StructureVis {
 
     removeHighlighting() {
         let vis = this;
+        if (!vis.highlightingEnabled) return;
         // clear
         vis.currentlyHighlighted = [];
         vis.linkData.forEach(x => x.highlighted = false);
