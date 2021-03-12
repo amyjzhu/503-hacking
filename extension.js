@@ -66,13 +66,19 @@ function activate(context) {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
 
 			const scriptPath = vscode.Uri.joinPath(context.extensionUri, 'parse.sh').path
-			const sourcesDir = vscode.workspace.workspaceFolders[0].uri.path
-
 			console.info(scriptPath)
-			console.info(sourcesDir)
 
-			terminal.sendText(`${scriptPath} ${sourcesDir}`);
-			terminal.show();
+			vscode.window.showInputBox(options = {
+				ignoreFocusOut: true,
+				prompt: 'Relative path to the sources root',
+				placeholder: 'src/main/java/'
+			}).then(sources => {
+				const sourcesDir = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, sources).path
+				console.info(sourcesDir)
+
+				terminal.sendText(`${scriptPath} ${sourcesDir}`);
+				terminal.show();
+			})
 		})
 	);
 }
