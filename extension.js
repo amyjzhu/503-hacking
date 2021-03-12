@@ -64,7 +64,14 @@ function activate(context) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.parse', function () {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
-			terminal.sendText("pwd");
+
+			const scriptPath = vscode.Uri.joinPath(context.extensionUri, 'parse.sh').path
+			const sourcesDir = vscode.workspace.workspaceFolders[0].uri.path
+
+			console.info(scriptPath)
+			console.info(sourcesDir)
+
+			terminal.sendText(`${scriptPath} ${sourcesDir}`);
 			terminal.show();
 		})
 	);
