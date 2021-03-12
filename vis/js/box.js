@@ -149,7 +149,7 @@ class StructureVis {
             .velocityDecay(0.18)
             .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
             .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
-            .force('charge', d3.forceManyBody().strength(-Math.pow(vis.boxHeight, 0.6)))
+            .force('charge', d3.forceManyBody().strength(-Math.pow(vis.boxHeight, 0.5)))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .on('tick', () => vis.fastTick(vis.boxGroups));
