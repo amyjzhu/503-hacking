@@ -13,10 +13,10 @@ let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
         data: data, 
-        // centeredOnClass: "classorg.jfree.data.xy.YWithXInterval",
+        // centeredOnClass: "class/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Cat.java",
         centeredOnClass: centerOnGlobal,
         classesOnly: false,
-        highlighting: false
+        highlighting: true
      });
 
     vis.classOnClick = getPathOnClick;

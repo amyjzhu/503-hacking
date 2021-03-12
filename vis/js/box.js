@@ -328,11 +328,11 @@ class StructureVis {
             .merge(texts)
             .attr("dx", 12)
             .attr("dy", ".35em")
-            .text(d => d.name)
+            .text(d => d.fqn)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
             .style("opacity", d => !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
+            .style('font-size', 24)
             .style("pointer-events", "none");
-
 
         texts.exit().remove();
 
