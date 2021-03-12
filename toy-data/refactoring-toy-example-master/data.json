@@ -3,9 +3,21 @@
     {
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
       "methods": [{
-        "signature": " void action()",
+        "synchronized": false,
+        "static": false,
+        "visibility": "public",
+        "signature": "org.felines.AnimalSuper.action()",
+        "abstract": true,
+        "strictfp": false,
+        "declaration": " void action()",
+        "typeParameters": [],
+        "default": false,
+        "native": false,
         "calls": [],
-        "name": "action"
+        "final": false,
+        "name": "action",
+        "parameters": [],
+        "return": "void"
       }],
       "className": "org.felines.AnimalSuper"
     },
@@ -13,34 +25,106 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Feline.java",
       "methods": [
         {
-          "signature": "public int getAge()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Feline.getAge()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getAge()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getAge"
+          "final": false,
+          "name": "getAge",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setAge(int age)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Feline.setAge(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setAge(int age)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setAge"
+          "final": false,
+          "name": "setAge",
+          "parameters": ["int"],
+          "return": "void"
         },
         {
-          "signature": "public int getName()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Feline.getName()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getName()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getName"
+          "final": false,
+          "name": "getName",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setName(int name)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Feline.setName(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setName(int name)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setName"
+          "final": false,
+          "name": "setName",
+          "parameters": ["int"],
+          "return": "void"
         },
         {
-          "signature": "public void meow()",
-          "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
-          "name": "meow"
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Feline.meow()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void meow()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
+          "calls": [],
+          "final": false,
+          "name": "meow",
+          "parameters": [],
+          "return": "void"
         },
         {
-          "signature": "public void action()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Feline.action()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void action()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "action"
+          "final": false,
+          "name": "action",
+          "parameters": [],
+          "return": "void"
         }
       ],
       "className": "org.felines.Feline"
@@ -49,14 +133,38 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Cat.java",
       "methods": [
         {
-          "signature": "public void sleep()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Cat.sleep()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void sleep()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [{"signature": "org.felines.Cat.sleepNight()"}],
-          "name": "sleep"
+          "final": false,
+          "name": "sleep",
+          "parameters": [],
+          "return": "void"
         },
         {
-          "signature": "private void sleepNight()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "private",
+          "signature": "org.felines.Cat.sleepNight()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "private void sleepNight()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "sleepNight"
+          "final": false,
+          "name": "sleepNight",
+          "parameters": [],
+          "return": "void"
         }
       ],
       "className": "org.felines.Cat"
@@ -65,14 +173,38 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Tiger.java",
       "methods": [
         {
-          "signature": "public int getSpeed()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Tiger.getSpeed()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getSpeed()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getSpeed"
+          "final": false,
+          "name": "getSpeed",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setSpeed(int speed)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.felines.Tiger.setSpeed(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setSpeed(int speed)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setSpeed"
+          "final": false,
+          "name": "setSpeed",
+          "parameters": ["int"],
+          "return": "void"
         }
       ],
       "className": "org.felines.Tiger"
@@ -91,14 +223,38 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/CowRenamed.java",
       "methods": [
         {
-          "signature": "public void moo()",
-          "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
-          "name": "moo"
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.animals.CowRenamed.moo()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void moo()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
+          "calls": [],
+          "final": false,
+          "name": "moo",
+          "parameters": [],
+          "return": "void"
         },
         {
-          "signature": "public void eat()",
-          "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
-          "name": "eat"
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.animals.CowRenamed.eat()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void eat()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
+          "calls": [],
+          "final": false,
+          "name": "eat",
+          "parameters": [],
+          "return": "void"
         }
       ],
       "className": "org.animals.CowRenamed"
@@ -112,23 +268,38 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/animals/Dog.java",
       "methods": [
         {
-          "signature": "public int getAge()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.animals.Dog.getAge()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getAge()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getAge"
+          "final": false,
+          "name": "getAge",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public String sayWoof()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.animals.Dog.takeABreath()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void takeABreath()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "sayWoof"
-        },
-        {
-          "signature": "public void takeABreath()",
-          "calls": [
-            {"signature": "java.io.PrintStream.println(java.lang.String)"},
-            {"signature": "org.animals.Dog.sayWoof()"},
-            {"signature": "org.birds.Chicken.cackle()"}
-          ],
-          "name": "takeABreath"
+          "final": false,
+          "name": "takeABreath",
+          "parameters": [],
+          "return": "void"
         }
       ],
       "className": "org.animals.Dog"
@@ -137,24 +308,72 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/AnimalMarilho.java",
       "methods": [
         {
-          "signature": "public int getSpead()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.AnimalMarilho.getSpead()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getSpead()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getSpead"
+          "final": false,
+          "name": "getSpead",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setSpead(int spead)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.AnimalMarilho.setSpead(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setSpead(int spead)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setSpead"
+          "final": false,
+          "name": "setSpead",
+          "parameters": ["int"],
+          "return": "void"
         },
         {
-          "signature": "public String getAction()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.AnimalMarilho.getAction()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public String getAction()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getAction"
+          "final": false,
+          "name": "getAction",
+          "parameters": [],
+          "return": "java.lang.String"
         },
         {
-          "signature": "public void setAction(String action)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.AnimalMarilho.setAction(java.lang.String)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setAction(String action)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setAction"
+          "final": false,
+          "name": "setAction",
+          "parameters": ["java.lang.String"],
+          "return": "void"
         }
       ],
       "className": "org.reptile.AnimalMarilho"
@@ -163,34 +382,106 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Snake.java",
       "methods": [
         {
-          "signature": "public int getAge()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Snake.getAge()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getAge()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getAge"
+          "final": false,
+          "name": "getAge",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setAge(int age)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Snake.setAge(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setAge(int age)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setAge"
+          "final": false,
+          "name": "setAge",
+          "parameters": ["int"],
+          "return": "void"
         },
         {
-          "signature": "public int getName()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Snake.getName()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getName()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getName"
+          "final": false,
+          "name": "getName",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setName(int name)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Snake.setName(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setName(int name)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setName"
+          "final": false,
+          "name": "setName",
+          "parameters": ["int"],
+          "return": "void"
         },
         {
-          "signature": "public String getAction()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Snake.getAction()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public String getAction()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getAction"
+          "final": false,
+          "name": "getAction",
+          "parameters": [],
+          "return": "java.lang.String"
         },
         {
-          "signature": "public void setAction(String action)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Snake.setAction(java.lang.String)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setAction(String action)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setAction"
+          "final": false,
+          "name": "setAction",
+          "parameters": ["java.lang.String"],
+          "return": "void"
         }
       ],
       "className": "org.reptile.Snake"
@@ -199,19 +490,55 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/Reptile.java",
       "methods": [
         {
-          "signature": "public int hashCode()",
-          "calls": [{"signature": "java.lang.String.hashCode()"}],
-          "name": "hashCode"
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Reptile.hashCode()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int hashCode()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
+          "calls": [],
+          "final": false,
+          "name": "hashCode",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public int getName()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Reptile.getName()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getName()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getName"
+          "final": false,
+          "name": "getName",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setName(int name)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.Reptile.setName(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setName(int name)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setName"
+          "final": false,
+          "name": "setName",
+          "parameters": ["int"],
+          "return": "void"
         }
       ],
       "className": "org.reptile.Reptile"
@@ -220,22 +547,55 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleTerrarium.java",
       "methods": [
         {
-          "signature": "public int getAge()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.TurtleTerrarium.getAge()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getAge()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getAge"
+          "final": false,
+          "name": "getAge",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setAge(int age)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.TurtleTerrarium.setAge(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setAge(int age)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setAge"
+          "final": false,
+          "name": "setAge",
+          "parameters": ["int"],
+          "return": "void"
         },
         {
-          "signature": "public boolean equals(Object obj)",
-          "calls": [
-            {"signature": "java.lang.Object.getClass()"},
-            {"signature": "java.lang.String.equals(java.lang.Object)"}
-          ],
-          "name": "equals"
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.TurtleTerrarium.equals(java.lang.Object)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public boolean equals(Object obj)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
+          "calls": [],
+          "final": false,
+          "name": "equals",
+          "parameters": ["java.lang.Object"],
+          "return": "boolean"
         }
       ],
       "className": "org.reptile.TurtleTerrarium"
@@ -244,22 +604,55 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/reptile/TurtleMarinha.java",
       "methods": [
         {
-          "signature": "public int getAge()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.TurtleMarinha.getAge()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public int getAge()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "getAge"
+          "final": false,
+          "name": "getAge",
+          "parameters": [],
+          "return": "int"
         },
         {
-          "signature": "public void setAge(int age)",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.TurtleMarinha.setAge(int)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void setAge(int age)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [],
-          "name": "setAge"
+          "final": false,
+          "name": "setAge",
+          "parameters": ["int"],
+          "return": "void"
         },
         {
-          "signature": "public boolean equals(Object obj)",
-          "calls": [
-            {"signature": "java.lang.Object.getClass()"},
-            {"signature": "java.lang.String.equals(java.lang.Object)"}
-          ],
-          "name": "equals"
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.reptile.TurtleMarinha.equals(java.lang.Object)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public boolean equals(Object obj)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
+          "calls": [],
+          "final": false,
+          "name": "equals",
+          "parameters": ["java.lang.Object"],
+          "return": "boolean"
         }
       ],
       "className": "org.reptile.TurtleMarinha"
@@ -267,18 +660,42 @@
     {
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Bird.java",
       "methods": [{
-        "signature": "public void layEgg()",
+        "synchronized": false,
+        "static": false,
+        "visibility": "public",
+        "signature": "org.birds.Bird.layEgg()",
+        "abstract": false,
+        "strictfp": false,
+        "declaration": "public void layEgg()",
+        "typeParameters": [],
+        "default": false,
+        "native": false,
         "calls": [],
-        "name": "layEgg"
+        "final": false,
+        "name": "layEgg",
+        "parameters": [],
+        "return": "void"
       }],
       "className": "org.birds.Bird"
     },
     {
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Chicken.java",
       "methods": [{
-        "signature": "public void cackle()",
-        "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
-        "name": "cackle"
+        "synchronized": false,
+        "static": false,
+        "visibility": "public",
+        "signature": "org.birds.Chicken.cackle()",
+        "abstract": false,
+        "strictfp": false,
+        "declaration": "public void cackle()",
+        "typeParameters": [],
+        "default": false,
+        "native": false,
+        "calls": [],
+        "final": false,
+        "name": "cackle",
+        "parameters": [],
+        "return": "void"
       }],
       "className": "org.birds.Chicken"
     },
@@ -290,9 +707,21 @@
     {
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/birds/Duck.java",
       "methods": [{
-        "signature": "public void quack()",
-        "calls": [{"signature": "java.io.PrintStream.println(java.lang.String)"}],
-        "name": "quack"
+        "synchronized": false,
+        "static": false,
+        "visibility": "public",
+        "signature": "org.birds.Duck.quack()",
+        "abstract": false,
+        "strictfp": false,
+        "declaration": "public void quack()",
+        "typeParameters": [],
+        "default": false,
+        "native": false,
+        "calls": [],
+        "final": false,
+        "name": "quack",
+        "parameters": [],
+        "return": "void"
       }],
       "className": "org.birds.Duck"
     },
@@ -300,22 +729,42 @@
       "fileName": "/Users/audrey/classes/cse503/503-hacking/toy-data/refactoring-toy-example-master/src/org/DogManager.java",
       "methods": [
         {
-          "signature": "public void doStuff()",
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.DogManager.doStuff()",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void doStuff()",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
           "calls": [
             {"signature": "org.DogManager.barkBark(org.animals.Dog)"},
             {"signature": "org.animals.Dog.getAge()"},
-            {"signature": "java.io.PrintStream.println(int)"},
             {"signature": "org.animals.Dog.takeABreath()"}
           ],
-          "name": "doStuff"
+          "final": false,
+          "name": "doStuff",
+          "parameters": [],
+          "return": "void"
         },
         {
-          "signature": "public void barkBark(Dog dog)",
-          "calls": [
-            {"signature": "java.io.PrintStream.println(java.lang.String)"},
-            {"signature": "org.animals.Dog.takeABreath()"}
-          ],
-          "name": "barkBark"
+          "synchronized": false,
+          "static": false,
+          "visibility": "public",
+          "signature": "org.DogManager.barkBark(org.animals.Dog)",
+          "abstract": false,
+          "strictfp": false,
+          "declaration": "public void barkBark(Dog dog)",
+          "typeParameters": [],
+          "default": false,
+          "native": false,
+          "calls": [{"signature": "org.animals.Dog.takeABreath()"}],
+          "final": false,
+          "name": "barkBark",
+          "parameters": ["org.animals.Dog"],
+          "return": "void"
         }
       ],
       "className": "org.DogManager"
