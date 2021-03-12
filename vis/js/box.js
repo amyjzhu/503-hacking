@@ -29,7 +29,7 @@ class StructureVis {
 
         // this.colours = ["red", "blue", "yellow", "green"]\
         // TODO we should make the colours get lighter or darker by level
-        this.colours = d3.schemePastel1;
+        this.colours = d3.schemeRdYlGn;
 
         this.zoomBarHeight = 300;
         this.minZoom = 0.25;
@@ -78,7 +78,7 @@ class StructureVis {
         
         vis.colourScale = d3.scaleOrdinal()
             .domain(Object.values(groupMap))
-            .range(vis.colours)
+            .range(vis.colours[Object.keys(groupMap).length])
 
 
         // TODO make a level1, level2, level3 array for reuse
