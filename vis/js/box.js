@@ -24,7 +24,7 @@ class StructureVis {
         this.smallBoxWidth = this.boxWidth / 3;
         this.smallBoxHeight = this.boxHeight / 4;
 
-        this.smallestBoxHeight = this.smallBoxHeight / 3;
+        this.smallestBoxHeight = this.smallBoxHeight / 8;
         this.smallestBoxWidth = this.smallBoxWidth / 3;
         this.highlightingEnabled = _config.highlighting;
 
@@ -312,7 +312,8 @@ class StructureVis {
             .merge(vis.level3Rects)
             .attr("width", d => {
                 // TODO this should approximate it, but we need to check afterwards
-                return d.text == undefined ? vis.smallestBoxWidth : Math.max(d.text.split("\n").map(s => s.length)) * 2 // for 2px;
+                return d.name == undefined ? vis.smallestBoxWidth : Math.max(d.name.split("\n").map(s => s.length)) * 3.3// for 2px;
+                // document.getElementById('text').getComputedTextLength()
             })//vis.smallestBoxWidth)
             .attr("height", vis.smallestBoxHeight)
             .style("fill", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
@@ -356,6 +357,7 @@ class StructureVis {
             // .transition()
             .text(d => vis.viewLevel == vis.level3 ? d.name : "")
             .style("font-size", "5px")
+            .style("font-family", "monospace")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
