@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Example usage: ./parse.sh -t 1 path/to/your/sources
+# -t 1 controls the number of prefixes for the fully qualified name from the root.
+
 # Requires the appropriate version of java and also maven
 
 die() {
