@@ -340,7 +340,7 @@ class StructureVis {
         vis.level2Texts = vis.level2Texts.enter().append("text")
             .merge(vis.level2Texts)
             .attr("dx", 12)
-            .attr("dy", ".35em")
+            // .attr("dy", ".35em")
             // .transition()
             .text(d => vis.viewLevel == vis.level1 ? "" : d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
