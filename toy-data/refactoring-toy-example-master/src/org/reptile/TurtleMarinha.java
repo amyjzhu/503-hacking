@@ -2,17 +2,17 @@ package org.reptile;
 
 public class TurtleMarinha extends Reptile {
 
-	public TurtleMarinha(int age, int name, int spead, String action) {
+	public TurtleMarinha(int age, int name, int speed, String action) {
 		this.age = age;
 		this.name = name;
-		this.spead = spead;
+		this.speed = speed;
 		this.action = action;
 	}
-	public TurtleMarinha(int age, int name, int spead) {
+	public TurtleMarinha(int age, int name, int speed) {
 		
 		this.age = age;
 		this.name = name;
-		this.spead = spead;
+		this.speed = speed;
 		
 	}
 	
@@ -53,7 +53,7 @@ public class TurtleMarinha extends Reptile {
 			return false;
 		if (name != other.name)
 			return false;
-		if (spead != other.spead)
+		if (speed != other.speed)
 			return false;
 		return true;
 	}

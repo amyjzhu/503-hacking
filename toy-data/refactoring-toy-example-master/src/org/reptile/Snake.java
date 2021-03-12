@@ -8,13 +8,13 @@ public class Snake {
 	private String action;
 	
 	
-	public Snake(int age, int name, int spead, String action) {
+	public Snake(int age, int name, int speed, String action) {
 		this.age = age;
 		this.name = name;
 	
 		this.action = action;
 	}
-	public Snake(int age, int name, int spead) {
+	public Snake(int age, int name, int speed) {
 		
 		this.age = age;
 		this.name = name;

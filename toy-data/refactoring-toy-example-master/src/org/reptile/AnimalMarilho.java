@@ -6,17 +6,15 @@ public class AnimalMarilho {
 		super();
 	}
 	
-	protected int spead;
+	protected int speed;
 	protected String action;
 
-	
-
-	public int getSpead() {
-		return spead;
+	public int getSpeed() {
+		return speed;
 	}
 
-	public void setSpead(int spead) {
-		this.spead = spead;
+	public void setSpeed(int speed) {
+		this.speed = speed;
 	}
 
 	public String getAction() {
@@ -25,6 +23,11 @@ public class AnimalMarilho {
 
 	public void setAction(String action) {
 		this.action = action;
+		int speed = getSpeed();
+		Reptile reptile = new Reptile();
+		System.out.println(reptile.getName() + reptile.hashCode());
+		Dog dog = new Dog();
+		dog.takeABreath();
 	}
 
 }

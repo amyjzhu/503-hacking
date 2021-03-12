@@ -12,7 +12,7 @@ public class Reptile extends AnimalMarilho {
 		result = prime * result + ((action == null) ? 0 : action.hashCode());
 		result = prime * result + age;
 		result = prime * result + name;
-		result = prime * result + spead;
+		result = prime * result + speed;
 		return result;
 	}
 

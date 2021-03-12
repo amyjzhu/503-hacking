@@ -27,8 +27,10 @@ function activate(context) {
 			);
 
 			
-			var currentClass = path.basename(activeTextEditor.document.fileName)
-			currentClass = currentClass.split('.').slice(0, -1).join('.')
+			var currentClass = activeTextEditor.document.fileName
+			console.log(currentClass)
+			// currentClass = currentClass.split('.').slice(0, -1).join('.')
+			// console.log(currentClass)
 			panel.webview.html = getWebviewContent(context, panel.webview, currentClass);
 
 			// Receiving messages from the visualization
@@ -36,15 +38,11 @@ function activate(context) {
 				message => {
 					switch (message.command) {
 					case 'open':
-						if(message.text.includes('files_in_main_directory/')) {
-							message.text = 'DogManager.java'
-						}
-
-						var workspace = vscode.workspace.workspaceFolders[0].uri;
-						var file = vscode.Uri.joinPath(workspace, 'src', 'org', message.text);
+						// var workspace = vscode.workspace.workspaceFolders[0].uri;
+						// var file = vscode.Uri.joinPath(workspace, 'src', 'org', message.text);
 						
-						console.log(file);
-						vscode.window.showTextDocument(file);
+						const fileUri = vscode.Uri.file(message.filePath)
+						vscode.window.showTextDocument(fileUri);
 						panel.dispose();
 						return;
 					}
@@ -98,8 +96,8 @@ function getWebviewContent(context, webview, centerOn) {
 	// Local path to css styles
 	const styleResetPath = vscode.Uri.joinPath(context.extensionUri, 'vis', 'css', 'reset.css');
 	const stylesResetUri = webview.asWebviewUri(styleResetPath);
-	// const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
-	// const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+	const stylesPathMainPath = vscode.Uri.joinPath(context.extensionUri, 'css', 'vscode.css');
+	const stylesVSCodeUri = webview.asWebviewUri(stylesPathMainPath);
 
 	return `<!DOCTYPE html>
 		<html lang="en">
@@ -113,6 +111,7 @@ function getWebviewContent(context, webview, centerOn) {
 				<script src="https://unpkg.com/@hpcc-js/wasm/dist/index.min.js" type="javascript/worker"></script> 
 
 				<link href="${stylesResetUri}" rel="stylesheet">
+				<link href="${stylesVSCodeUri}" rel="stylesheet">
 				
 				<title>Vis</title>
 		</head>

@@ -6,15 +6,17 @@ d3.json(dataPathGlobal).then(jsonData => {
     console.log(data);
     // nodes, list, groups
 
-    // initializeVisualization(data);
+    initializeVisualization(data);
 })
 
 let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
         data: data, 
+        // centeredOnClass: "class/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Cat.java",
         centeredOnClass: centerOnGlobal,
-        classesOnly: true
+        classesOnly: false,
+        highlighting: true
      });
 
     vis.classOnClick = getPathOnClick;
@@ -30,6 +32,7 @@ let processJson = ({classData, classNames}) => {
     let classNodes = classData.map(item => ({
         fqn: item.className, 
         name: getShortName(item.className), 
+        filePath: item.fileName,
         type: "class"
     }));
 
@@ -47,7 +50,11 @@ let processJson = ({classData, classNames}) => {
         return itemClass.methods.flatMap(itemMethod => {
             return itemMethod.calls.flatMap(callee => ({
                 source: getMethodFqn(itemClass.className, itemMethod.name),
-                target: callee.signature
+                target: callee.signature,
+                // TODO: type is actually superfluous since we can just check if
+                // the source and target are currently visible
+                // but this incurs more performance issues so...
+                type: 'method'
             }));
         });
     });
@@ -62,13 +69,35 @@ let processJson = ({classData, classNames}) => {
         }));
     });
 
-    let classContainers = classNames.map(className => ({ // includes private classses!
-        parent: getPackage(className),
-        child: className, 
-        type: 'class'
-    }));
+    let classContainers = classNames.map(fqnClassName => {
+        let parent = getPackage(fqnClassName);
+
+        // Remove parents that are classes until we find a package.
+        while (isClass(parent)) {
+            parent = getPackage(parent)    
+        }
+
+        return {
+            parent: parent,
+            child: fqnClassName, 
+            type: 'class'
+        }
+    });
 
     let hierarchy = methodContainers.concat(classContainers);
+
+    // add extra links about classes
+    let classLinks = [];
+    methodLinks.map(ml => {
+        let sourceClass = methodContainers.find(m => m.child == ml.source);
+        let targetClass = methodContainers.find(m => m.child == ml.target);
+        if (targetClass == undefined || sourceClass == undefined) return;
+        classLinks.push({source: sourceClass.parent, target: targetClass.parent, type: 'class' })
+    })
+
+    classLinks = Array.from(new Set(classLinks));
+
+    links = links.concat(classLinks);
 
     console.log({nodes})
     console.log({links})
@@ -121,13 +150,12 @@ let processJson = ({classData, classNames}) => {
 }
 
 let getPathOnClick = (d) => {
-    var file = `${d.pkg}/${d.id}.java`
-    console.log(file)
+    console.log(d.filePath)
 
     // Sending messages to the plugin
     vscode.postMessage({
         command: 'open',
-        text: file
+        filePath: d.filePath
     })
 }
 
@@ -145,6 +173,14 @@ function getMethodFqn(classFqn, methodName){
 
 function getPackage(classFqn) {
     return classFqn.substring(0, classFqn.lastIndexOf("."))
+}
+
+// Verifies if a FQN is a class or a package. Returns true if it's a class.
+function isClass(classFqn) {
+    let splitFqn = classFqn.split('.');
+    let maybeAClass = splitFqn[splitFqn.length - 1]; // The last element is either a package or a class.
+    return maybeAClass.charCodeAt(0) >= 65 && maybeAClass.charCodeAt(0) <= 90
+    // Alternate implementation: look if the candidate is an element of data.classNames. Set operations are O(1).
 }
 
 // ----------------------------------------------------------------------------

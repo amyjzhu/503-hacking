@@ -19,17 +19,18 @@ class StructureVis {
         this.chart = this.svg.append("g");
 
         this.forceStrength = _config.forceStrength || 0.25
-        this.boxWidth = 300;
-        this.boxHeight = 200;
+        this.boxWidth = 600;
+        this.boxHeight = 500;
         this.smallBoxWidth = this.boxWidth / 3;
         this.smallBoxHeight = this.boxHeight / 4;
 
-        this.smallestBoxHeight = this.smallBoxHeight / 3;
-        this.smallestBoxWidth = this.smallBoxWidth / 2.5;
+        this.smallestBoxHeight = this.smallBoxHeight / 8;
+        this.smallestBoxWidth = this.smallBoxWidth / 3;
+        this.highlightingEnabled = _config.highlighting;
 
         // this.colours = ["red", "blue", "yellow", "green"]\
         // TODO we should make the colours get lighter or darker by level
-        this.colours = d3.schemePastel1;
+        this.colours = d3.interpolateRdYlGn;
 
         this.zoomBarHeight = 300;
         this.minZoom = 0.25;
@@ -41,7 +42,7 @@ class StructureVis {
         // this.transitionPoints = [0.25];
         // this.transitionPoints = [1.48, 9.875];
         // this.transitionPoints = [1.01, 9.875];
-        this.transitionPoints = [.99, 9.875];
+        this.transitionPoints = [.99, 5];
         this.initialized = 0;
 
         this.view = _config.view || "default"
@@ -65,13 +66,26 @@ class StructureVis {
             y: 1.25 * vis.height / 3
         };
 
-        vis.colourScale = d3.scaleOrdinal()
-            .domain([1, 2, 3, 4])
-            .range(vis.colours)
+        // create packages using hierarchy data and assign groups
+        // propagate groups downwards
+        // we need to use numbers for groups because there will be a lot of groups
+        let groupMap = {};
+        let level1 = vis.data.hierarchy.filter(d => d.type == vis.level2).map(p => p.parent);
+        level1 = Array.from(new Set(level1));
+        level1 = level1.map((p, index) => { groupMap[p] = index; return { fqn: p, group: index, type: vis.level1 } })
 
-        // TODO this will just be the input data
-        vis.boxData = vis.data.data;
-    
+        // we add the package data here
+        vis.boxData = vis.data.nodes.concat(level1);
+
+        console.log({ groupMap })
+        console.log(vis.colours)
+        vis.colourScale = d3.scaleLinear()
+            .domain([0, Object.values(groupMap).length])
+            .range([0, 1])
+
+        vis.getColour = d => vis.colours(vis.colourScale(d))
+
+
         // TODO make a level1, level2, level3 array for reuse
 
         vis.visArea = vis.chart.append("g");
@@ -83,14 +97,45 @@ class StructureVis {
 
         vis.boxArea = vis.visArea.append("g").attr("class", "boxes");
 
+        // append container information to each entity using hierarchy info
+        // naive implementation, could be faster
+        vis.data.hierarchy.forEach(d => {
+            // get child and add parent as container
+            let child = vis.boxData.findIndex(child => child.fqn == d.child);
+            vis.boxData[child].container = d.parent;
+        })
+
+        vis.boxData.forEach(datum => {
+            if (datum.type == vis.level2) {
+                datum.group = groupMap[datum.container];
+            }
+
+            // This would be simpler if we inherit the colour from the
+            // class in the SVG step TODO
+            let secondPass = [];
+            if (datum.type == vis.level3) {
+                let container = vis.boxData.find(d => d.fqn == datum.container);
+                if (container == undefined) {
+                    // do it on a second pass
+                    // TODO - complete second pass
+                    secondPass.push(datum)
+                } else {
+                    datum.group = container.group;
+                }
+            }
+
+        })
+
+        console.log(vis.boxData)
+
         // calculate classes by package
         vis.level2ByLevel1 = {};
-        vis.boxData.filter(x => x.type == vis.level1).map(p => p.id).forEach(id => {
+        vis.boxData.filter(x => x.type == vis.level1).map(p => p.fqn).forEach(id => {
             vis.level2ByLevel1[id] = vis.boxData.filter(c => c.type == vis.level2 && c.container == id);
         }); // { package1: [class1, class2], package2: [class3]}
 
         vis.level3ByLevel2 = {};
-        vis.boxData.filter(x => x.type == vis.level2).map(c => c.id).forEach(id => {
+        vis.boxData.filter(x => x.type == vis.level2).map(c => c.fqn).forEach(id => {
             vis.level3ByLevel2[id] = vis.boxData.filter(m => m.type == vis.level3 && m.container == id);
         });
 
@@ -100,28 +145,27 @@ class StructureVis {
             return -Math.pow(vis.boxHeight, 2.2) * vis.forceStrength;
         }
 
-
-
         vis.level1Simulation = d3.forceSimulation()
             .velocityDecay(0.18)
             .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
             .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
-            .force('charge', d3.forceManyBody().strength(charge))
+            .force('charge', d3.forceManyBody().strength(20))//Math.pow(vis.boxHeight, 0.1)))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
-            .on('tick', () => vis.fastTick(vis));
+            .on('tick', () => vis.fastTick(vis.boxGroups));
         vis.level1Simulation.stop();
 
         console.log(vis.centeredOn);
         // center an item, if valid
         if (vis.centeredOn != undefined) {
-            let center = vis.boxData.find(f => f.type + f.id == vis.centeredOn);
+            let center = vis.boxData.find(f => f.type + f.filePath == vis.centeredOn);
 
             center.fx = vis.center.x;
             center.fy = vis.center.y;
 
             if (center.type == vis.level2) {
-                let centerContainer = vis.boxData.find(f => `${vis.level1}${center.container}` == f.type + f.id);
+                let centerContainer = vis.boxData.find(f => `${vis.level1}${center.container}` == f.type + f.fqn);
+                console.log(vis.boxData)
                 centerContainer.fx = vis.center.x - vis.boxWidth / 2 + vis.smallBoxWidth / 2;
                 centerContainer.fy = vis.center.y - vis.boxHeight / 2 + vis.smallBoxHeight / 2;
             }
@@ -131,10 +175,9 @@ class StructureVis {
         // let's also make simulations per class
         vis.level2Simulations = Object.keys(vis.level2ByLevel1).map(level1 => {
             var mapping = {};
-            mapping.id = level1;
+            mapping.fqn = level1;
             mapping.simFn = () => {
-                var level1Info = vis.boxData.filter(x => x.type == vis.level1).find(p => p.id == level1);
-                console.log(level1Info.x + vis.boxWidth / 2);
+                var level1Info = vis.boxData.filter(x => x.type == vis.level1).find(p => p.fqn == level1);
 
                 return d3.forceSimulation()
                     .velocityDecay(0.18)
@@ -152,9 +195,9 @@ class StructureVis {
         vis.level3Simulations = Object.keys(vis.level3ByLevel2).map(level2 => {
             // TODO maybe remove if there is no sim
             var mapping = {};
-            mapping.id = level2;
+            mapping.fqn = level2;
             mapping.simFn = () => {
-                var level2Info = vis.boxData.filter(x => x.type == vis.level2).find(c => c.id == level2);
+                var level2Info = vis.boxData.filter(x => x.type == vis.level2).find(c => c.fqn == level2);
                 console.log(level2Info.x + vis.boxWidth / 2);
 
                 return d3.forceSimulation()
@@ -189,7 +232,8 @@ class StructureVis {
         // include that info in data so the render() can use it
 
         vis.linkData = vis.data.links.filter(x => x.type == vis.viewLevel)
-        
+        console.log(vis.linkData)
+
 
         vis.render();
     }
@@ -209,7 +253,7 @@ class StructureVis {
             }));
 
 
-        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.type + d.id });
+        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.fqn });
         vis.boxGroups = vis.boxGroupsSelect.enter().append("g").attr("class", "boxgroups").merge(vis.boxGroupsSelect);
 
         var boxes = vis.boxGroups.selectAll("rect").data(d => [d]);
@@ -221,22 +265,20 @@ class StructureVis {
             .attr("width", vis.boxWidth)
             .attr("height", vis.boxHeight)
             // colour coded by group
-            .style("fill", d => vis.viewLevel == vis.level1 ? vis.colourScale(d.group) : "none")
-            .style("stroke", d => vis.viewLevel == vis.level1 ? "none" : vis.colourScale(d.group))
+            .style("fill", d => vis.viewLevel == vis.level1 ? vis.getColour(d.group) : "none")
+            .style("stroke", d => vis.viewLevel == vis.level1 ? "none" : vis.getColour(d.group))
             .style("stroke-opacity", vis.viewLevel == vis.level3 ? 0.6 : 1)
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1);
-
-        console.log(boxes)
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
         // classes
-        var level2GroupSelect = vis.boxArea.selectAll(".level2-group").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.type + d.id });
+        var level2GroupSelect = vis.boxArea.selectAll(".level2-group").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.type + d.fqn });
         vis.level2Groups = level2GroupSelect.enter().append("g").attr("class", "level2-group").merge(level2GroupSelect);
 
-        vis.level2Groups = vis.level2Groups.selectAll("g").data(level1 => {  return vis.boxData.filter(d => d.type == vis.level2 && d.container == level1.id) }, d => d.type + d.id);
+        vis.level2Groups = vis.level2Groups.selectAll("g").data(level1 => { return vis.boxData.filter(d => d.type == vis.level2 && d.container == level1.fqn) }, d => d.type + d.fqn);
         vis.level2Groups = vis.level2Groups.enter().append("g").merge(vis.level2Groups);
 
         vis.level2Rects = vis.level2Groups.selectAll("rect").data(d => [d]);
@@ -247,20 +289,20 @@ class StructureVis {
             .on("click", vis.classOnClick)
             .attr("width", vis.smallBoxWidth)
             .attr("height", vis.smallBoxHeight)
-            .style("fill", d => vis.viewLevel == vis.level2 ? vis.colourScale(d.group) : "none")
-            .style("stroke", d => vis.viewLevel == vis.level3 ? vis.colourScale(d.group) : "none")
+            .style("fill", d => vis.viewLevel == vis.level2 ? vis.getColour(d.group) : "none")
+            .style("stroke", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
             .style("stroke-opacity", vis.viewLevel == vis.level3 ? 0.5 : 1)
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1);
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
         // methods
-        var level3GroupsSelect = vis.boxArea.selectAll(".level3Group").data(vis.boxData.filter(d => d.type == vis.level2), d => { return d.type + d.id });
+        var level3GroupsSelect = vis.boxArea.selectAll(".level3Group").data(vis.boxData.filter(d => d.type == vis.level2), d => { return d.type + d.fqn });
         vis.level3Groups = level3GroupsSelect.enter().append("g").attr("class", "level3Group").merge(level3GroupsSelect);
 
-        vis.level3Groups = vis.level3Groups.selectAll("g").data(level2 => { return vis.boxData.filter(d => d.type == vis.level3 && d.container == level2.id) }, d => d.type + d.id);
+        vis.level3Groups = vis.level3Groups.selectAll("g").data(level2 => { return vis.boxData.filter(d => d.type == vis.level3 && d.container == level2.fqn) }, d => d.type + d.fqn);
         vis.level3Groups = vis.level3Groups.enter().append("g").merge(vis.level3Groups);
 
         vis.level3Rects = vis.level3Groups.selectAll("rect").data(d => [d]);
@@ -268,28 +310,29 @@ class StructureVis {
             .append("rect")
             .attr("class", "level2-box")
             .merge(vis.level3Rects)
-            .attr("width", d => { 
+            .attr("width", d => {
                 // TODO this should approximate it, but we need to check afterwards
-                return Math.max(d.text.split("\n").map(s => s.length)) * 2 // for 2px;
+                return d.name == undefined ? vis.smallestBoxWidth : Math.max(d.name.split("\n").map(s => s.length)) * 3.3// for 2px;
+                // document.getElementById('text').getComputedTextLength()
             })//vis.smallestBoxWidth)
-            .attr("height",  vis.smallestBoxHeight)
-            .style("fill", d => vis.viewLevel == vis.level3 ? vis.colourScale(d.group) : "none")
+            .attr("height", vis.smallestBoxHeight)
+            .style("fill", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1);
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
             .merge(texts)
             .attr("dx", 12)
-            .attr("dy", ".35em")
-            .text(d => d.id)
+            .attr("dy", "1em")
+            .text(d => d.fqn)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
-            .style("opacity", d => !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1)
+            .style("opacity", d => !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
+            .style('font-size', 24)
             .style("pointer-events", "none");
-
 
         texts.exit().remove();
 
@@ -297,11 +340,11 @@ class StructureVis {
         vis.level2Texts = vis.level2Texts.enter().append("text")
             .merge(vis.level2Texts)
             .attr("dx", 12)
-            .attr("dy", ".35em")
+            .attr("dy", "1em")
             // .transition()
-            .text(d => vis.viewLevel == vis.level1 ? "" : d.id)
+            .text(d => vis.viewLevel == vis.level1 ? "" : d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1)
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
         vis.level2Texts.exit().remove();
 
@@ -312,14 +355,15 @@ class StructureVis {
             .attr("dx", 1)
             .attr("dy", "0.8em")
             // .transition()
-            .text(d => vis.viewLevel == vis.level3 ? d.id : "")
+            .text(d => vis.viewLevel == vis.level3 ? d.name : "")
             .style("font-size", "5px")
+            .style("font-family", "monospace")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.id) ? 0.5 : 1)
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
         vis.level2Texts.exit().remove();
 
-        var level3BodyTexts = vis.level3Groups.selectAll(".body-text").data(d => d.text.split("\n").map(t => { return { text: t, views: d.views, id: d.type + d.id } }));
+        var level3BodyTexts = vis.level3Groups.selectAll(".body-text").data(d => d.text == undefined ? [] : d.text.split("\n").map(t => { return { text: t, views: d.views, id: d.type + d.fqn } }));
         level3BodyTexts = level3BodyTexts.enter().append("text")
             .attr("class", "body-text")
             .merge(level3BodyTexts)
@@ -329,14 +373,14 @@ class StructureVis {
             .text(d => vis.viewLevel == vis.level3 ? d.text : "")
             .style("font-size", "2px")
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.id) ? 0.5 : 1)
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
 
         vis.level2Texts.exit().remove();
 
         // TODO this might be tricky with visibility
         console.log(vis.linkData);
-        vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => { vis.viewLevel == vis.level1 ? d.source.id + d.target.id : d.source + d.target});
+        vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => { vis.viewLevel == vis.level1 ? d.source.fqn + d.target.fqn : d.source + d.target });
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
             .attr("stroke", "#999")
@@ -349,7 +393,7 @@ class StructureVis {
             // vis.level1Simulation.nodes(vis.boxData).restart();
 
             vis.level1Simulation.nodes(vis.boxData).restart()
-                .force("link", d3.forceLink(vis.data.links.filter(x => x.type == vis.level1)).id(d => d.type + d.id))
+                .force("link", d3.forceLink(vis.data.links.filter(x => x.type == vis.level1)).id(d => d.fqn))
 
             for (var i = 0; i < 20; i++) {
                 vis.level1Simulation.tick();
@@ -361,16 +405,35 @@ class StructureVis {
                 if (sim.sim == undefined) {
                     sim.sim = sim.simFn();
                     sim.sim.nodes(sim.assoc).restart();
+                    // for (i = 0; i < 100; i++) {
+                    //     sim.sim.tick();
+                    // }
+                    // sim.sim.stop();
+                    // vis.level2Ticked(vis);
                 }
             })
+
+
+            // vis.level3Simulations.forEach(sim => {
+            //     if (sim.sim == undefined) {
+            //         // now we need to create it, if it's the first time...
+            //         sim.sim = sim.simFn();
+            //         sim.sim.nodes(sim.assoc).restart();
+            //         for (i = 0; i < 100; i++) {
+            //             sim.sim.tick();
+            //         }
+            //         sim.sim.stop();
+            //         vis.level3Ticked(vis);
+            //     }
+            // });
 
             vis.initialized = 1;
         }
 
     }
 
-    fastTick(vis) {
-        vis.boxGroups.each(d => d.x = d.originalX);
+    fastTick(selection) {
+        selection.each(d => d.x = d.originalX);
     }
 
     ticked(vis) {
@@ -391,7 +454,7 @@ class StructureVis {
     level3Ticked(vis) {
         vis.level3Groups
             .attr("transform", d => {
-                let level2 = vis.boxData.find(box => box.id == d.container && box.type == vis.level2);
+                let level2 = vis.boxData.find(box => box.fqn == d.container && box.type == vis.level2);
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
                 let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
 
@@ -415,6 +478,7 @@ class StructureVis {
 
         // TODO we should highlight packages that are related to the current package with a highlighting idiom 
 
+        // TODO this will cause errors if the target is not in the graph. Should be okay to ignore.
         if (vis.viewLevel == vis.level1) {
             vis.links
                 .attr("x1", d => d.source.x)
@@ -427,13 +491,15 @@ class StructureVis {
 
         } else {
             vis.links
-                .attr("x1", d => vis.boxData.find(data => d.source == data.type + data.id).x)
-                .attr("y1", d => vis.boxData.find(data => d.source == data.type + data.id).y)
-                .attr("x2", d => vis.boxData.find(data => d.target == data.type + data.id).x)
-                .attr("y2", d => vis.boxData.find(data => d.target == data.type + data.id).y)
-                .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.type + data.id).views.includes(vis.view)
-                    && vis.boxData.find(data => d.target == data.type + data.id).views.includes(vis.view)) ? "visible" : "hidden")
+                .attr("x1", d => {let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x} )
+                .attr("y1", d => {let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y} )
+                .attr("x2", d => {let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.x} )
+                .attr("y2", d => {let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.y} )
+                .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
+                    && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         }
+
+        // console.log(vis.links)
     }
 
     changeViewLevel(direction) {
@@ -447,13 +513,13 @@ class StructureVis {
             vis.level1Simulation.stop();
             vis.viewLevel = vis.level2;
 
-            // vis.level2Simulations.forEach(sim => {
-            //     if (sim.sim == undefined) {
-            //         // now we need to create it, if it's the first time...
-            //         sim.sim = sim.simFn();
-            //         sim.sim.nodes(sim.assoc).restart();
-            //     }
-            // })
+            vis.level2Simulations.forEach(sim => {
+                if (sim.sim == undefined) {
+                    // now we need to create it, if it's the first time...
+                    sim.sim = sim.simFn();
+                    sim.sim.nodes(sim.assoc).restart();
+                }
+            })
 
             vis.level3Simulations.forEach(sim => {
                 if (sim.sim != undefined) {
@@ -540,6 +606,8 @@ class StructureVis {
     addHighlighting(item) {
         let vis = this;
 
+        if (!vis.highlightingEnabled) return;
+
         let findAllRec = (visited, todo) => {
             if (todo.length == 0) {
                 return visited;
@@ -551,11 +619,12 @@ class StructureVis {
             // (and we should in the future)
             let connected;
             if (vis.viewLevel == vis.level1) {
-                connected = vis.linkData.filter(d => (d.source.type + d.source.id) == item);
+                // TODO need to check this new logic with packages
+                connected = vis.linkData.filter(d => (d.source.fqn) == item);
                 connected.forEach(x => x.highlighted = true);
                 console.log(vis.linkData.filter(x => x.highlighted));
-                connected = connected.map(d => d.target.type + d.target.id);
-                
+                connected = connected.map(d => d.target.fqn);
+
             } else {
                 connected = vis.linkData.filter(d => d.source == item);
                 connected.forEach(x => x.highlighted = true);
@@ -566,13 +635,15 @@ class StructureVis {
             // right now, containment doesn't mean dependency
             // necessary to express inter-level dependencies
             // else we can say "if you contain this method, you should be highlighted too"
+            // go through and add the containers of all the connected
             let diff = connected.filter(x => !visited.includes(x));
 
             return findAllRec(visited.concat([item]), todo.slice(1).concat(diff));
 
         }
 
-        vis.currentlyHighlighted = findAllRec([], [item.type + item.id]);
+        console.log(item)
+        vis.currentlyHighlighted = findAllRec([], [item.fqn]);
 
         vis.render();
         vis.updateLinks();
@@ -580,6 +651,7 @@ class StructureVis {
 
     removeHighlighting() {
         let vis = this;
+        if (!vis.highlightingEnabled) return;
         // clear
         vis.currentlyHighlighted = [];
         vis.linkData.forEach(x => x.highlighted = false);

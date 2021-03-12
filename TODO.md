@@ -24,10 +24,11 @@
 
 # Visualization
 - [ ] Distance function
-- [ ] **TS** Integrate new parser datafile format
 - [ ] Links between classes for high-level view
 - [ ] The furthest zoom should fit all classes in the viewport
-- [ ] Fix classes clusters being light years apart
+- [x] Fix classes clusters being light years apart
+- [x] Integrate new parser datafile format
+- [x] Fix hierarchy for private classes
 - [x] Highlighting: when you over an element, the edges and nodes it's connected to are highlighted.
 - [x] Adapt rectangle shape to fit class and method names
 - [x] Fix methods appearing outside of the class

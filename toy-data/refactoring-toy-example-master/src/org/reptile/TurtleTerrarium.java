@@ -28,7 +28,7 @@ public class TurtleTerrarium extends Reptile{
 			return false;
 		if (name != other.name)
 			return false;
-		if (spead != other.spead)
+		if (speed != other.speed)
 			return false;
 		return true;
 	}
