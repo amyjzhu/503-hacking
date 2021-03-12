@@ -16,7 +16,7 @@ let initializeVisualization = (data) => {
         // centeredOnClass: "classorg.jfree.data.xy.YWithXInterval",
         centeredOnClass: centerOnGlobal,
         classesOnly: false,
-        highlighting: false
+        highlighting: true
      });
 
     vis.classOnClick = getPathOnClick;
