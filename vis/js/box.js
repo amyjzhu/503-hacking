@@ -42,7 +42,7 @@ class StructureVis {
         // this.transitionPoints = [0.25];
         // this.transitionPoints = [1.48, 9.875];
         // this.transitionPoints = [1.01, 9.875];
-        this.transitionPoints = [.99, 9.875];
+        this.transitionPoints = [.99, 5];
         this.initialized = 0;
 
         this.view = _config.view || "default"
@@ -391,7 +391,7 @@ class StructureVis {
             // vis.level1Simulation.nodes(vis.boxData).restart();
 
             vis.level1Simulation.nodes(vis.boxData).restart()
-                .force("link", d3.forceLink(vis.data.links.filter(x => x.type == vis.level1)).id(d => d.type + d.fqn))
+                .force("link", d3.forceLink(vis.data.links.filter(x => x.type == vis.level1)).id(d => d.fqn))
 
             for (var i = 0; i < 20; i++) {
                 vis.level1Simulation.tick();
@@ -489,13 +489,15 @@ class StructureVis {
 
         } else {
             vis.links
-                .attr("x1", d => vis.boxData.find(data => d.source == data.fqn).x)
-                .attr("y1", d => vis.boxData.find(data => d.source == data.fqn).y)
-                .attr("x2", d => vis.boxData.find(data => d.target == data.fqn).x)
-                .attr("y2", d => vis.boxData.find(data => d.target == data.fqn).y)
+                .attr("x1", d => {let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x} )
+                .attr("y1", d => {let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y} )
+                .attr("x2", d => {let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.x} )
+                .attr("y2", d => {let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.y} )
                 .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
                     && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         }
+
+        console.log(vis.links)
     }
 
     changeViewLevel(direction) {
