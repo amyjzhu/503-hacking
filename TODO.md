@@ -12,13 +12,13 @@
 - [x] Look at how user studies are done in the visualization community and reframe our study tasks in that way.
 
 # Plugin
-- [ ] (Make codemap.parse actually code the parsing script or call the terminal commands)
+- [x] Make codemap.parse actually code the parsing script or call the terminal commands
 - [x] Add shortcut to visualization
 
 # Parser
 - [ ] **AS** Refactor parser and clean up code
-- [x] **AS** In parser, ignore all calls not from the same namespace
-- [x] **AS** Fix parser bugs
+- [x] In parser, ignore all calls not from the same namespace
+- [x] Fix parser bugs
 - [x] Parse local package dependencies and imported dependencies from XML
 - [x] New parser using JavaParser
 
