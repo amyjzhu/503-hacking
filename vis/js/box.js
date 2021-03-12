@@ -19,13 +19,13 @@ class StructureVis {
         this.chart = this.svg.append("g");
 
         this.forceStrength = _config.forceStrength || 0.25
-        this.boxWidth = 300;
-        this.boxHeight = 200;
+        this.boxWidth = 600;
+        this.boxHeight = 500;
         this.smallBoxWidth = this.boxWidth / 3;
         this.smallBoxHeight = this.boxHeight / 4;
 
         this.smallestBoxHeight = this.smallBoxHeight / 3;
-        this.smallestBoxWidth = this.smallBoxWidth / 2.5;
+        this.smallestBoxWidth = this.smallBoxWidth / 3;
         this.highlightingEnabled = _config.highlighting;
 
         // this.colours = ["red", "blue", "yellow", "green"]\
@@ -149,7 +149,7 @@ class StructureVis {
             .velocityDecay(0.18)
             .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
             .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
-            .force('charge', d3.forceManyBody().strength(-Math.pow(vis.boxHeight, 0.5)))
+            .force('charge', d3.forceManyBody().strength(20))//Math.pow(vis.boxHeight, 0.1)))
             .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .on('tick', () => vis.fastTick(vis.boxGroups));
@@ -186,7 +186,7 @@ class StructureVis {
                     .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallBoxHeight, 2) * vis.forceStrength))
                     .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallBoxWidth / 2, 2) + Math.pow(vis.smallBoxHeight / 2, 2))))
                     .force("center", d3.forceCenter(level1Info.x + vis.boxWidth / 2, level1Info.y + vis.boxHeight / 2))
-                    .on('tick', () => vis.fastTick(vis));
+                    .on('tick', () => vis.level2Ticked(vis));
             }
             mapping.assoc = vis.level2ByLevel1[level1];
             return mapping;
@@ -209,7 +209,7 @@ class StructureVis {
                     .force("center", d => {
                         return d3.forceCenter(level2Info.x + vis.smallBoxWidth / 2, level2Info.y + vis.smallBoxWidth / 2);
                     })
-                    .on('tick', () => vis.fastTick(vis));
+                    .on('tick', () => vis.level3Ticked(vis));
             }
             mapping.assoc = vis.level3ByLevel2[level2];
             return mapping;
@@ -327,7 +327,7 @@ class StructureVis {
             .merge(texts)
             .attr("dx", 12)
             .attr("dy", ".35em")
-            .text(d => d.fqn)
+            .text(d => d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
             .style("opacity", d => !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
@@ -341,7 +341,7 @@ class StructureVis {
             .attr("dx", 12)
             .attr("dy", ".35em")
             // .transition()
-            .text(d => vis.viewLevel == vis.level1 ? "" : d.fqn)
+            .text(d => vis.viewLevel == vis.level1 ? "" : d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
             .style("pointer-events", "none");
@@ -354,7 +354,7 @@ class StructureVis {
             .attr("dx", 1)
             .attr("dy", "0.8em")
             // .transition()
-            .text(d => vis.viewLevel == vis.level3 ? d.fqn : "")
+            .text(d => vis.viewLevel == vis.level3 ? d.name : "")
             .style("font-size", "5px")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
@@ -403,27 +403,27 @@ class StructureVis {
                 if (sim.sim == undefined) {
                     sim.sim = sim.simFn();
                     sim.sim.nodes(sim.assoc).restart();
-                    for (i = 0; i < 100; i++) {
-                        sim.sim.tick();
-                    }
-                    sim.sim.stop();
-                    vis.level2Ticked(vis);
+                    // for (i = 0; i < 100; i++) {
+                    //     sim.sim.tick();
+                    // }
+                    // sim.sim.stop();
+                    // vis.level2Ticked(vis);
                 }
             })
 
 
-            vis.level3Simulations.forEach(sim => {
-                if (sim.sim == undefined) {
-                    // now we need to create it, if it's the first time...
-                    sim.sim = sim.simFn();
-                    sim.sim.nodes(sim.assoc).restart();
-                    for (i = 0; i < 100; i++) {
-                        sim.sim.tick();
-                    }
-                    sim.sim.stop();
-                    vis.level3Ticked(vis);
-                }
-            });
+            // vis.level3Simulations.forEach(sim => {
+            //     if (sim.sim == undefined) {
+            //         // now we need to create it, if it's the first time...
+            //         sim.sim = sim.simFn();
+            //         sim.sim.nodes(sim.assoc).restart();
+            //         for (i = 0; i < 100; i++) {
+            //             sim.sim.tick();
+            //         }
+            //         sim.sim.stop();
+            //         vis.level3Ticked(vis);
+            //     }
+            // });
 
             vis.initialized = 1;
         }
@@ -497,7 +497,7 @@ class StructureVis {
                     && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         }
 
-        console.log(vis.links)
+        // console.log(vis.links)
     }
 
     changeViewLevel(direction) {
@@ -511,19 +511,19 @@ class StructureVis {
             vis.level1Simulation.stop();
             vis.viewLevel = vis.level2;
 
-            // vis.level2Simulations.forEach(sim => {
-            //     if (sim.sim == undefined) {
-            //         // now we need to create it, if it's the first time...
-            //         sim.sim = sim.simFn();
-            //         sim.sim.nodes(sim.assoc).restart();
-            //     }
-            // })
+            vis.level2Simulations.forEach(sim => {
+                if (sim.sim == undefined) {
+                    // now we need to create it, if it's the first time...
+                    sim.sim = sim.simFn();
+                    sim.sim.nodes(sim.assoc).restart();
+                }
+            })
 
-            // vis.level3Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // })
+            vis.level3Simulations.forEach(sim => {
+                if (sim.sim != undefined) {
+                    sim.sim.stop();
+                }
+            })
 
             vis.update();
             vis.updateLinks();
@@ -531,17 +531,17 @@ class StructureVis {
         } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel != vis.level1) {
             vis.level1Simulation.stop();
 
-            // vis.level2Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // })
+            vis.level2Simulations.forEach(sim => {
+                if (sim.sim != undefined) {
+                    sim.sim.stop();
+                }
+            })
 
-            // vis.level3Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // })
+            vis.level3Simulations.forEach(sim => {
+                if (sim.sim != undefined) {
+                    sim.sim.stop();
+                }
+            })
 
             vis.viewLevel = vis.level1;
             vis.update();
@@ -549,19 +549,19 @@ class StructureVis {
         } else if (vis.zoomLevel >= viewThresholdlevel3 && vis.viewLevel != vis.level3) {
             vis.level1Simulation.stop();
 
-            // vis.level3Simulations.forEach(sim => {
-            //     if (sim.sim == undefined) {
-            //         // now we need to create it, if it's the first time...
-            //         sim.sim = sim.simFn();
-            //         sim.sim.nodes(sim.assoc).restart();
-            //     }
-            // });
+            vis.level3Simulations.forEach(sim => {
+                if (sim.sim == undefined) {
+                    // now we need to create it, if it's the first time...
+                    sim.sim = sim.simFn();
+                    sim.sim.nodes(sim.assoc).restart();
+                }
+            });
 
-            // vis.level2Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // });
+            vis.level2Simulations.forEach(sim => {
+                if (sim.sim != undefined) {
+                    sim.sim.stop();
+                }
+            });
 
             vis.viewLevel = vis.level3;
             vis.update();

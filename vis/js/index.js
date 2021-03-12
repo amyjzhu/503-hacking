@@ -13,9 +13,9 @@ let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
         data: data, 
-        centeredOnClass: "classorg.jfree.data.xy.YWithXInterval",
-        // centeredOnClass: "classorg.reptile.Snake",
-        classesOnly: true,
+        // centeredOnClass: "classorg.jfree.data.xy.YWithXInterval",
+        centeredOnClass: "classorg.reptile.Snake",
+        classesOnly: false,
         highlighting: false
      });
 
@@ -84,6 +84,19 @@ let processJson = ({classData, classNames}) => {
     });
 
     let hierarchy = methodContainers.concat(classContainers);
+
+    // add extra links about classes
+    let classLinks = [];
+    methodLinks.map(ml => {
+        let sourceClass = methodContainers.find(m => m.child == ml.source);
+        let targetClass = methodContainers.find(m => m.child == ml.target);
+        if (targetClass == undefined || sourceClass == undefined) return;
+        classLinks.push({source: sourceClass.parent, target: targetClass.parent, type: 'class' })
+    })
+
+    classLinks = Array.from(new Set(classLinks));
+
+    links = links.concat(classLinks);
 
     console.log({nodes})
     console.log({links})
