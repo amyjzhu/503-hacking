@@ -26,7 +26,7 @@ SRC_DIR="${@:$OPTIND:1}"
 DATA_DEST="${@:$OPTIND+1:1}"
 
 if [ -z "$DATA_DEST" ]; then
-  DATA_DEST="vis/data/data.json"
+  DATA_DEST="$DIR/../vis/data/data.json"
 fi
 
 JAR_PATH="$DIR"/target/codemap-java-parser-1.0-SNAPSHOT-jar-with-dependencies.jar
