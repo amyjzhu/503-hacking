@@ -29,10 +29,10 @@ if [ -z "$DATA_DEST" ]; then
   DATA_DEST="vis/data/data.json"
 fi
 
-JAR_PATH="$DIR"/codemap-java-parser/target/codemap-java-parser-1.0-SNAPSHOT-jar-with-dependencies.jar
+JAR_PATH="$DIR"/target/codemap-java-parser-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 if ! [ -e "$JAR_PATH" ]; then
-  cd "$DIR/codemap-java-parser" || die "Could not find directory $DIR/codemap-java-parser"
+  cd "$DIR" || die "Could not find directory $DIR"
   mvn clean compile assembly:single || die "Maven failed!"
 fi
 
