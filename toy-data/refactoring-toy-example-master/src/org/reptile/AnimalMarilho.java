@@ -1,5 +1,7 @@
 package org.reptile;
 
+import org.animals.Dog;
+
 public class AnimalMarilho {
 
 	public AnimalMarilho() {
