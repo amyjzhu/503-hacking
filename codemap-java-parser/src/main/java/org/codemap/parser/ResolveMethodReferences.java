@@ -1,6 +1,7 @@
 package org.codemap.parser;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -70,7 +71,7 @@ public class ResolveMethodReferences {
         return ci.getInfo();
     }
 
-    public static JSONObject getMethodDeclarationInfo(MethodDeclaration method) {
+    public static MethodDeclarationInfo getMethodDeclarationInfo(MethodDeclaration method) {
         MethodDeclarationInfo mdi = new MethodDeclarationInfo();
         mdi.setDeclaration(method.getDeclarationAsString());
         try {
@@ -149,7 +150,7 @@ public class ResolveMethodReferences {
             mdi.addTypeParameter(tp.asString());
         }
 //        mdi.addAllTypeParameters(typeParamsArray);
-        return mdi.getMethodInfo();
+        return mdi;
     }
 
     public static boolean sharePackagePrefix(String className, String methodName) {
@@ -195,7 +196,8 @@ public class ResolveMethodReferences {
         formatter.printHelp("java org.codemap.parser.ResolveMethodReferences [options] <project_source_dir> [<json_output_filename>]", options);
     }
 
-    public static void main(String[] args) throws Exception {
+
+    public static void main(String[] args) {
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
         String sourceDir;
@@ -205,13 +207,9 @@ public class ResolveMethodReferences {
             String[] leftoverArgs = line.getArgs();
             if (line.hasOption("h")) {
                 printHelp(options);
-                return;
+                System.exit(0);
             }
-            if (leftoverArgs.length != 1 && leftoverArgs.length != 2) {
-                System.out.println("ERROR: expected either one or two arguments.");
-                printHelp(options);
-                return;
-            }
+            mustHaveOneOrTwoArguments(options, leftoverArgs);
 
             if (line.hasOption("t")) {
                 minPackageMatchThreshold = Integer.parseInt(line.getOptionValue("t"));
@@ -220,13 +218,17 @@ public class ResolveMethodReferences {
             if (leftoverArgs.length == 2) {
                 dataFile = leftoverArgs[1];
             }
+            parse(sourceDir, dataFile);
         } catch (ParseException e) {
             System.out.println("Error parsing command line args.");
             System.out.println(e.getMessage());
             e.printStackTrace();
-            return;
+            printHelp(options);
+            System.exit(1);
         }
+    }
 
+    private static void parse(String sourceDir, String dataFile) {
         // Apparently for org.xml.sax (which is a part of the JDK), the reflection
         // type solver doesn't recognize it as being a part of the JDK, so you have
         // to say that you want jreOnly=false
@@ -251,26 +253,34 @@ public class ResolveMethodReferences {
         AtomicReference<Integer> numMethodCalls = new AtomicReference<>(0);
         for (String fileName : fileNames) {
             System.out.println(fileName);
-            CompilationUnit cu = StaticJavaParser.parse(new File(fileName));
+            CompilationUnit cu;
+            try {
+                cu = StaticJavaParser.parse(new File(fileName));
+            } catch (FileNotFoundException e) {
+                System.out.println("ERROR: Could not find file " + fileName);
+                e.printStackTrace();
+                continue;
+            }
             cu.findAll(ClassOrInterfaceDeclaration.class).forEach(clazzOrInterface -> {
                 JSONObject classInfo = getClassInfo(fileName, clazzOrInterface);
                 JSONArray methodsList = new JSONArray();
                 clazzOrInterface
                         .findAll(MethodDeclaration.class)
                         .forEach(md -> {
-                            JSONObject methodInfo = getMethodDeclarationInfo(md);
-                            HashSet<String> calledMethods = new HashSet<>();
-                            JSONArray calledMethodsArray = new JSONArray();
+                            MethodDeclarationInfo methodInfo = getMethodDeclarationInfo(md);
+//                            HashSet<String> calledMethods = new HashSet<>();
+//                            JSONArray calledMethodsArray = new JSONArray();
                             md.findAll(MethodCallExpr.class)
                               .forEach(mce -> {
                                   try {
                                       JSONObject mceInfo = getMethodCallInfo(mce, (String) classInfo.get("className"));
-                                      String sig = (String) mceInfo.get("signature");
-                                      if (sig.length() > 0 && !calledMethods.contains((String) mceInfo.get("signature"))) {
-                                          calledMethods.add((String) mceInfo.get("signature"));
-                                          calledMethodsArray.put(mceInfo);
-                                      }
-//                                      System.out.println(clazzOrInterface.resolve().getQualifiedName() + "@" + md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
+                                      methodInfo.addCall(mceInfo);
+//                                      String sig = (String) mceInfo.get("signature");
+//                                      if (sig.length() > 0 && !calledMethods.contains((String) mceInfo.get("signature"))) {
+//                                          calledMethods.add((String) mceInfo.get("signature"));
+//                                          calledMethodsArray.put(mceInfo);
+//                                      }
+                                      //                                      System.out.println(clazzOrInterface.resolve().getQualifiedName() + "@" + md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
                                   } catch (com.github.javaparser.resolution.UnsolvedSymbolException e) {
                                       System.out.println("Error occurred in file " + fileName);
                                       e.printStackTrace();
@@ -283,9 +293,9 @@ public class ResolveMethodReferences {
                                   }
 
                               });
-                            methodInfo.put("calls", calledMethodsArray);
-                            numMethodCalls.set(numMethodCalls.get() + calledMethodsArray.length());
-                            methodsList.put(methodInfo);
+//                            methodInfo.put("calls", calledMethodsArray);
+                                numMethodCalls.set(numMethodCalls.get() + methodInfo.getNumCalls());
+                            methodsList.put(methodInfo.getMethodInfo());
                         });
                 classInfo.put("methods", methodsList);
                 classNamesList.put(classInfo.get("className"));
@@ -303,6 +313,14 @@ public class ResolveMethodReferences {
         } catch (IOException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static void mustHaveOneOrTwoArguments(Options options, String[] leftoverArgs) {
+        if (leftoverArgs.length != 1 && leftoverArgs.length != 2) {
+            System.out.println("ERROR: expected either one or two arguments.");
+            printHelp(options);
+            System.exit(1);
         }
     }
 }

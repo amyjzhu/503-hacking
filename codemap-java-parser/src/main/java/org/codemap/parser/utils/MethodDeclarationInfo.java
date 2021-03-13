@@ -3,6 +3,8 @@ package org.codemap.parser.utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashSet;
+
 public class MethodDeclarationInfo {
     JSONObject methodInfo = new JSONObject();
     static final String VISIBILITY = "visibility";
@@ -19,6 +21,8 @@ public class MethodDeclarationInfo {
     static final String RETURN = "return";
     static final String TYPE_PARAMETERS = "typeParameters";
     static final String PARAMETERS = "parameters";
+    static final String CALLS = "calls";
+    private HashSet<String> calledMethods = new HashSet<String>();
 
     public MethodDeclarationInfo() {
         setVisibility("public");
@@ -35,10 +39,27 @@ public class MethodDeclarationInfo {
         setReturn("");
         methodInfo.put(TYPE_PARAMETERS, new JSONArray());
         methodInfo.put(PARAMETERS, new JSONArray());
+        methodInfo.put(CALLS, new JSONArray());
     }
 
     public JSONObject getMethodInfo() {
         return methodInfo;
+    }
+
+    public void addCall(JSONObject mceInfo) {
+        String sig = mceInfo.getString(SIGNATURE);
+        if (sig.length() > 0 && !calledMethods.contains(sig)) {
+            methodInfo.getJSONArray(CALLS).put(mceInfo);
+            calledMethods.add(sig);
+        }
+    }
+
+    public int getNumCalls() {
+        return getCalls().length();
+    }
+
+    private JSONArray getCalls() {
+        return methodInfo.getJSONArray(CALLS);
     }
 
     public void setSignature(String signature) {
