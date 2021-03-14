@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.nio.file.Path;
@@ -39,7 +38,8 @@ import org.json.JSONObject;
 
 public class ResolveMethodReferences {
     private static int minPackageMatchThreshold = 2;
-    public static ArrayList<String> getJavaFiles(String sourceDir) {
+
+    private static ArrayList<String> getJavaFiles(String sourceDir) {
         ArrayList<String> fileNames = new ArrayList<>();
         try (Stream<Path> paths = Files.walk(Paths.get(sourceDir))) {
             paths.filter(Files::isRegularFile)
@@ -60,18 +60,15 @@ public class ResolveMethodReferences {
     }
 
 
-    public static JSONObject getClassInfo(String fileName, ClassOrInterfaceDeclaration classOrInterface) {
-//        JSONObject classInfo = new JSONObject();
+    private static ClassInfo getClassInfo(String fileName, ClassOrInterfaceDeclaration classOrInterface) {
         ClassInfo ci = new ClassInfo();
         String qualifiedName = classOrInterface.resolve().getQualifiedName();
         ci.setClassName(qualifiedName);
-//        classInfo.put("className", qualifiedName);
         ci.setFileName(fileName);
-//        classInfo.put("fileName", fileName);
-        return ci.getInfo();
+        return ci;
     }
 
-    public static MethodDeclarationInfo getMethodDeclarationInfo(MethodDeclaration method) {
+    private static MethodDeclarationInfo getMethodDeclarationInfo(MethodDeclaration method) {
         MethodDeclarationInfo mdi = new MethodDeclarationInfo();
         mdi.setDeclaration(method.getDeclarationAsString());
         try {
@@ -130,26 +127,19 @@ public class ResolveMethodReferences {
             }
         }
         NodeList<Parameter> params = method.getParameters();
-//        JSONArray paramsArray = new JSONArray();
         for (Parameter p : params) {
             try {
-//                paramsArray.put(p.resolve().describeType());
                 mdi.addParameter(p.resolve().describeType());
             } catch (UnsolvedSymbolException e) {
-//                paramsArray.put(e.getName());
                 mdi.addParameter(e.getName());
                 System.out.println("Unsolved symbol exception for parameter of type " + e.getName());
             }
 
         }
-//        mdi.addAllParameters(paramsArray);
         NodeList<TypeParameter> typeParams = method.getTypeParameters();
-//        JSONArray typeParamsArray = new JSONArray();
         for (TypeParameter tp : typeParams) {
-//            typeParamsArray.put(tp.asString());
             mdi.addTypeParameter(tp.asString());
         }
-//        mdi.addAllTypeParameters(typeParamsArray);
         return mdi;
     }
 
@@ -173,7 +163,6 @@ public class ResolveMethodReferences {
 
     public static JSONObject getMethodCallInfo(MethodCallExpr mce, String className) {
         JSONObject methodCallInfo = new JSONObject();
-        // TODO: add more info
         ResolvedMethodDeclaration rmd = mce.resolve();
         String signature = rmd.getQualifiedSignature();
         if (sharePackagePrefix(className, signature)) {
@@ -197,6 +186,102 @@ public class ResolveMethodReferences {
     }
 
 
+    private static void writeData(String dataFile,
+                                  JSONArray classList,
+                                  JSONArray classNamesList,
+                                  AtomicReference<Integer> numErrors,
+                                  AtomicReference<Integer> numMethodCalls) {
+        System.out.println("Number of errors: " + numErrors.toString());
+        System.out.println("Number of method calls: " + numMethodCalls.toString());
+        JSONObject allData = new JSONObject();
+        allData.put("classNames", classNamesList);
+        allData.put("classData", classList);
+        try (FileWriter file = new FileWriter(dataFile)) {
+            file.write(allData.toString(2));
+            file.flush();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static void parse(String sourceDir, String dataFile) {
+        setupParser(sourceDir);
+
+        ArrayList<String> fileNames = getJavaFiles(sourceDir);
+        JSONArray classList = new JSONArray();
+        JSONArray classNamesList = new JSONArray();
+        AtomicReference<Integer> numErrors = new AtomicReference<>(0);
+        AtomicReference<Integer> numMethodCalls = new AtomicReference<>(0);
+        for (String fileName : fileNames) {
+            System.out.println(fileName);
+            CompilationUnit cu;
+            try {
+                cu = StaticJavaParser.parse(new File(fileName));
+            } catch (FileNotFoundException e) {
+                System.out.println("ERROR: Could not find file " + fileName);
+                e.printStackTrace();
+                continue;
+            }
+            cu.findAll(ClassOrInterfaceDeclaration.class).forEach(clazzOrInterface -> {
+                ClassInfo classInfo = getClassInfo(fileName, clazzOrInterface);
+                clazzOrInterface
+                        .findAll(MethodDeclaration.class)
+                        .forEach(md -> {
+                            MethodDeclarationInfo methodInfo = getMethodDeclarationInfo(md);
+                            md.findAll(MethodCallExpr.class)
+                              .forEach(mce -> {
+                                  try {
+                                      methodInfo.addCall(getMethodCallInfo(mce, classInfo.getClassName()));
+                                      //                                      System.out.println(clazzOrInterface.resolve().getQualifiedName() + "@" + md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
+                                  } catch (com.github.javaparser.resolution.UnsolvedSymbolException e) {
+                                      System.out.println("Error occurred in file " + fileName);
+                                      e.printStackTrace();
+                                      numErrors.set(numErrors.get() + 1);
+                                  } catch (java.lang.RuntimeException e) {
+                                      System.out.println("Error occurred in file " + fileName);
+                                      System.out.println(e.getMessage());
+                                      e.printStackTrace();
+                                      numErrors.set(numErrors.get() + 1);
+                                  }
+                              });
+                                numMethodCalls.set(numMethodCalls.get() + methodInfo.getNumCalls());
+                            classInfo.addMethod(methodInfo.getJSON());
+                        });
+                classNamesList.put(classInfo.getClassName());
+                classList.put(classInfo.getJSON());
+            });
+        }
+        writeData(dataFile, classList, classNamesList, numErrors, numMethodCalls);
+    }
+
+    private static void setupParser(String sourceDir) {
+        // Apparently for org.xml.sax (which is a part of the JDK), the reflection
+        // type solver doesn't recognize it as being a part of the JDK, so you have
+        // to say that you want jreOnly=false
+        TypeSolver reflectionTypeSolver = new ReflectionTypeSolver(false);
+        TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File(sourceDir));
+
+
+        CombinedTypeSolver combinedSolver = new CombinedTypeSolver();
+        combinedSolver.add(reflectionTypeSolver);
+        combinedSolver.add(javaParserTypeSolver);
+
+        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedSolver);
+
+        StaticJavaParser.getConfiguration()
+                        .setSymbolResolver(symbolSolver)
+                        .setLanguageLevel(com.github.javaparser.ParserConfiguration.LanguageLevel.JAVA_11);
+    }
+
+
+    private static void mustHaveOneOrTwoArguments(Options options, String[] leftoverArgs) {
+        if (leftoverArgs.length != 1 && leftoverArgs.length != 2) {
+            System.out.println("ERROR: expected either one or two arguments.");
+            printHelp(options);
+            System.exit(1);
+        }
+    }
     public static void main(String[] args) {
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
@@ -223,102 +308,6 @@ public class ResolveMethodReferences {
             System.out.println("Error parsing command line args.");
             System.out.println(e.getMessage());
             e.printStackTrace();
-            printHelp(options);
-            System.exit(1);
-        }
-    }
-
-    private static void parse(String sourceDir, String dataFile) {
-        // Apparently for org.xml.sax (which is a part of the JDK), the reflection
-        // type solver doesn't recognize it as being a part of the JDK, so you have
-        // to say that you want jreOnly=false
-        TypeSolver reflectionTypeSolver = new ReflectionTypeSolver(false);
-        TypeSolver javaParserTypeSolver = new JavaParserTypeSolver(new File(sourceDir));
-
-        ArrayList<String> fileNames = getJavaFiles(sourceDir);
-
-        CombinedTypeSolver combinedSolver = new CombinedTypeSolver();
-        combinedSolver.add(reflectionTypeSolver);
-        combinedSolver.add(javaParserTypeSolver);
-
-        JavaSymbolSolver symbolSolver = new JavaSymbolSolver(combinedSolver);
-
-        StaticJavaParser.getConfiguration()
-                        .setSymbolResolver(symbolSolver)
-                        .setLanguageLevel(com.github.javaparser.ParserConfiguration.LanguageLevel.JAVA_11);
-
-        JSONArray classList = new JSONArray();
-        JSONArray classNamesList = new JSONArray();
-        AtomicReference<Integer> numErrors = new AtomicReference<>(0);
-        AtomicReference<Integer> numMethodCalls = new AtomicReference<>(0);
-        for (String fileName : fileNames) {
-            System.out.println(fileName);
-            CompilationUnit cu;
-            try {
-                cu = StaticJavaParser.parse(new File(fileName));
-            } catch (FileNotFoundException e) {
-                System.out.println("ERROR: Could not find file " + fileName);
-                e.printStackTrace();
-                continue;
-            }
-            cu.findAll(ClassOrInterfaceDeclaration.class).forEach(clazzOrInterface -> {
-                JSONObject classInfo = getClassInfo(fileName, clazzOrInterface);
-                JSONArray methodsList = new JSONArray();
-                clazzOrInterface
-                        .findAll(MethodDeclaration.class)
-                        .forEach(md -> {
-                            MethodDeclarationInfo methodInfo = getMethodDeclarationInfo(md);
-//                            HashSet<String> calledMethods = new HashSet<>();
-//                            JSONArray calledMethodsArray = new JSONArray();
-                            md.findAll(MethodCallExpr.class)
-                              .forEach(mce -> {
-                                  try {
-                                      JSONObject mceInfo = getMethodCallInfo(mce, (String) classInfo.get("className"));
-                                      methodInfo.addCall(mceInfo);
-//                                      String sig = (String) mceInfo.get("signature");
-//                                      if (sig.length() > 0 && !calledMethods.contains((String) mceInfo.get("signature"))) {
-//                                          calledMethods.add((String) mceInfo.get("signature"));
-//                                          calledMethodsArray.put(mceInfo);
-//                                      }
-                                      //                                      System.out.println(clazzOrInterface.resolve().getQualifiedName() + "@" + md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
-                                  } catch (com.github.javaparser.resolution.UnsolvedSymbolException e) {
-                                      System.out.println("Error occurred in file " + fileName);
-                                      e.printStackTrace();
-                                      numErrors.set(numErrors.get() + 1);
-                                  } catch (java.lang.RuntimeException e) {
-                                      System.out.println("Error occurred in file " + fileName);
-                                      System.out.println(e.getMessage());
-                                      e.printStackTrace();
-                                      numErrors.set(numErrors.get() + 1);
-                                  }
-
-                              });
-//                            methodInfo.put("calls", calledMethodsArray);
-                                numMethodCalls.set(numMethodCalls.get() + methodInfo.getNumCalls());
-                            methodsList.put(methodInfo.getMethodInfo());
-                        });
-                classInfo.put("methods", methodsList);
-                classNamesList.put(classInfo.get("className"));
-                classList.put(classInfo);
-            });
-        }
-        System.out.println("Number of errors: " + numErrors.toString());
-        System.out.println("Number of method calls: " + numMethodCalls.toString());
-        JSONObject allData = new JSONObject();
-        allData.put("classNames", classNamesList);
-        allData.put("classData", classList);
-        try (FileWriter file = new FileWriter(dataFile)) {
-            file.write(allData.toString(2));
-            file.flush();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private static void mustHaveOneOrTwoArguments(Options options, String[] leftoverArgs) {
-        if (leftoverArgs.length != 1 && leftoverArgs.length != 2) {
-            System.out.println("ERROR: expected either one or two arguments.");
             printHelp(options);
             System.exit(1);
         }

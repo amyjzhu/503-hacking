@@ -42,7 +42,7 @@ public class MethodDeclarationInfo {
         methodInfo.put(CALLS, new JSONArray());
     }
 
-    public JSONObject getMethodInfo() {
+    public JSONObject getJSON() {
         return methodInfo;
     }
 

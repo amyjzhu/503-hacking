@@ -1,18 +1,21 @@
 package org.codemap.parser.utils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ClassInfo {
     static final String CLASS_NAME = "className";
     static final String FILE_NAME = "fileName";
+    static final String METHODS = "methods";
     JSONObject info = new JSONObject();
 
     public ClassInfo() {
         setClassName("");
         setFileName("");
+        info.put(METHODS, new JSONArray());
     }
 
-    public JSONObject getInfo() {
+    public JSONObject getJSON() {
         return info;
     }
 
@@ -30,5 +33,9 @@ public class ClassInfo {
 
     public void setFileName(String fileName) {
         info.put(FILE_NAME, fileName);
+    }
+
+    public void addMethod(JSONObject method) {
+        info.getJSONArray(METHODS).put(method);
     }
 }
