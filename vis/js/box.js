@@ -51,6 +51,7 @@ class StructureVis {
         this.viewLevel = _config.view || "class"
         this.classesOnly = _config.classesOnly || false;
         this.currentlyHighlighted = [];
+        this.linksHighlighted = [];
 
         this.level1 = "package";
         this.level2 = "class";
@@ -127,6 +128,10 @@ class StructureVis {
 
         })
 
+        vis.boxData.forEach(node => {
+            // get nodes in the hierarchy
+            node.sourceOf = vis.data.links.filter(l => l.source == node.fqn);
+        })
         console.log(vis.boxData)
 
         // calculate classes by package
@@ -401,7 +406,7 @@ class StructureVis {
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
             .attr("stroke", "#999")
-            .attr("stroke-opacity", d => !d.highlighted && vis.currentlyHighlighted.length != 0 ? 0.5 : 0.9);
+            .attr("stroke-opacity", d => !vis.linksHighlighted.includes(d) && vis.linksHighlighted.length != 0 ? 0.5 : 0.9);
 
         vis.links.exit().remove();
 
@@ -629,18 +634,18 @@ class StructureVis {
         // TODO this is actually unidirectional
         // (but we don't display the arrows)
         // (and we should in the future)
-        let connected;
+        
+        let nodes;
+        console.log({item})
+        let connected = vis.boxData.find(f => f.fqn == item).sourceOf;
+        if (connected == null) {
+            connected = [];
+        }
         if (vis.viewLevel == vis.level1) {
             // TODO need to check this new logic with packages
-            connected = vis.linkData.filter(d => (d.source.fqn) == item);
-            connected.forEach(x => x.highlighted = true);
-            console.log(vis.linkData.filter(x => x.highlighted));
-            connected = connected.map(d => d.target.fqn);
-
+            nodes = connected.map(d => d.target.fqn);
         } else {
-            connected = vis.linkData.filter(d => d.source == item);
-            connected.forEach(x => x.highlighted = true);
-            connected = connected.map(d => d.target);
+            nodes = connected.map(d => d.target);
         }
 
         // TODO there has to be an explicit connection
@@ -648,9 +653,9 @@ class StructureVis {
         // necessary to express inter-level dependencies
         // else we can say "if you contain this method, you should be highlighted too"
         // go through and add the containers of all the connected
-        let diff = connected.filter(x => !visited.includes(x));
+        let diff = nodes.filter(x => !visited.nodes.includes(x));
 
-        return vis.findConnected(visited.concat([item]), todo.slice(1).concat(diff));
+        return vis.findConnected({nodes: visited.nodes.concat([item]), links: visited.links.concat(connected)}, todo.slice(1).concat(diff));
     }
 
     onClick = (item) => {
@@ -671,8 +676,13 @@ class StructureVis {
 
     linksOnDemand(item) {
         let vis = this;
-        vis.findConnected([], [item.fqn]);
-        vis.linksToDraw = vis.linkData.filter(l => l.highlighted);
+        // TODO we only need one level of connected
+        // TODO memoize and store all the links with the data. Create new linkdata each update of level
+        // uhhhh
+        // avoid looping through data too many times
+        // no separate link data, just update on update using the stored links per node of that level
+        // vis.findConnected([], [item.fqn]);
+        vis.linksToDraw = item.sourceOf;
     }
 
     addHighlighting(item) {
@@ -680,8 +690,10 @@ class StructureVis {
 
         if (!vis.highlightingEnabled) return;
 
-        console.log(item)
-        vis.currentlyHighlighted = vis.findConnected([], [item.fqn]);
+        let highlight = vis.findConnected({nodes: [], links: []}, [item.fqn]);
+        vis.currentlyHighlighted = highlight.nodes;
+        vis.linksHighlighted = highlight.links;
+        console.log(vis.currentlyHighlighted)
 
         vis.render();
         vis.updateLinks();
@@ -692,7 +704,8 @@ class StructureVis {
         if (!vis.highlightingEnabled) return;
         // clear
         vis.currentlyHighlighted = [];
-        vis.linkData.forEach(x => x.highlighted = false);
+        vis.linksHighlighted = [];
+        // vis.linkData.forEach(x => x.highlighted = false);
         // vis.linksToDraw = [];
         vis.render();
         vis.updateLinks();
