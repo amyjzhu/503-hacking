@@ -27,6 +27,7 @@ class StructureVis {
         this.smallestBoxHeight = this.smallBoxHeight / 8;
         this.smallestBoxWidth = this.smallBoxWidth / 3;
         this.highlightingEnabled = _config.highlighting;
+        this.performanceMode = _config.performanceMode;
 
         // this.colours = ["red", "blue", "yellow", "green"]\
         // TODO we should make the colours get lighter or darker by level
@@ -231,7 +232,13 @@ class StructureVis {
         // and view, eventually
         // include that info in data so the render() can use it
 
-        vis.linkData = vis.data.links.filter(x => x.type == vis.viewLevel)
+        vis.linkData = vis.data.links.filter(x => x.type == vis.viewLevel);
+        if (vis.performanceMode) {
+            vis.linksToDraw = [];
+        } else {
+            vis.linksToDraw = vis.linkData;
+        }
+
         console.log(vis.linkData)
 
 
@@ -242,7 +249,16 @@ class StructureVis {
         let vis = this;
 
         var zoom = d3.zoom()
-            .scaleExtent([vis.minZoom, vis.maxZoom]);
+            .scaleExtent([vis.minZoom, vis.maxZoom])
+            .filter(function(){
+                console.log(d3.event)
+                d3.event.preventDefault();
+                    // 0 is left mouse, 1 is wheel, 2 is right mouse
+                    return (event.button === 0 ||
+                        event.button === 1 ||
+                        event.button === 2);
+                
+              });
 
         vis.svg
             .call(zoom.on("zoom", function () {
@@ -270,6 +286,7 @@ class StructureVis {
             .style("stroke-opacity", vis.viewLevel == vis.level3 ? 0.6 : 1)
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
+            .on("click", vis.onClick)
             .transition()
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
@@ -286,7 +303,7 @@ class StructureVis {
             .append("rect")
             .attr("class", "level2-box")
             .merge(vis.level2Rects)
-            .on("click", vis.classOnClick)
+            .on("click", vis.onClick)
             .attr("width", vis.smallBoxWidth)
             .attr("height", vis.smallBoxHeight)
             .style("fill", d => vis.viewLevel == vis.level2 ? vis.getColour(d.group) : "none")
@@ -319,6 +336,7 @@ class StructureVis {
             .style("fill", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
+            .on("click", vis.onClick)
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
@@ -380,7 +398,9 @@ class StructureVis {
 
         // TODO this might be tricky with visibility
         console.log(vis.linkData);
-        vis.links = vis.linkArea.selectAll("line").data(vis.linkData, d => { vis.viewLevel == vis.level1 ? d.source.fqn + d.target.fqn : d.source + d.target });
+        console.log(vis.linksToDraw);
+
+        vis.links = vis.linkArea.selectAll("line").data(vis.linksToDraw, d => { vis.viewLevel == vis.level1 ? d.source.fqn + d.target.fqn : d.source + d.target });
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
             .attr("stroke", "#999")
@@ -491,15 +511,15 @@ class StructureVis {
 
         } else {
             vis.links
-                .attr("x1", d => {let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x} )
-                .attr("y1", d => {let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y} )
-                .attr("x2", d => {let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.x} )
-                .attr("y2", d => {let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.y} )
+                .attr("x1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x })
+                .attr("y1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y })
+                .attr("x2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.x })
+                .attr("y2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.y })
                 .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
                     && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         }
 
-        // console.log(vis.links)
+        console.log(vis.linksToDraw)
     }
 
     changeViewLevel(direction) {
@@ -603,47 +623,70 @@ class StructureVis {
         vis.updateZoomLevel();
     }
 
+    findConnected(visited, todo) {
+        let vis = this;
+        if (todo.length == 0) {
+            return visited;
+        }
+        let item = todo[0];
+
+        // TODO this is actually unidirectional
+        // (but we don't display the arrows)
+        // (and we should in the future)
+        let connected;
+        if (vis.viewLevel == vis.level1) {
+            // TODO need to check this new logic with packages
+            connected = vis.linkData.filter(d => (d.source.fqn) == item);
+            connected.forEach(x => x.highlighted = true);
+            console.log(vis.linkData.filter(x => x.highlighted));
+            connected = connected.map(d => d.target.fqn);
+
+        } else {
+            connected = vis.linkData.filter(d => d.source == item);
+            connected.forEach(x => x.highlighted = true);
+            connected = connected.map(d => d.target);
+        }
+
+        // TODO there has to be an explicit connection
+        // right now, containment doesn't mean dependency
+        // necessary to express inter-level dependencies
+        // else we can say "if you contain this method, you should be highlighted too"
+        // go through and add the containers of all the connected
+        let diff = connected.filter(x => !visited.includes(x));
+
+        return vis.findConnected(visited.concat([item]), todo.slice(1).concat(diff));
+    }
+
+    onClick = (item) => {
+        let vis = this;
+
+        if (d3.event.ctrlKey && item.type == vis.level2) {
+            vis.classOnClick(item)
+        } else {
+            if (vis.performanceMode) {
+                vis.linkData.forEach(x => x.highlighted = false);
+                vis.linksOnDemand(item);
+                vis.render();
+                vis.updateLinks(); // necessary?
+
+            }
+        }
+    }
+
+    linksOnDemand(item) {
+        let vis = this;
+        vis.findConnected([], [item.fqn]);
+        vis.linksToDraw = vis.linkData.filter(l => l.highlighted);
+        console.log(vis.linksToDraw)
+    }
+
     addHighlighting(item) {
         let vis = this;
 
         if (!vis.highlightingEnabled) return;
 
-        let findAllRec = (visited, todo) => {
-            if (todo.length == 0) {
-                return visited;
-            }
-            let item = todo[0];
-
-            // TODO this is actually unidirectional
-            // (but we don't display the arrows)
-            // (and we should in the future)
-            let connected;
-            if (vis.viewLevel == vis.level1) {
-                // TODO need to check this new logic with packages
-                connected = vis.linkData.filter(d => (d.source.fqn) == item);
-                connected.forEach(x => x.highlighted = true);
-                console.log(vis.linkData.filter(x => x.highlighted));
-                connected = connected.map(d => d.target.fqn);
-
-            } else {
-                connected = vis.linkData.filter(d => d.source == item);
-                connected.forEach(x => x.highlighted = true);
-                connected = connected.map(d => d.target);
-            }
-
-            // TODO there has to be an explicit connection
-            // right now, containment doesn't mean dependency
-            // necessary to express inter-level dependencies
-            // else we can say "if you contain this method, you should be highlighted too"
-            // go through and add the containers of all the connected
-            let diff = connected.filter(x => !visited.includes(x));
-
-            return findAllRec(visited.concat([item]), todo.slice(1).concat(diff));
-
-        }
-
         console.log(item)
-        vis.currentlyHighlighted = findAllRec([], [item.fqn]);
+        vis.currentlyHighlighted = vis.findConnected([], [item.fqn]);
 
         vis.render();
         vis.updateLinks();
@@ -655,6 +698,8 @@ class StructureVis {
         // clear
         vis.currentlyHighlighted = [];
         vis.linkData.forEach(x => x.highlighted = false);
+        // vis.linksToDraw = [];
+        console.log(vis.linksToDraw)
         vis.render();
         vis.updateLinks();
 
