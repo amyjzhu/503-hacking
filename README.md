@@ -17,5 +17,5 @@ There are two commands:
 Because the skeleton example didn't work out of the box, and I couldn't get it to work properly.
 
 ### Requirements
-- Doxygen
-- Python2
+- NodeJS
+- npm
