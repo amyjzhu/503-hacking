@@ -13,10 +13,10 @@ let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
         data: data, 
-        // centeredOnClass: "class/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/Cat.java",
-        centeredOnClass: centerOnGlobal,
+        centeredOnClass: "class/Users/audrey/github/jfreechart/src/main/java/org/jfree/chart/renderer/xy/StackedXYAreaRenderer.java",
+        // centeredOnClass: centerOnGlobal,
         classesOnly: false,
-        highlighting: true
+        highlighting: false
      });
 
     vis.classOnClick = getPathOnClick;
@@ -150,7 +150,7 @@ let processJson = ({classData, classNames}) => {
 }
 
 let getPathOnClick = (d) => {
-    console.log(d.filePath)
+    // console.log(d.filePath)
 
     // Sending messages to the plugin
     vscode.postMessage({
