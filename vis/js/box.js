@@ -251,7 +251,6 @@ class StructureVis {
         var zoom = d3.zoom()
             .scaleExtent([vis.minZoom, vis.maxZoom])
             .filter(function(){
-                console.log(d3.event)
                 d3.event.preventDefault();
                     // 0 is left mouse, 1 is wheel, 2 is right mouse
                     return (event.button === 0 ||
@@ -397,8 +396,6 @@ class StructureVis {
         vis.level2Texts.exit().remove();
 
         // TODO this might be tricky with visibility
-        console.log(vis.linkData);
-        console.log(vis.linksToDraw);
 
         vis.links = vis.linkArea.selectAll("line").data(vis.linksToDraw, d => { vis.viewLevel == vis.level1 ? d.source.fqn + d.target.fqn : d.source + d.target });
         vis.links = vis.links.join("line")
@@ -519,7 +516,6 @@ class StructureVis {
                     && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         }
 
-        console.log(vis.linksToDraw)
     }
 
     changeViewLevel(direction) {
@@ -677,7 +673,6 @@ class StructureVis {
         let vis = this;
         vis.findConnected([], [item.fqn]);
         vis.linksToDraw = vis.linkData.filter(l => l.highlighted);
-        console.log(vis.linksToDraw)
     }
 
     addHighlighting(item) {
@@ -699,7 +694,6 @@ class StructureVis {
         vis.currentlyHighlighted = [];
         vis.linkData.forEach(x => x.highlighted = false);
         // vis.linksToDraw = [];
-        console.log(vis.linksToDraw)
         vis.render();
         vis.updateLinks();
 

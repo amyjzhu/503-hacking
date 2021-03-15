@@ -17,8 +17,8 @@ let initializeVisualization = (data) => {
         // centeredOnClass: centerOnGlobal,
         centeredOnClass: "class/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
         classesOnly: false,
-        highlighting: true,
-        performanceMode: false,
+        highlighting: false,
+        performanceMode: true,
      });
 
     vis.classOnClick = getPathOnClick;
