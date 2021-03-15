@@ -61,11 +61,15 @@ public class MethodDeclarationInfo {
     private JSONArray getCalls() {
         return methodInfo.getJSONArray(CALLS);
     }
-
+    public String getSignature() {
+        return methodInfo.getString(SIGNATURE);
+    }
     public void setSignature(String signature) {
         methodInfo.put(SIGNATURE, signature);
     }
-
+    public String getDeclaration() {
+        return methodInfo.getString(DECLARATION);
+    }
     public void setDeclaration(String declaration) {
         methodInfo.put(DECLARATION, declaration);
     }

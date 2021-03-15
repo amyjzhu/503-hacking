@@ -50,6 +50,12 @@ If the root of the sources is at `/my/path/to/sources/`, then you can produce th
 java -cp target/codemap-java-parser-1.0-SNAPSHOT-jar-with-dependencies.jar org.codemap.parser.ResolveMethodReferences /my/path/to/sources
 ```
 
+If you want to run the parser on the toy example, you should run it with the option `-t 1`:
+
+```
+java -cp target/codemap-java-parser-1.0-SNAPSHOT-jar-with-dependencies.jar org.codemap.parser.ResolveMethodReferences -t 1 /path/to/toy/example
+```
+
 ### Using Maven
 If you don't want to produce the whole jar file, you can run
 
@@ -57,4 +63,5 @@ If you don't want to produce the whole jar file, you can run
 mvn exec:java -Dexec.mainClass="org.codemap.parser.ResolveMethodReferences" -Dexec.args="sources_dir [data_file]"
 ```
 
-instead. This has the added benefit of not having to figure out the classpath, since Maven will do it for you.
+instead. This has the added benefit of not having to figure out the classpath, since Maven will do it for you. The `-t 1` option also applies here for toy data, and you would add this to the `exec.args` property set in the above.
+

@@ -235,11 +235,11 @@ public class ResolveMethodReferences {
                                       methodInfo.addCall(getMethodCallInfo(mce, classInfo.getClassName()));
                                       //                                      System.out.println(clazzOrInterface.resolve().getQualifiedName() + "@" + md.getDeclarationAsString() + ": " + mce.resolve().getQualifiedSignature());
                                   } catch (com.github.javaparser.resolution.UnsolvedSymbolException e) {
-                                      System.out.println("Error occurred in file " + fileName);
+                                      System.out.println("Error occurred in file " + fileName + " in method (" + methodInfo.getSignature() + ", " + methodInfo.getDeclaration() + ")");
                                       e.printStackTrace();
                                       numErrors.set(numErrors.get() + 1);
                                   } catch (java.lang.RuntimeException e) {
-                                      System.out.println("Error occurred in file " + fileName);
+                                      System.out.println("Error occurred in file " + fileName + " in method (" + methodInfo.getSignature() + ", " + methodInfo.getDeclaration() + ")");
                                       System.out.println(e.getMessage());
                                       e.printStackTrace();
                                       numErrors.set(numErrors.get() + 1);
