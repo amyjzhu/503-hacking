@@ -37,7 +37,7 @@ let processJson = ({classData, classNames}) => {
 
     let methodNodes = classData.flatMap(itemClass => {
         return itemClass.methods.flatMap(itemMethod => ({
-            fqn: getMethodFqn(itemClass.className, itemMethod.name), 
+            fqn: itemMethod.signature, //getMethodFqn(itemClass.className, itemMethod.name), 
             name: itemMethod.name,
             type: 'method'
         }));
@@ -48,7 +48,7 @@ let processJson = ({classData, classNames}) => {
     let methodLinks = classData.flatMap(itemClass => {
         return itemClass.methods.flatMap(itemMethod => {
             return itemMethod.calls.flatMap(callee => ({
-                source: getMethodFqn(itemClass.className, itemMethod.name),
+                source: itemMethod.signature, //getMethodFqn(itemClass.className, itemMethod.name),
                 target: callee.signature,
                 // TODO: type is actually superfluous since we can just check if
                 // the source and target are currently visible
@@ -63,7 +63,7 @@ let processJson = ({classData, classNames}) => {
     let methodContainers = classData.flatMap(itemClass => {
         return itemClass.methods.flatMap(itemMethod => ({
             parent: itemClass.className,
-            child: getMethodFqn(itemClass.className, itemMethod.name),
+            child: itemMethod.signature, //getMethodFqn(itemClass.className, itemMethod.name),
             type: 'method'
         }));
     });

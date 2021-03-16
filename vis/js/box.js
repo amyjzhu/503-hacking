@@ -105,7 +105,11 @@ class StructureVis {
         vis.data.hierarchy.forEach(d => {
             // get child and add parent as container
             let child = vis.boxData.findIndex(child => child.fqn == d.child);
-            vis.boxData[child].container = d.parent;
+            if (child != -1) {
+                vis.boxData[child].container = d.parent;
+            } else {
+                console.log("Could not find child for ", d);
+            }
         })
 
         vis.boxData.forEach(datum => {
@@ -276,6 +280,7 @@ class StructureVis {
                 }
 
                 vis.boxesToDraw = vis.boxData.filter(vis.withinFrame);
+                console.log("Boxes to draw")
                 console.log(vis.boxesToDraw)
 
                 // width and height also change with size
@@ -532,7 +537,14 @@ class StructureVis {
     level3Ticked(vis) {
         vis.level3Groups
             .attr("transform", d => {
+                if (d === undefined) {
+                    console.log("d undefined");
+                }
                 let level2 = vis.boxData.find(box => box.fqn == d.container && box.type == vis.level2);
+                if (level2 === undefined) {
+                    console.log("level2 undefined", level2);
+                    console.log("d", d);
+                }
                 // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
                 let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
