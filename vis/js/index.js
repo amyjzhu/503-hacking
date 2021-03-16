@@ -4,7 +4,6 @@ d3.json(dataPathGlobal).then(jsonData => {
 
     var data = processJson(jsonData);
     console.log(data);
-    // nodes, list, groups
 
     initializeVisualization(data);
 })
@@ -106,49 +105,6 @@ let processJson = ({classData, classNames}) => {
     console.log({hierarchy})
 
     return {nodes: nodes, links: links, hierarchy: hierarchy}
-
-
-    // each package goes in its own group, class go in the package group
-    // var pkgGroups = [];
-    // var classGroups = [];
-    // var methodGroups = [];
-    // data.forEach((pkg, idx) => {
-    //     // not sre if these groups an be zero-indexed
-    //     pkgGroups.push({id: pkg.name, group: idx + 1, type: "package", views: pkg.views || [], container: ""});
-    //     pkg.classes.forEach(cls => {
-    //         classGroups.push({id: cls.name, group: idx + 1, container: pkg.name, type: "class", views: cls.views || []})
-    //     })
-
-    //     // right now we inherit views from classes
-    //     // TODO we may want to change this later
-    //     pkg.classes.forEach(cls => {
-    //         cls.methods.forEach(method => {
-    //             methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", container: cls.name, text: method.text || "", views: cls.views || []}) 
-    //         })
-    //     })
-    // })
-    
-    // // TODO -- the strength of the package links should depend on number of class links
-    // var packageLinks = data.map(p => p.uses.map(link => {return {source: "package" + p.name, target: "package" + link, value: 1, type:"package"}})).flat();
-
-    // var classLinks = data.map(p => p.classes.map(cls => cls.uses.map(link => {return {source: "class" + cls.name, target: "class" + link, value: 1, type: "class"}}))).flat().flat();
-
-    // var methodLinks = data.map(p => p.classes.map(cls => cls.methods.map(meth => meth.uses.map(link => {return {source: "method" + meth.name, target: "method" + link, value: 1, type: "method"}})))).flat().flat().flat();
-    
-    // console.group("After processJson")
-    // console.log(packageLinks);
-    // console.log(classLinks);
-    // console.log(methodLinks);
-
-    // console.log(pkgGroups);
-    // console.log(classGroups);
-    // console.log(methodGroups);
-    // console.groupEnd();
-
-    // return {
-    //     data: pkgGroups.concat(classGroups).concat(methodGroups), 
-    //     links: packageLinks.concat(classLinks).concat(methodLinks)
-    // };
 }
 
 let getPathOnClick = (d) => {
