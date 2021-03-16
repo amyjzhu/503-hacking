@@ -395,6 +395,7 @@ class StructureVis {
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
             .merge(texts)
+            .attr("class", (vis.viewLevel == vis.level2 || vis.viewLevel == vis.level3 ? "zoomed-in-pkg" : "not-zoomed-in-pkg"))
             .attr("dx", 12)
             .attr("dy", "1em")
             .text(d => d.fqn)
