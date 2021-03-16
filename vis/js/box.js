@@ -393,6 +393,7 @@ class StructureVis {
             .merge(vis.level2Texts)
             .attr("dx", 12)
             .attr("dy", "1em")
+            .attr("class", (vis.viewLevel == vis.level3 ? "zoomed-in-class" : "not-zoomed-in-class"))
             // .transition()
             .text(d => vis.viewLevel == vis.level1 ? "" : d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
