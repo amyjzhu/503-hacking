@@ -3,6 +3,9 @@
 const vscode = require('vscode');
 const path = require('path');
 
+
+var rootFolderNameGlobal = undefined;
+
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -26,22 +29,22 @@ function activate(context) {
 				{enableScripts: true,} // Webview options
 			);
 
+			let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path
+
+			rootFolderNameGlobal = path.basename(projectAbsolutePath)
 			
-			var currentClass = activeTextEditor.document.fileName
+			var currentClass = activeTextEditor.document.fileName.replace(projectAbsolutePath, '').substring(1);
 			console.log(currentClass)
-			// currentClass = currentClass.split('.').slice(0, -1).join('.')
-			// console.log(currentClass)
+
 			panel.webview.html = getWebviewContent(context, panel.webview, currentClass);
 
 			// Receiving messages from the visualization
 			panel.webview.onDidReceiveMessage(
+				
 				message => {
 					switch (message.command) {
 					case 'open':
-						// var workspace = vscode.workspace.workspaceFolders[0].uri;
-						// var file = vscode.Uri.joinPath(workspace, 'src', 'org', message.text);
-						
-						const fileUri = vscode.Uri.file(message.filePath)
+						const fileUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, message.filePath);
 						vscode.window.showTextDocument(fileUri);
 						panel.dispose();
 						return;
@@ -120,6 +123,7 @@ function getWebviewContent(context, webview, centerOn) {
 				<script>
 					var dataPathGlobal = "${dataUri}";
 					var centerOnGlobal = "class${centerOn}";
+					var rootFolderNameGlobal = "${rootFolderNameGlobal}";
 
 					// TODO Should not be global. For security reasons, you must keep the VS Code API object private and make sure it is never leaked into the global scope.
 					const vscode = acquireVsCodeApi();
