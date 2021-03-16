@@ -21,11 +21,13 @@ class StructureVis {
         this.forceStrength = _config.forceStrength || 0.25
         this.boxWidth = 600;
         this.boxHeight = 500;
-        this.smallBoxWidth = this.boxWidth / 3;
-        this.smallBoxHeight = this.boxHeight / 4;
+        this.smallBoxWidth = 200;
+        this.smallBoxHeight = 500/3;
+        // this.smallBoxHeight = 500/4;
 
-        this.smallestBoxHeight = this.smallBoxHeight / 8;
-        this.smallestBoxWidth = this.smallBoxWidth / 3;
+        this.smallestBoxWidth = 200/3;
+        this.smallestBoxHeight = 500/32;
+
         this.highlightingEnabled = _config.highlighting;
         this.performanceMode = _config.performanceMode;
 
@@ -34,7 +36,7 @@ class StructureVis {
         this.colours = d3.interpolateRdYlGn;
 
         this.zoomBarHeight = 300;
-        this.minZoom = 0.25;
+        this.minZoom = 0.05;
         this.maxZoom = 20;
         this.zoomLevel = 1;
 
@@ -150,7 +152,29 @@ class StructureVis {
             vis.level3ByLevel2[id] = vis.boxData.filter(m => m.type == vis.level3 && m.container == id);
         });
 
-        console.log(vis.level3ByLevel2);
+
+        let dynamicallySetSizes = () => {
+        // we need the container to be at least squared big as the height and width 
+        // to avoid overlapping and keep them within the containers
+        let maxLevel3 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+        let alpha = 1;
+        
+        // methods are a bit weird though since their size is variable
+        let sqrtMaxLevel3 = Math.sqrt(maxLevel3);
+        // also, make them square (why not?)
+        vis.level3CollisionSquare = sqrtMaxLevel3 * Math.max(vis.smallestBoxHeight, vis.smallestBoxWidth) * alpha;
+        // vis.smallBoxHeight = sqrtMaxLevel3 * vis.smallestBoxHeight * alpha;
+        // vis.smallBoxWidth = vis.smallBoxHeight;
+
+        // need to determine package sizes based on how many entities there are
+        let maxLevel2 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+        let sqrtMaxLevel2 = Math.sqrt(maxLevel2);
+        // vis.boxWidth = sqrtMaxLevel2 * vis.smallBoxWidth * alpha;
+        // vis.boxHeight = sqrtMaxLevel2 * vis.smallBoxHeight * alpha;
+        vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
+        }
+
+        dynamicallySetSizes();
 
         function charge() {
             return -Math.pow(vis.boxHeight, 2.2) * vis.forceStrength;
@@ -161,7 +185,8 @@ class StructureVis {
             .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
             .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
             .force('charge', d3.forceManyBody().strength(20))//Math.pow(vis.boxHeight, 0.1)))
-            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
+            // .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
+            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.level2CollisionSquare / 2, 2) * 2)))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .on('tick', () => vis.fastTick(vis.boxGroups));
         vis.level1Simulation.stop();
@@ -215,7 +240,7 @@ class StructureVis {
                     .velocityDecay(0.18)
                     .force('x', d3.forceX().strength(vis.forceStrength).x(level2Info.x + vis.smallBoxWidth / 2))
                     .force('y', d3.forceY().strength(vis.forceStrength).y(level2Info.y + vis.smallBoxHeight / 2))
-                    .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
+                    // .force('charge', d3.forceManyBody().strength(() => 200))//-Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
                     .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallestBoxWidth / 2, 2) + Math.pow(vis.smallestBoxHeight / 2, 2))))
                     .force("center", d => {
                         return d3.forceCenter(level2Info.x + vis.smallBoxWidth / 2, level2Info.y + vis.smallBoxWidth / 2);
@@ -548,10 +573,10 @@ class StructureVis {
                 // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
             
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
-                let height = level2.y + vis.smallBoxHeight - d.width;
+                let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
 
                 // let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
-                // let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
+                // let height = level2.y + vis.smallBoxHeight - d.width;
 
                 // either where we are, or the max coordinate (far edge)
                 // either where we are, or the min coordinate (close edge)
