@@ -72,9 +72,10 @@ function activate(context) {
 				placeholder: 'src/main/java/'
 			}).then(sources => {
 				const sourcesDir = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, sources).path
+				const outputPath = vscode.workspace.workspaceFolders[0].uri.path
 				console.info(sourcesDir)
 
-				terminal.sendText(`${scriptPath} ${sourcesDir}`);
+				terminal.sendText(`${scriptPath} ${sourcesDir} ${outputPath}`);
 				terminal.show();
 			})
 		})
