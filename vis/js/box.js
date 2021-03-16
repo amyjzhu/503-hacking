@@ -260,23 +260,19 @@ class StructureVis {
                     // Upper left
                     let x1 = item.x;
                     let y1 = item.y;
-                    // Upper right
-                    let x2 = item.x + w;
-                    let y2 = item.y;
                     // Lower right
                     let x3 = item.x + w;
                     let y3 = item.y + h;
-                    // Lower left
-                    let x4 = item.x;
-                    let y4 = item.y + h;
-
-                    function within(x, y) {
-                        return x > tx && x < tx + scaledWidth && y > ty && item.y < ty + scaledHeight;
+                    
+                    // Box is to the left of the screen or screen is to the left of the box
+                    if (x1 >= tx + scaledWidth || tx >= x3) {
+                        return false;
                     }
-                    // return (item.x > tx && item.x < tx + scaledWidth) && (item.y > ty && item.y < ty + scaledHeight)
-                    // We'll say it's in the view if any of the corners are in view.
-                    // I will look for a more general solution later -Audrey
-                    return within(x1, y1) || within(x2, y2) || within(x3, y3) || within(x4, y4);
+                    // Box is below the screen or screen is below the box
+                    if (y1 >= ty + scaledHeight || ty >= y3) {
+                        return false;
+                    }
+                    return true;
                 }
 
                 vis.boxesToDraw = vis.boxData.filter(vis.withinFrame);
