@@ -267,6 +267,20 @@ class StructureVis {
         vis.svg
             .call(zoom.on("zoom", function () {
                 vis.visArea.attr("transform", d3.event.transform);
+                let k = d3.event.transform.k;
+                let tx = d3.event.transform.x / k * -1;
+                let ty = d3.event.transform.y /k * -1;
+                let scaledWidth = vis.width / k;
+                let scaledHeight = vis.height / k;
+                // vis.currentCoords = {x0: }
+                console.log(d3.event.transform)
+                console.log({x: tx/k, y: ty/k})
+
+                vis.withinFrame = (item) => {
+                    return (item.x > tx && item.x > tx + scaledWidth) && (item.y > ty && item.y < ty + scaledHeight)
+                }
+
+                // width and height also change with size
                 vis.changeViewLevel();
                 vis.zoomLevel = d3.event.transform.k;
                 vis.updateZoomLevel();
