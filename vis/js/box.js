@@ -78,6 +78,7 @@ class StructureVis {
 
         // we add the package data here
         vis.boxData = vis.data.nodes.concat(level1);
+        vis.boxesToDraw = [];
 
         console.log({ groupMap })
         console.log(vis.colours)
@@ -227,6 +228,52 @@ class StructureVis {
         vis.addZoomLevel();
         vis.addViewButtons();
 
+        var zoom = d3.zoom()
+            .scaleExtent([vis.minZoom, vis.maxZoom])
+            .filter(function () {
+                d3.event.preventDefault();
+                // 0 is left mouse, 1 is wheel, 2 is right mouse
+                return (event.button === 0 ||
+                    event.button === 1 ||
+                    event.button === 2);
+
+            });
+
+        vis.svg
+            .call(zoom.on("zoom", function () {
+                vis.visArea.attr("transform", d3.event.transform);
+                let k = d3.event.transform.k;
+                let tx = d3.event.transform.x / k * -1;
+                let ty = d3.event.transform.y / k * -1;
+                let scaledWidth = vis.width / k;
+                let scaledHeight = vis.height / k;
+                // vis.currentCoords = {x0: }
+                console.log(d3.event.transform)
+                console.log({ x: tx / k, y: ty / k })
+
+                // TODO there is a smarter way to check this by storing it
+                // in a clever data structure
+                // maybe ask some GRAIL friends lol 
+                vis.withinFrame = (item) => {
+                    return (item.x > tx && item.x < tx + scaledWidth) && (item.y > ty && item.y < ty + scaledHeight)
+                }
+
+                vis.boxesToDraw = vis.boxData.filter(vis.withinFrame);
+                console.log(vis.boxesToDraw)
+
+                // width and height also change with size
+                let changed = vis.changeViewLevel();
+                vis.zoomLevel = d3.event.transform.k;
+                vis.updateZoomLevel();
+
+                if (!changed) {
+                    vis.render();
+                    vis.tickAll();
+
+                }
+
+            }));
+
         vis.update();
     }
 
@@ -253,41 +300,7 @@ class StructureVis {
     render() {
         let vis = this;
 
-        var zoom = d3.zoom()
-            .scaleExtent([vis.minZoom, vis.maxZoom])
-            .filter(function(){
-                d3.event.preventDefault();
-                    // 0 is left mouse, 1 is wheel, 2 is right mouse
-                    return (event.button === 0 ||
-                        event.button === 1 ||
-                        event.button === 2);
-                
-              });
-
-        vis.svg
-            .call(zoom.on("zoom", function () {
-                vis.visArea.attr("transform", d3.event.transform);
-                let k = d3.event.transform.k;
-                let tx = d3.event.transform.x / k * -1;
-                let ty = d3.event.transform.y /k * -1;
-                let scaledWidth = vis.width / k;
-                let scaledHeight = vis.height / k;
-                // vis.currentCoords = {x0: }
-                console.log(d3.event.transform)
-                console.log({x: tx/k, y: ty/k})
-
-                vis.withinFrame = (item) => {
-                    return (item.x > tx && item.x > tx + scaledWidth) && (item.y > ty && item.y < ty + scaledHeight)
-                }
-
-                // width and height also change with size
-                vis.changeViewLevel();
-                vis.zoomLevel = d3.event.transform.k;
-                vis.updateZoomLevel();
-            }));
-
-
-        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.fqn });
+        vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxesToDraw.filter(d => d.type == vis.level1), d => { return d.fqn });
         vis.boxGroups = vis.boxGroupsSelect.enter().append("g").attr("class", "boxgroups").merge(vis.boxGroupsSelect);
 
         var boxes = vis.boxGroups.selectAll("rect").data(d => [d]);
@@ -309,12 +322,12 @@ class StructureVis {
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
-        // classes
-        var level2GroupSelect = vis.boxArea.selectAll(".level2-group").data(vis.boxData.filter(d => d.type == vis.level1), d => { return d.type + d.fqn });
-        vis.level2Groups = level2GroupSelect.enter().append("g").attr("class", "level2-group").merge(level2GroupSelect);
+        boxes.exit().remove();
 
-        vis.level2Groups = vis.level2Groups.selectAll("g").data(level1 => { return vis.boxData.filter(d => d.type == vis.level2 && d.container == level1.fqn) }, d => d.type + d.fqn);
-        vis.level2Groups = vis.level2Groups.enter().append("g").merge(vis.level2Groups);
+        // classes
+
+        vis.level2Groups = vis.boxArea.selectAll(".level2Group").data(vis.boxesToDraw.filter(d => d.type == vis.level2), d => d.type + d.fqn);
+        vis.level2Groups = vis.level2Groups.enter().append("g").attr("class", "level2Group").merge(vis.level2Groups);
 
         vis.level2Rects = vis.level2Groups.selectAll("rect").data(d => [d]);
         vis.level2Rects = vis.level2Rects.enter()
@@ -333,17 +346,18 @@ class StructureVis {
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
-        // methods
-        var level3GroupsSelect = vis.boxArea.selectAll(".level3Group").data(vis.boxData.filter(d => d.type == vis.level2), d => { return d.type + d.fqn });
-        vis.level3Groups = level3GroupsSelect.enter().append("g").attr("class", "level3Group").merge(level3GroupsSelect);
+        // vis.level2Rects.exit().remove()
 
-        vis.level3Groups = vis.level3Groups.selectAll("g").data(level2 => { return vis.boxData.filter(d => d.type == vis.level3 && d.container == level2.fqn) }, d => d.type + d.fqn);
-        vis.level3Groups = vis.level3Groups.enter().append("g").merge(vis.level3Groups);
+        // methods
+        console.log(vis.boxesToDraw.filter(d => d.type == vis.level2));
+        // now we don't even need this since those boxes are guaranteed to be inside
+        vis.level3Groups = vis.boxArea.selectAll(".level3Group").data(vis.boxesToDraw.filter(d => d.type == vis.level3), d => d.type + d.fqn);
+        vis.level3Groups = vis.level3Groups.enter().append("g").attr("class", "level3Group").merge(vis.level3Groups);
 
         vis.level3Rects = vis.level3Groups.selectAll("rect").data(d => [d]);
         vis.level3Rects = vis.level3Rects.enter()
             .append("rect")
-            .attr("class", "level2-box")
+            .attr("class", "level3-box")
             .merge(vis.level3Rects)
             .attr("width", d => {
                 // TODO this should approximate it, but we need to check afterwards
@@ -358,6 +372,8 @@ class StructureVis {
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
+
+        // vis.level3Rects.exit().remove();
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
@@ -468,6 +484,13 @@ class StructureVis {
 
     }
 
+    tickAll() {
+        let vis = this;
+        vis.ticked(vis);
+        vis.level2Ticked(vis);
+        vis.level3Ticked(vis);
+    }
+
     fastTick(selection) {
         selection.each(d => d.x = d.originalX);
     }
@@ -564,6 +587,8 @@ class StructureVis {
 
             vis.update();
             vis.updateLinks();
+            return true;
+
 
         } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel != vis.level1) {
             vis.level1Simulation.stop();
@@ -583,6 +608,8 @@ class StructureVis {
             vis.viewLevel = vis.level1;
             vis.update();
             vis.updateLinks();
+            return true;
+
         } else if (vis.zoomLevel >= viewThresholdlevel3 && vis.viewLevel != vis.level3) {
             vis.level1Simulation.stop();
 
@@ -603,7 +630,10 @@ class StructureVis {
             vis.viewLevel = vis.level3;
             vis.update();
             vis.updateLinks();
+            return true;
         }
+
+        return false;
     }
 
     addZoomLevel() {
@@ -648,9 +678,9 @@ class StructureVis {
         // TODO this is actually unidirectional
         // (but we don't display the arrows)
         // (and we should in the future)
-        
+
         let nodes;
-        console.log({item})
+        console.log({ item })
         let connected = vis.boxData.find(f => f.fqn == item).sourceOf;
         if (connected == null) {
             connected = [];
@@ -669,7 +699,7 @@ class StructureVis {
         // go through and add the containers of all the connected
         let diff = nodes.filter(x => !visited.nodes.includes(x));
 
-        return vis.findConnected({nodes: visited.nodes.concat([item]), links: visited.links.concat(connected)}, todo.slice(1).concat(diff));
+        return vis.findConnected({ nodes: visited.nodes.concat([item]), links: visited.links.concat(connected) }, todo.slice(1).concat(diff));
     }
 
     onClick = (item) => {
@@ -704,7 +734,7 @@ class StructureVis {
 
         if (!vis.highlightingEnabled) return;
 
-        let highlight = vis.findConnected({nodes: [], links: []}, [item.fqn]);
+        let highlight = vis.findConnected({ nodes: [], links: [] }, [item.fqn]);
         vis.currentlyHighlighted = highlight.nodes;
         vis.linksHighlighted = highlight.links;
         console.log(vis.currentlyHighlighted)
