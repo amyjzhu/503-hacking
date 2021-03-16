@@ -706,7 +706,7 @@ class StructureVis {
     onClick = (item) => {
         let vis = this;
 
-        if (d3.event.ctrlKey && item.type == vis.level2) {
+        if ((d3.event.ctrlKey || d3.event.metaKey) && item.type == vis.level2) {
             vis.classOnClick(item)
         } else {
             if (vis.performanceMode) {
@@ -714,7 +714,6 @@ class StructureVis {
                 vis.linksOnDemand(item);
                 vis.render();
                 vis.updateLinks(); // necessary?
-
             }
         }
     }

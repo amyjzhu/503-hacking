@@ -16,7 +16,7 @@ The root directory contains the Visual Studio Code plugin framework. `package.js
 5. When the parser has finished or that a `data.json` file is present at the root, use `codemap.view` to visualize the currently opened class.
 
 ### Visualization controls
-- `ctrl + click` on a class to open its file and close the visualization.
+- `ctrl + click` (or `cmd + click` on macOS) on a class to open its file and close the visualization.
 - `click` on a class to toggle the highlighting.
 - `hover` on a class to highlight dependencies.
 
