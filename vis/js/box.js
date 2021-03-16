@@ -105,7 +105,11 @@ class StructureVis {
         vis.data.hierarchy.forEach(d => {
             // get child and add parent as container
             let child = vis.boxData.findIndex(child => child.fqn == d.child);
-            vis.boxData[child].container = d.parent;
+            if (child != -1) {
+                vis.boxData[child].container = d.parent;
+            } else {
+                console.log("Could not find child for ", d);
+            }
         })
 
         vis.boxData.forEach(datum => {
@@ -255,10 +259,28 @@ class StructureVis {
                 // in a clever data structure
                 // maybe ask some GRAIL friends lol 
                 vis.withinFrame = (item) => {
-                    return (item.x > tx && item.x < tx + scaledWidth) && (item.y > ty && item.y < ty + scaledHeight)
+                    let w = (item.type == vis.level1) ? vis.boxWidth : ((item.type == vis.level2) ? vis.smallBoxWidth : vis.smallestBoxWidth);
+                    let h = (item.type == vis.level1) ? vis.boxHeight : ((item.type == vis.level2) ? vis.smallBoxHeight : vis.smallestBoxHeight);
+                    // Upper left
+                    let x1 = item.x;
+                    let y1 = item.y;
+                    // Lower right
+                    let x3 = item.x + w;
+                    let y3 = item.y + h;
+                    
+                    // Box is to the left of the screen or screen is to the left of the box
+                    if (x1 >= tx + scaledWidth || tx >= x3) {
+                        return false;
+                    }
+                    // Box is below the screen or screen is below the box
+                    if (y1 >= ty + scaledHeight || ty >= y3) {
+                        return false;
+                    }
+                    return true;
                 }
 
                 vis.boxesToDraw = vis.boxData.filter(vis.withinFrame);
+                console.log("Boxes to draw")
                 console.log(vis.boxesToDraw)
 
                 // width and height also change with size
@@ -378,6 +400,7 @@ class StructureVis {
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
             .merge(texts)
+            .attr("class", (vis.viewLevel == vis.level2 || vis.viewLevel == vis.level3 ? "zoomed-in-pkg" : "not-zoomed-in-pkg"))
             .attr("dx", 12)
             .attr("dy", "1em")
             .text(d => d.fqn)
@@ -393,6 +416,7 @@ class StructureVis {
             .merge(vis.level2Texts)
             .attr("dx", 12)
             .attr("dy", "1em")
+            .attr("class", (vis.viewLevel == vis.level3 ? "zoomed-in-class" : "not-zoomed-in-class"))
             // .transition()
             .text(d => vis.viewLevel == vis.level1 ? "" : d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
@@ -513,7 +537,14 @@ class StructureVis {
     level3Ticked(vis) {
         vis.level3Groups
             .attr("transform", d => {
+                if (d === undefined) {
+                    console.log("d undefined");
+                }
                 let level2 = vis.boxData.find(box => box.fqn == d.container && box.type == vis.level2);
+                if (level2 === undefined) {
+                    console.log("level2 undefined", level2);
+                    console.log("d", d);
+                }
                 // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
             
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
@@ -710,7 +741,7 @@ class StructureVis {
     onClick = (item) => {
         let vis = this;
 
-        if (d3.event.ctrlKey && item.type == vis.level2) {
+        if ((d3.event.ctrlKey || d3.event.metaKey) && item.type == vis.level2) {
             vis.classOnClick(item)
         } else {
             if (vis.performanceMode) {
@@ -718,7 +749,6 @@ class StructureVis {
                 vis.linksOnDemand(item);
                 vis.render();
                 vis.updateLinks(); // necessary?
-
             }
         }
     }

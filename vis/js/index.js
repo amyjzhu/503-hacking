@@ -4,7 +4,6 @@ d3.json(dataPathGlobal).then(jsonData => {
 
     var data = processJson(jsonData);
     console.log(data);
-    // nodes, list, groups
 
     initializeVisualization(data);
 })
@@ -12,10 +11,8 @@ d3.json(dataPathGlobal).then(jsonData => {
 let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
-        data: data, 
-        centeredOnClass: "class/Users/audrey/github/jfreechart/src/main/java/org/jfree/chart/renderer/xy/StackedXYAreaRenderer.java",
-        // centeredOnClass: centerOnGlobal,
-        // centeredOnClass: "class/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
+        data: data,
+        centeredOnClass: centerOnGlobal, // Please control centeredOnClass via the centerOnGlobal in index.html.
         classesOnly: false,
         highlighting: false,
         performanceMode: true,
@@ -34,13 +31,13 @@ let processJson = ({classData, classNames}) => {
     let classNodes = classData.map(item => ({
         fqn: item.className, 
         name: getShortName(item.className), 
-        filePath: item.fileName,
+        filePath: makeRelative(item.fileName),
         type: "class"
     }));
 
     let methodNodes = classData.flatMap(itemClass => {
         return itemClass.methods.flatMap(itemMethod => ({
-            fqn: getMethodFqn(itemClass.className, itemMethod.name), 
+            fqn: itemMethod.signature, //getMethodFqn(itemClass.className, itemMethod.name), 
             name: itemMethod.name,
             type: 'method'
         }));
@@ -51,7 +48,7 @@ let processJson = ({classData, classNames}) => {
     let methodLinks = classData.flatMap(itemClass => {
         return itemClass.methods.flatMap(itemMethod => {
             return itemMethod.calls.flatMap(callee => ({
-                source: getMethodFqn(itemClass.className, itemMethod.name),
+                source: itemMethod.signature, //getMethodFqn(itemClass.className, itemMethod.name),
                 target: callee.signature,
                 // TODO: type is actually superfluous since we can just check if
                 // the source and target are currently visible
@@ -66,7 +63,7 @@ let processJson = ({classData, classNames}) => {
     let methodContainers = classData.flatMap(itemClass => {
         return itemClass.methods.flatMap(itemMethod => ({
             parent: itemClass.className,
-            child: getMethodFqn(itemClass.className, itemMethod.name),
+            child: itemMethod.signature, //getMethodFqn(itemClass.className, itemMethod.name),
             type: 'method'
         }));
     });
@@ -106,49 +103,6 @@ let processJson = ({classData, classNames}) => {
     console.log({hierarchy})
 
     return {nodes: nodes, links: links, hierarchy: hierarchy}
-
-
-    // each package goes in its own group, class go in the package group
-    // var pkgGroups = [];
-    // var classGroups = [];
-    // var methodGroups = [];
-    // data.forEach((pkg, idx) => {
-    //     // not sre if these groups an be zero-indexed
-    //     pkgGroups.push({id: pkg.name, group: idx + 1, type: "package", views: pkg.views || [], container: ""});
-    //     pkg.classes.forEach(cls => {
-    //         classGroups.push({id: cls.name, group: idx + 1, container: pkg.name, type: "class", views: cls.views || []})
-    //     })
-
-    //     // right now we inherit views from classes
-    //     // TODO we may want to change this later
-    //     pkg.classes.forEach(cls => {
-    //         cls.methods.forEach(method => {
-    //             methodGroups.push({id: method.name, group: idx + 1, pkg: pkg.name, type: "method", container: cls.name, text: method.text || "", views: cls.views || []}) 
-    //         })
-    //     })
-    // })
-    
-    // // TODO -- the strength of the package links should depend on number of class links
-    // var packageLinks = data.map(p => p.uses.map(link => {return {source: "package" + p.name, target: "package" + link, value: 1, type:"package"}})).flat();
-
-    // var classLinks = data.map(p => p.classes.map(cls => cls.uses.map(link => {return {source: "class" + cls.name, target: "class" + link, value: 1, type: "class"}}))).flat().flat();
-
-    // var methodLinks = data.map(p => p.classes.map(cls => cls.methods.map(meth => meth.uses.map(link => {return {source: "method" + meth.name, target: "method" + link, value: 1, type: "method"}})))).flat().flat().flat();
-    
-    // console.group("After processJson")
-    // console.log(packageLinks);
-    // console.log(classLinks);
-    // console.log(methodLinks);
-
-    // console.log(pkgGroups);
-    // console.log(classGroups);
-    // console.log(methodGroups);
-    // console.groupEnd();
-
-    // return {
-    //     data: pkgGroups.concat(classGroups).concat(methodGroups), 
-    //     links: packageLinks.concat(classLinks).concat(methodLinks)
-    // };
 }
 
 let getPathOnClick = (d) => {
@@ -183,6 +137,16 @@ function isClass(classFqn) {
     let maybeAClass = splitFqn[splitFqn.length - 1]; // The last element is either a package or a class.
     return maybeAClass.charCodeAt(0) >= 65 && maybeAClass.charCodeAt(0) <= 90
     // Alternate implementation: look if the candidate is an element of data.classNames. Set operations are O(1).
+}
+
+// Attempts to make an absolute path relative IF the global variable `rootFolderNameGlobal` is set.
+// Will delete the path before encountering `rootFolderNameGlobal`.
+function makeRelative(absolutePath) {
+    if(!rootFolderNameGlobal){ return absolutePath;}
+
+    let index = absolutePath.indexOf(rootFolderNameGlobal) + rootFolderNameGlobal.length;
+
+    return absolutePath.substring(index + 1);
 }
 
 // ----------------------------------------------------------------------------
