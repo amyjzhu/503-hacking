@@ -13,9 +13,9 @@ let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
         data: data, 
-        // centeredOnClass: "class/Users/audrey/github/jfreechart/src/main/java/org/jfree/chart/renderer/xy/StackedXYAreaRenderer.java",
+        centeredOnClass: "class/Users/audrey/github/jfreechart/src/main/java/org/jfree/chart/renderer/xy/StackedXYAreaRenderer.java",
         // centeredOnClass: centerOnGlobal,
-        centeredOnClass: "class/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
+        // centeredOnClass: "class/Users/thomas/Projects/503-hacking/toy-data/refactoring-toy-example-master/src/org/felines/AnimalSuper.java",
         classesOnly: false,
         highlighting: false,
         performanceMode: true,

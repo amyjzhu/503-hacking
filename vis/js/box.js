@@ -266,11 +266,11 @@ class StructureVis {
                 vis.zoomLevel = d3.event.transform.k;
                 vis.updateZoomLevel();
 
-                if (!changed) {
+                // if (!changed) {
                     vis.render();
                     vis.tickAll();
 
-                }
+                // }
 
             }));
 
@@ -514,6 +514,7 @@ class StructureVis {
         vis.level3Groups
             .attr("transform", d => {
                 let level2 = vis.boxData.find(box => box.fqn == d.container && box.type == vis.level2);
+                // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
                 let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
 
