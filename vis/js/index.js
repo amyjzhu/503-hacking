@@ -11,7 +11,7 @@ d3.json(dataPathGlobal).then(jsonData => {
 let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
-        data: data, 
+        data: data,
         centeredOnClass: centerOnGlobal, // Please control centeredOnClass via the centerOnGlobal in index.html.
         classesOnly: false,
         highlighting: false,

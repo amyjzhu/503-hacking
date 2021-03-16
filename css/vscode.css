@@ -1,3 +1,7 @@
 /* text {
     fill: var(--vscode-foreground);
 } */
+
+text.zoomed-in-class {
+    fill: var(--vscode-foreground);
+}
