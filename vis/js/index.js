@@ -31,7 +31,7 @@ let processJson = ({classData, classNames}) => {
     let classNodes = classData.map(item => ({
         fqn: item.className, 
         name: getShortName(item.className), 
-        filePath: item.fileName,
+        filePath: makeRelative(item.fileName),
         type: "class"
     }));
 
@@ -137,6 +137,16 @@ function isClass(classFqn) {
     let maybeAClass = splitFqn[splitFqn.length - 1]; // The last element is either a package or a class.
     return maybeAClass.charCodeAt(0) >= 65 && maybeAClass.charCodeAt(0) <= 90
     // Alternate implementation: look if the candidate is an element of data.classNames. Set operations are O(1).
+}
+
+// Attempts to make an absolute path relative IF the global variable `rootFolderNameGlobal` is set.
+// Will delete the path before encountering `rootFolderNameGlobal`.
+function makeRelative(absolutePath) {
+    if(!rootFolderNameGlobal){ return absolutePath;}
+
+    let index = absolutePath.indexOf(rootFolderNameGlobal) + rootFolderNameGlobal.length;
+
+    return absolutePath.substring(index + 1);
 }
 
 // ----------------------------------------------------------------------------
