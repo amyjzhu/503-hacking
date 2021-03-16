@@ -515,8 +515,12 @@ class StructureVis {
             .attr("transform", d => {
                 let level2 = vis.boxData.find(box => box.fqn == d.container && box.type == vis.level2);
                 // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
+            
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
-                let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
+                let height = level2.y + vis.smallBoxHeight - d.width;
+
+                // let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
+                // let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
 
                 // either where we are, or the max coordinate (far edge)
                 // either where we are, or the min coordinate (close edge)
