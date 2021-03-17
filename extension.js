@@ -6,6 +6,8 @@ const path = require('path');
 
 var rootFolderNameGlobal = undefined;
 
+let panel = undefined;
+
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -14,6 +16,20 @@ function activate(context) {
 	// Registers a command (named codemap.view) that shows the visualization in D3.
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemap.view', function () {
+
+			if(panel) {
+				let activeTextEditor = vscode.window.activeTextEditor
+				let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path
+				let currentClass = activeTextEditor.document.fileName.replace(projectAbsolutePath, '').substring(1);
+
+				panel.webview.postMessage({
+					command: 'center',
+					class: currentClass
+				});
+
+				panel.reveal();
+				return;
+			}
 			
 			var activeTextEditor = vscode.window.activeTextEditor
 
@@ -22,12 +38,14 @@ function activate(context) {
 				return;
 			}
 
-			const panel = vscode.window.createWebviewPanel(
+			panel = vscode.window.createWebviewPanel(
 				'codemap', // Identifies the type of the webview. Used internally
 				'Codemap', // Title of the panel displayed to the user
 				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-				{enableScripts: true,
-				retainContextWhenHidden: true} // Webview options
+				{
+					enableScripts: true,
+					retainContextWhenHidden: true
+				} // Webview options
 			);
 
 			let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path
@@ -54,10 +72,6 @@ function activate(context) {
 				undefined,
 				context.subscriptions
 			  );
-
-			// Send a message to the visualization.
-			// You can send any JSON serializable data.
-			// panel.webview.postMessage({ command: 'refactor' });
 		})
 	);
 

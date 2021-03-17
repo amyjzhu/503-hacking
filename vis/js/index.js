@@ -8,6 +8,8 @@ d3.json(dataPathGlobal).then(jsonData => {
     initializeVisualization(data);
 })
 
+var visvis = undefined;
+
 let initializeVisualization = (data) => {
     var vis = new StructureVis({
         parentElement: "#vis", 
@@ -20,8 +22,24 @@ let initializeVisualization = (data) => {
 
     vis.classOnClick = getPathOnClick;
 
+    visvis = vis;
     // TODO we should also have a different views data structure to help us filter elements
 }
+
+// Receives messages sent from the extension.
+window.addEventListener('message', event => {
+
+    const message = event.data;
+
+    switch (message.command) {
+        case 'center':
+            console.log("It works");
+            console.log(message.class);
+            console.log(visvis)
+            visvis.centerOn(message.class);
+            break;
+    }
+});
 
 // Transform JSON to flat representations: nodes, links, hierarchy
 let processJson = ({classData, classNames}) => {
@@ -157,16 +175,3 @@ function makeRelative(absolutePath) {
 
     return absolutePath.substring(index + 1);
 }
-
-// ----------------------------------------------------------------------------
-// Example of message passing to receive messages from the plugin
-// window.addEventListener('message', event => {
-
-//     const message = event.data; // The JSON data our extension sent
-
-//     switch (message.command) {
-//         case 'refactor':
-//             console.log("It works")
-//             break;
-//     }
-// });

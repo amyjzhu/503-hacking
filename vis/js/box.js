@@ -803,10 +803,10 @@ class StructureVis {
         return vis.findConnected({ nodes: visited.nodes.concat([item]), links: visited.links.concat(connected) }, todo.slice(1).concat(diff));
     }
 
-    centerOn(name) {
+    centerOn(filePath) {
         let vis = this;
         vis.zoomLevel = 1;
-        vis._centerOn(vis.boxData.find(b => b.fqn == name));
+        vis._centerOn(vis.boxData.find(b => b.filePath == filePath));
     }
 
     _centerOn(destination) {
