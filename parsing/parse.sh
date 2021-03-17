@@ -10,7 +10,7 @@ die() {
   echo "$1"
   exit 1
 }
-USAGE="Usage: parse.sh [-t #] <path/to/sources/root> [<data destination>]"
+USAGE="Usage: parse.sh [-t #] <path/to/sources/root> <data destination> [<jar path>]"
 [ "$#" -gt 0 ] || die "$USAGE"
 
 THRESHOLD_ARG=""
@@ -24,12 +24,7 @@ done
 
 SRC_DIR="${@:$OPTIND:1}"
 DATA_DEST="${@:$OPTIND+1:1}"
-
-if [ -z "$DATA_DEST" ]; then
-  DATA_DEST="$DIR/../vis/data/data.json"
-fi
-
-JAR_PATH="$DIR/parsing/parse-java.jar"
+JAR_PATH="${@:$OPTIND+2:1}"
 
 if ! [ -e "$JAR_PATH" ]; then
   cd "$DIR" || die "Could not find directory $DIR"

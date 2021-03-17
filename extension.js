@@ -67,7 +67,10 @@ function activate(context) {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
 
 			const scriptPath = vscode.Uri.joinPath(context.extensionUri, 'parsing', 'parse.sh').path
+			const jarPath = vscode.Uri.joinPath(context.extensionUri, 'parsing', 'parse-java.jar').path
+
 			console.info(scriptPath)
+			console.info(jarPath)
 
 			vscode.window.showInputBox(options = {
 				ignoreFocusOut: true,
@@ -75,10 +78,10 @@ function activate(context) {
 				placeholder: 'src/main/java/'
 			}).then(sources => {
 				const sourcesDir = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, sources).path
-				const outputPath = vscode.workspace.workspaceFolders[0].uri.path
+				const outputPath = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'data.json').path
 				console.info(sourcesDir)
 
-				terminal.sendText(`${scriptPath} ${sourcesDir} ${outputPath}`);
+				terminal.sendText(`${scriptPath} ${sourcesDir} ${outputPath} ${jarPath}`);
 				terminal.show();
 			})
 		})
