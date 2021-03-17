@@ -21,11 +21,13 @@ class StructureVis {
         this.forceStrength = _config.forceStrength || 0.25
         this.boxWidth = 600;
         this.boxHeight = 500;
-        this.smallBoxWidth = this.boxWidth / 3;
-        this.smallBoxHeight = this.boxHeight / 4;
+        this.smallBoxWidth = 200;
+        this.smallBoxHeight = 500/3;
+        // this.smallBoxHeight = 500/4;
 
-        this.smallestBoxHeight = this.smallBoxHeight / 8;
-        this.smallestBoxWidth = this.smallBoxWidth / 3;
+        this.smallestBoxWidth = 200/3;
+        this.smallestBoxHeight = 500/32;
+
         this.highlightingEnabled = _config.highlighting;
         this.performanceMode = _config.performanceMode;
 
@@ -34,7 +36,7 @@ class StructureVis {
         this.colours = d3.interpolateRdYlGn;
 
         this.zoomBarHeight = 300;
-        this.minZoom = 0.25;
+        this.minZoom = 0.05;
         this.maxZoom = 20;
         this.zoomLevel = 1;
 
@@ -105,7 +107,11 @@ class StructureVis {
         vis.data.hierarchy.forEach(d => {
             // get child and add parent as container
             let child = vis.boxData.findIndex(child => child.fqn == d.child);
-            vis.boxData[child].container = d.parent;
+            if (child != -1) {
+                vis.boxData[child].container = d.parent;
+            } else {
+                console.log("Could not find child for ", d);
+            }
         })
 
         vis.boxData.forEach(datum => {
@@ -146,7 +152,29 @@ class StructureVis {
             vis.level3ByLevel2[id] = vis.boxData.filter(m => m.type == vis.level3 && m.container == id);
         });
 
-        console.log(vis.level3ByLevel2);
+
+        let dynamicallySetSizes = () => {
+        // we need the container to be at least squared big as the height and width 
+        // to avoid overlapping and keep them within the containers
+        let maxLevel3 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+        let alpha = 1;
+        
+        // methods are a bit weird though since their size is variable
+        let sqrtMaxLevel3 = Math.sqrt(maxLevel3);
+        // also, make them square (why not?)
+        vis.level3CollisionSquare = sqrtMaxLevel3 * Math.max(vis.smallestBoxHeight, vis.smallestBoxWidth) * alpha;
+        // vis.smallBoxHeight = sqrtMaxLevel3 * vis.smallestBoxHeight * alpha;
+        // vis.smallBoxWidth = vis.smallBoxHeight;
+
+        // need to determine package sizes based on how many entities there are
+        let maxLevel2 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+        let sqrtMaxLevel2 = Math.sqrt(maxLevel2);
+        // vis.boxWidth = sqrtMaxLevel2 * vis.smallBoxWidth * alpha;
+        // vis.boxHeight = sqrtMaxLevel2 * vis.smallBoxHeight * alpha;
+        vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
+        }
+
+        dynamicallySetSizes();
 
         function charge() {
             return -Math.pow(vis.boxHeight, 2.2) * vis.forceStrength;
@@ -157,7 +185,8 @@ class StructureVis {
             .force('x', d3.forceX().strength(vis.forceStrength).x(vis.center.x))
             .force('y', d3.forceY().strength(vis.forceStrength).y(vis.center.y))
             .force('charge', d3.forceManyBody().strength(20))//Math.pow(vis.boxHeight, 0.1)))
-            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
+            // .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.boxWidth / 2, 2) + Math.pow(vis.boxHeight / 2, 2))))
+            .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.level2CollisionSquare / 2, 2) * 2)))
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .on('tick', () => vis.fastTick(vis.boxGroups));
         vis.level1Simulation.stop();
@@ -211,7 +240,7 @@ class StructureVis {
                     .velocityDecay(0.18)
                     .force('x', d3.forceX().strength(vis.forceStrength).x(level2Info.x + vis.smallBoxWidth / 2))
                     .force('y', d3.forceY().strength(vis.forceStrength).y(level2Info.y + vis.smallBoxHeight / 2))
-                    .force('charge', d3.forceManyBody().strength(() => -Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
+                    // .force('charge', d3.forceManyBody().strength(() => 200))//-Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
                     .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallestBoxWidth / 2, 2) + Math.pow(vis.smallestBoxHeight / 2, 2))))
                     .force("center", d => {
                         return d3.forceCenter(level2Info.x + vis.smallBoxWidth / 2, level2Info.y + vis.smallBoxWidth / 2);
@@ -260,26 +289,23 @@ class StructureVis {
                     // Upper left
                     let x1 = item.x;
                     let y1 = item.y;
-                    // Upper right
-                    let x2 = item.x + w;
-                    let y2 = item.y;
                     // Lower right
                     let x3 = item.x + w;
                     let y3 = item.y + h;
-                    // Lower left
-                    let x4 = item.x;
-                    let y4 = item.y + h;
-
-                    function within(x, y) {
-                        return x > tx && x < tx + scaledWidth && y > ty && item.y < ty + scaledHeight;
+                    
+                    // Box is to the left of the screen or screen is to the left of the box
+                    if (x1 >= tx + scaledWidth || tx >= x3) {
+                        return false;
                     }
-                    // return (item.x > tx && item.x < tx + scaledWidth) && (item.y > ty && item.y < ty + scaledHeight)
-                    // We'll say it's in the view if any of the corners are in view.
-                    // I will look for a more general solution later -Audrey
-                    return within(x1, y1) || within(x2, y2) || within(x3, y3) || within(x4, y4);
+                    // Box is below the screen or screen is below the box
+                    if (y1 >= ty + scaledHeight || ty >= y3) {
+                        return false;
+                    }
+                    return true;
                 }
 
                 vis.boxesToDraw = vis.boxData.filter(vis.withinFrame);
+                console.log("Boxes to draw")
                 console.log(vis.boxesToDraw)
 
                 // width and height also change with size
@@ -399,6 +425,7 @@ class StructureVis {
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
             .merge(texts)
+            .attr("class", (vis.viewLevel == vis.level2 || vis.viewLevel == vis.level3 ? "zoomed-in-pkg" : "not-zoomed-in-pkg"))
             .attr("dx", 12)
             .attr("dy", "1em")
             .text(d => d.fqn)
@@ -535,10 +562,21 @@ class StructureVis {
     level3Ticked(vis) {
         vis.level3Groups
             .attr("transform", d => {
+                if (d === undefined) {
+                    console.log("d undefined");
+                }
                 let level2 = vis.boxData.find(box => box.fqn == d.container && box.type == vis.level2);
+                if (level2 === undefined) {
+                    console.log("level2 undefined", level2);
+                    console.log("d", d);
+                }
                 // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
+            
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
                 let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
+
+                // let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
+                // let height = level2.y + vis.smallBoxHeight - d.width;
 
                 // either where we are, or the max coordinate (far edge)
                 // either where we are, or the min coordinate (close edge)

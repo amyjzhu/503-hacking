@@ -5,3 +5,7 @@
 text.zoomed-in-class {
     fill: var(--vscode-foreground);
 }
+
+text.zoomed-in-pkg {
+    fill: var(--vscode-foreground);
+}
