@@ -1,0 +1,1 @@
+This folder contains the parsed jfreechart project to use for the user study.
