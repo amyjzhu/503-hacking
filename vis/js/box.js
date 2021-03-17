@@ -1,5 +1,4 @@
 
-
 class StructureVis {
 
     constructor(_config) {
@@ -244,7 +243,7 @@ class StructureVis {
                     .velocityDecay(0.18)
                     .force('x', d3.forceX().strength(vis.forceStrength).x(level2Info.x + vis.smallBoxWidth / 2))
                     .force('y', d3.forceY().strength(vis.forceStrength).y(level2Info.y + vis.smallBoxHeight / 2))
-                    // .force('charge', d3.forceManyBody().strength(() => 200))//-Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
+                    .force('charge', d3.forceManyBody().strength(() => 200))//-Math.pow(vis.smallestBoxHeight, 2.1) * vis.forceStrength))
                     .force('collision', d3.forceCollide().radius(d => Math.sqrt(Math.pow(vis.smallestBoxWidth / 2, 2) + Math.pow(vis.smallestBoxHeight / 2, 2))))
                     .force("center", d => {
                         return d3.forceCenter(level2Info.x + vis.smallBoxWidth / 2, level2Info.y + vis.smallBoxWidth / 2);
@@ -434,7 +433,7 @@ class StructureVis {
         // vis.level2Rects.exit().remove()
 
         // methods
-        console.log(vis.boxesToDraw.filter(d => d.type == vis.level2));
+        // console.log(vis.boxesToDraw.filter(d => d.type == vis.level2));
         // now we don't even need this since those boxes are guaranteed to be inside
         vis.level3Groups = vis.boxArea.selectAll(".level3Group").data(vis.boxesToDraw.filter(d => d.type == vis.level3), d => d.type + d.fqn);
         vis.level3Groups = vis.level3Groups.enter().append("g").attr("class", "level3Group").merge(vis.level3Groups);
@@ -884,7 +883,12 @@ class StructureVis {
     addHighlighting(item) {
         let vis = this;
 
-        if (!vis.highlightingEnabled) return;
+        if (!vis.highlightingEnabled) {
+            vis.currentlyHighlighted = [item.fqn];
+            vis.render();
+            vis.updateLinks();
+            return;
+        };
 
         let highlight = vis.findConnected({ nodes: [], links: [] }, [item.fqn]);
         vis.currentlyHighlighted = highlight.nodes;
@@ -896,8 +900,14 @@ class StructureVis {
     }
 
     removeHighlighting() {
+
         let vis = this;
-        if (!vis.highlightingEnabled) return;
+        if (!vis.highlightingEnabled) {
+            vis.currentlyHighlighted = [];
+            vis.render();
+            vis.updateLinks();
+            return;
+        };
         // clear
         vis.currentlyHighlighted = [];
         vis.linksHighlighted = [];
