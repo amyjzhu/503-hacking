@@ -1,3 +1,5 @@
+
+
 class StructureVis {
 
     constructor(_config) {
@@ -22,11 +24,11 @@ class StructureVis {
         this.boxWidth = 600;
         this.boxHeight = 500;
         this.smallBoxWidth = 200;
-        this.smallBoxHeight = 500/3;
+        this.smallBoxHeight = 500 / 3;
         // this.smallBoxHeight = 500/4;
 
-        this.smallestBoxWidth = 200/3;
-        this.smallestBoxHeight = 500/32;
+        this.smallestBoxWidth = 200 / 3;
+        this.smallestBoxHeight = 500 / 32;
 
         this.highlightingEnabled = _config.highlighting;
         this.performanceMode = _config.performanceMode;
@@ -155,26 +157,26 @@ class StructureVis {
 
 
         let dynamicallySetSizes = () => {
-        // we need the container to be at least squared big as the height and width 
-        // to avoid overlapping and keep them within the containers
-        let maxLevel3 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
-        let alpha = 1;
-        
-        // methods are a bit weird though since their size is variable
-        let sqrtMaxLevel3 = Math.sqrt(maxLevel3);
-        // also, make them square (why not?)
-        vis.level3CollisionSquare = sqrtMaxLevel3 * Math.max(vis.smallestBoxHeight, vis.smallestBoxWidth) * alpha;
-        // vis.smallBoxHeight = sqrtMaxLevel3 * vis.smallestBoxHeight * alpha;
-        // vis.smallBoxWidth = vis.smallBoxHeight;
+            // we need the container to be at least squared big as the height and width 
+            // to avoid overlapping and keep them within the containers
+            let maxLevel3 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+            let alpha = 1;
 
-        // need to determine package sizes based on how many entities there are
-        let maxLevel2 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
-        let sqrtMaxLevel2 = Math.sqrt(maxLevel2);
-        // vis.boxWidth = sqrtMaxLevel2 * vis.smallBoxWidth * alpha;
-        // vis.boxHeight = sqrtMaxLevel2 * vis.smallBoxHeight * alpha;
-        vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
+            // methods are a bit weird though since their size is variable
+            let sqrtMaxLevel3 = Math.sqrt(maxLevel3);
+            // also, make them square (why not?)
+            vis.level3CollisionSquare = sqrtMaxLevel3 * Math.max(vis.smallestBoxHeight, vis.smallestBoxWidth) * alpha;
+            // vis.smallBoxHeight = sqrtMaxLevel3 * vis.smallestBoxHeight * alpha;
+            // vis.smallBoxWidth = vis.smallBoxHeight;
+
+            // need to determine package sizes based on how many entities there are
+            let maxLevel2 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+            let sqrtMaxLevel2 = Math.sqrt(maxLevel2);
+            // vis.boxWidth = sqrtMaxLevel2 * vis.smallBoxWidth * alpha;
+            // vis.boxHeight = sqrtMaxLevel2 * vis.smallBoxHeight * alpha;
+            vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
         }
-        
+
 
         dynamicallySetSizes();
 
@@ -259,7 +261,7 @@ class StructureVis {
         vis.addZoomLevel();
         vis.addViewButtons();
 
-        var zoom = d3.zoom()
+        vis.zoom = d3.zoom()
             .scaleExtent([vis.minZoom, vis.maxZoom])
             .filter(function () {
                 d3.event.preventDefault();
@@ -271,7 +273,7 @@ class StructureVis {
             });
 
         vis.svg
-            .call(zoom.on("zoom", function () {
+            .call(vis.zoom.on("zoom", function () {
                 vis.visArea.attr("transform", d3.event.transform);
                 let k = d3.event.transform.k;
                 let tx = d3.event.transform.x / k * -1;
@@ -281,6 +283,9 @@ class StructureVis {
                 // vis.currentCoords = {x0: }
                 console.log(d3.event.transform)
                 console.log({ x: tx / k, y: ty / k })
+
+                vis.windowX = tx;
+                vis.windowY = ty;
 
                 // TODO there is a smarter way to check this by storing it
                 // in a clever data structure
@@ -294,7 +299,7 @@ class StructureVis {
                     // Lower right
                     let x3 = item.x + w;
                     let y3 = item.y + h;
-                    
+
                     // Box is to the left of the screen or screen is to the left of the box
                     if (x1 >= tx + scaledWidth || tx >= x3) {
                         return false;
@@ -316,18 +321,46 @@ class StructureVis {
                 vis.updateZoomLevel();
 
                 // if (!changed) {
-                    vis.render();
-                    vis.tickAll();
+                vis.render();
+                vis.tickAll();
 
                 // }
 
             }));
-        
+
+        let markerBoxWidth = 20;
+        let markerBoxHeight = 20;
+        let refX = markerBoxWidth / 2;
+        let refY = markerBoxHeight / 2;
+        let markerWidth = 10;
+        let markerHeight = 10;
+        let arrowPoints = [[0, 0], [0, 20], [20, 10]];
+
+        vis.svg
+            .append('defs')
+            .append('marker')
+            .attr('id', 'arrow')
+            .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
+            .attr('refX', refX)
+            .attr('refY', refY)
+            .attr('markerWidth', markerWidth)
+            .attr('markerHeight', markerHeight)
+            .attr('orient', 'auto-start-reverse')
+            .append('path')
+            .attr('d', d3.line()(arrowPoints))
+            .attr('stroke', 'black');
+
+
+        if (vis.performanceMode) {
+            vis.linksToDraw = [];
+            vis.linkData = vis.data.links;
+        }
 
         vis.update();
 
         d3.select("svg").on("dblclick.zoom", null);
-        vis.svg.call(zoom.transform, d3.zoomIdentity)
+        vis.svg.call(vis.zoom.transform, d3.zoomIdentity)
+
 
     }
 
@@ -338,10 +371,8 @@ class StructureVis {
         // and view, eventually
         // include that info in data so the render() can use it
 
-        vis.linkData = vis.data.links.filter(x => x.type == vis.viewLevel);
-        if (vis.performanceMode) {
-            vis.linksToDraw = [];
-        } else {
+        if (!vis.performanceMode) {
+            vis.linkData = vis.data.links.filter(x => x.type == vis.viewLevel);
             vis.linksToDraw = vis.linkData;
         }
 
@@ -492,8 +523,9 @@ class StructureVis {
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
             .attr("stroke", "#999")
+            .attr('marker-end', 'url(#arrow)')
             .attr("stroke-opacity", d => !vis.linksHighlighted.includes(d) && vis.linksHighlighted.length != 0 ? 0.5 : 0.9)
-            .on("dblclick", d => vis.autoPan(d.target));
+            .on("dblclick", d => vis.autoPan(d));
 
         vis.links.exit().remove();
 
@@ -579,7 +611,7 @@ class StructureVis {
                     console.log("d", d);
                 }
                 // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
-            
+
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
                 let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
 
@@ -771,14 +803,48 @@ class StructureVis {
         return vis.findConnected({ nodes: visited.nodes.concat([item]), links: visited.links.concat(connected) }, todo.slice(1).concat(diff));
     }
 
-    autoPan = (destinationName) => {
+    centerOn(name) {
+        let vis = this;
+        vis.zoomLevel = 1;
+        vis._centerOn(vis.boxData.find(b => b.fqn == name));
+    }
+
+    _centerOn(destination) {
+        console.log({ name: destination.name, x: destination.x, y: destination.y })
+        let vis = this;
+        let scaledWidth = (destination.type == vis.level1) ? vis.boxWidth : ((destination.type == vis.level2) ? vis.smallBoxWidth : vis.smallestBoxWidth); //destination.width// / vis.zoomLevel;
+        let scaledHeight = (destination.type == vis.level1) ? vis.boxHeight : ((destination.type == vis.level2) ? vis.smallBoxHeight : vis.smallestBoxHeight);//destination.height// / vis.zoomLevel;
+        let nx = destination.x * -1  + scaledWidth/2//vis.windowX;
+        let ny = destination.y * -1  + scaledHeight/2 //+ vis.windowY;
+
+
+        var transform = d3.zoomIdentity.scale(vis.zoomLevel).translate(nx, ny);
+        // vis.visArea.attr('transform', `translate(${nx}, ${ny}) scale(${vis.zoomLevel})`);
+        vis.svg.call(vis.zoom.transform, transform)
+        //vis.render();
+    }
+
+    autoPan = (link) => {
         let vis = this;
 
-        let destination = vis.boxData.find(x => x.fqn == destinationName || x.signature == destinationName)
-        let nx = destination.x * -1 * vis.zoomLevel;
-        let ny = destination.y * -1 * vis.zoomLevel;
-        
-        vis.visArea.attr('transform', `translate(${nx}, ${ny}) scale(${vis.zoomLevel})`);
+        let sourceInWindow = vis.boxesToDraw.find(x => x.fqn == link.source || x.signature == link.source)
+        let targetInWindow = vis.boxesToDraw.find(x => x.fqn == link.target || x.signature == link.target);
+
+        if (sourceInWindow != undefined) {
+            if (targetInWindow != undefined) {
+                console.log(link)
+                console.log(vis.boxesToDraw)
+                // do nothing, we can't determine the destination
+                return;
+            }
+
+            vis._centerOn(vis.boxData.find(x => x.fqn == link.target || x.signature == link.target))
+
+        } else {
+            if (targetInWindow != undefined) {
+                vis._centerOn(vis.boxData.find(x => x.fqn == link.source || x.signature == link.source));
+            }
+        }
     }
 
     onClick = (item) => {
@@ -876,19 +942,4 @@ class StructureVis {
             .on("click", d => { vis.view = d; vis.render(); vis.updateLinks(); });
     }
 
-    // credits: richard maloney 2006
-    getTintedColor(color, v) {
-        if (color.length > 6) { color = color.substring(1, color.length) }
-        var rgb = parseInt(color, 16);
-        var r = Math.abs(((rgb >> 16) & 0xFF) + v); if (r > 255) r = r - (r - 255);
-        var g = Math.abs(((rgb >> 8) & 0xFF) + v); if (g > 255) g = g - (g - 255);
-        var b = Math.abs((rgb & 0xFF) + v); if (b > 255) b = b - (b - 255);
-        r = Number(r < 0 || isNaN(r)) ? 0 : ((r > 255) ? 255 : r).toString(16);
-        if (r.length == 1) r = '0' + r;
-        g = Number(g < 0 || isNaN(g)) ? 0 : ((g > 255) ? 255 : g).toString(16);
-        if (g.length == 1) g = '0' + g;
-        b = Number(b < 0 || isNaN(b)) ? 0 : ((b > 255) ? 255 : b).toString(16);
-        if (b.length == 1) b = '0' + b;
-        return "#" + r + g + b;
-    }
 }
