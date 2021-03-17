@@ -320,8 +320,12 @@ class StructureVis {
                 // }
 
             }));
+        
 
         vis.update();
+
+        vis.svg.call(zoom.transform, d3.zoomIdentity)
+
     }
 
     update() {
