@@ -26,7 +26,8 @@ function activate(context) {
 				'codemap', // Identifies the type of the webview. Used internally
 				'Codemap', // Title of the panel displayed to the user
 				vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-				{enableScripts: true,} // Webview options
+				{enableScripts: true,
+				retainContextWhenHidden: true} // Webview options
 			);
 
 			let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path
@@ -46,7 +47,7 @@ function activate(context) {
 					case 'open':
 						const fileUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, message.filePath);
 						vscode.window.showTextDocument(fileUri);
-						panel.dispose();
+						// panel.dispose();
 						return;
 					}
 				},
