@@ -71,7 +71,14 @@ function activate(context) {
 				},
 				undefined,
 				context.subscriptions
-			  );
+			);
+
+			panel.onDidDispose(() => {
+					panel = undefined;
+				},
+				null,
+				context.subscriptions
+			);
 		})
 	);
 
