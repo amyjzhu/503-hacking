@@ -54,6 +54,7 @@ class StructureVis {
         this.classesOnly = _config.classesOnly || false;
         this.currentlyHighlighted = [];
         this.linksHighlighted = [];
+        this.clickedNodes = [];
 
         this.level1 = "package";
         this.level2 = "class";
@@ -173,6 +174,7 @@ class StructureVis {
         // vis.boxHeight = sqrtMaxLevel2 * vis.smallBoxHeight * alpha;
         vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
         }
+        
 
         dynamicallySetSizes();
 
@@ -324,6 +326,7 @@ class StructureVis {
 
         vis.update();
 
+        d3.select("svg").on("dblclick.zoom", null);
         vis.svg.call(zoom.transform, d3.zoomIdentity)
 
     }
@@ -489,7 +492,8 @@ class StructureVis {
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
             .attr("stroke", "#999")
-            .attr("stroke-opacity", d => !vis.linksHighlighted.includes(d) && vis.linksHighlighted.length != 0 ? 0.5 : 0.9);
+            .attr("stroke-opacity", d => !vis.linksHighlighted.includes(d) && vis.linksHighlighted.length != 0 ? 0.5 : 0.9)
+            .on("dblclick", d => vis.autoPan(d.target));
 
         vis.links.exit().remove();
 
@@ -767,6 +771,16 @@ class StructureVis {
         return vis.findConnected({ nodes: visited.nodes.concat([item]), links: visited.links.concat(connected) }, todo.slice(1).concat(diff));
     }
 
+    autoPan = (destinationName) => {
+        let vis = this;
+
+        let destination = vis.boxData.find(x => x.fqn == destinationName || x.signature == destinationName)
+        let nx = destination.x * -1 * vis.zoomLevel;
+        let ny = destination.y * -1 * vis.zoomLevel;
+        
+        vis.visArea.attr('transform', `translate(${nx}, ${ny}) scale(${vis.zoomLevel})`);
+    }
+
     onClick = (item) => {
         let vis = this;
 
@@ -774,7 +788,7 @@ class StructureVis {
             vis.classOnClick(item)
         } else {
             if (vis.performanceMode) {
-                vis.linkData.forEach(x => x.highlighted = false);
+                // vis.linkData.forEach(x => x.highlighted = false);
                 vis.linksOnDemand(item);
                 vis.render();
                 vis.updateLinks(); // necessary?
@@ -790,7 +804,15 @@ class StructureVis {
         // avoid looping through data too many times
         // no separate link data, just update on update using the stored links per node of that level
         // vis.findConnected([], [item.fqn]);
-        vis.linksToDraw = item.sourceOf;
+        if (!vis.clickedNodes.includes(item)) {
+            vis.linksToDraw = vis.linksToDraw.concat(item.sourceOf);
+            vis.clickedNodes.push(item);
+        } else {
+            console.log(vis.linksToDraw)
+            vis.linksToDraw = vis.linksToDraw.filter(link => !item.sourceOf.includes(link))
+            vis.clickedNodes = vis.clickedNodes.filter(node => node.fqn != item.fqn)
+        }
+        // vis.linksToDraw = item.sourceOf;
     }
 
     addHighlighting(item) {

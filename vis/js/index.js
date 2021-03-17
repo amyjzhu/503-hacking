@@ -96,7 +96,16 @@ let processJson = ({classData, classNames}) => {
 
     classLinks = Array.from(new Set(classLinks));
 
-    links = links.concat(classLinks);
+    // add extra package links
+    let packageLinks = [];
+    classLinks.map(ml => {
+        let sourcePkg = classContainers.find(m => m.child == ml.source);
+        let targetPkg = classContainers.find(m => m.child == ml.target);
+        if (sourcePkg == undefined || targetPkg == undefined) return;
+        packageLinks.push({source: sourcePkg.parent, target: targetPkg.parent, type: 'class' })
+    })
+
+    links = links.concat(classLinks).concat(packageLinks);
 
     console.log({nodes})
     console.log({links})
