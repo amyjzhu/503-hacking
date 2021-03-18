@@ -50,7 +50,7 @@ function activate(context) {
 			);
 
 
-			let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path.replace(/^([a-zA-Z]):/, "/mnt/$1")
+			let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path.replace(/^\/?([a-zA-Z]):/, "/mnt/$1")
 
 			rootFolderNameGlobal = path.basename(projectAbsolutePath)
 			
@@ -90,8 +90,8 @@ function activate(context) {
 		vscode.commands.registerCommand('codemap.parse', function () {
 			const terminal = vscode.window.createTerminal(`Codemap Terminal`);
 
-			const scriptPath = vscode.Uri.joinPath(context.extensionUri, 'parsing', 'parse.sh').path.replace(/^([a-zA-Z]):/, "/mnt/$1")
-			const jarPath = vscode.Uri.joinPath(context.extensionUri, 'parsing', 'parse-java.jar').path.replace(/^([a-zA-Z]):/, "/mnt/$1")
+			const scriptPath = vscode.Uri.joinPath(context.extensionUri, 'parsing', 'parse.sh').path.replace(/^\/?([a-zA-Z]):/, "bash /mnt/$1")
+			const jarPath = vscode.Uri.joinPath(context.extensionUri, 'parsing', 'parse-java.jar').path.replace(/^\/?([a-zA-Z]):/, "/mnt/$1")
 
 			console.info(scriptPath)
 			console.info(jarPath)
@@ -101,8 +101,8 @@ function activate(context) {
 				prompt: 'Relative path to the sources root',
 				placeholder: 'src/main/java/'
 			}).then(sources => {
-				const sourcesDir = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, sources).path.replace(/^([a-zA-Z]):/, "/mnt/$1")
-				const outputPath = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'data.json').path.replace(/^([a-zA-Z]):/, "/mnt/$1")
+				const sourcesDir = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, sources).path.replace(/^\/?([a-zA-Z]):/, "/mnt/$1")
+				const outputPath = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, 'data.json').path.replace(/^\/?([a-zA-Z]):/, "/mnt/$1")
 				console.info(sourcesDir)
 
 				terminal.sendText(`${scriptPath} ${sourcesDir} ${outputPath} ${jarPath}`);
