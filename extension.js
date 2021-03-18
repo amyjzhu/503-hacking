@@ -20,6 +20,7 @@ function activate(context) {
 			if(panel) {
 				let activeTextEditor = vscode.window.activeTextEditor
 				let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path
+
 				let currentClass = activeTextEditor.document.fileName.replace(projectAbsolutePath, '').substring(1);
 
 				panel.webview.postMessage({
@@ -48,7 +49,8 @@ function activate(context) {
 				} // Webview options
 			);
 
-			let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path
+
+			let projectAbsolutePath = vscode.workspace.workspaceFolders[0].uri.path.replace(/^([a-zA-Z]):/, "/mnt/$1")
 
 			rootFolderNameGlobal = path.basename(projectAbsolutePath)
 			
