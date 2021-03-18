@@ -26,3 +26,10 @@ Because the skeleton example didn't work out of the box, and I couldn't get it t
 ### Requirements
 - NodeJS
 - npm
+
+## UI Improvements Ideas
+- Button to clean all the links so the developer doesn't have to remove all of them manually
+- Ability to zoom by dragging the ruler on the bottom right
+- Add links between packages
+- Color code links based on their target's packages
+- Button to toggle on/off all the links between the methods in a class
