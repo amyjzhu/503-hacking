@@ -2,7 +2,9 @@
 d3.json(dataPathGlobal).then(jsonData => {
     console.log({jsonData})
 
+    console.time('processJson')
     var data = processJson(jsonData);
+    console.timeEnd('processJson')
     console.log(data);
 
     initializeVisualization(data);

@@ -65,6 +65,8 @@ class StructureVis {
     }
 
     initVis() {
+
+        console.time('initVis')
         let vis = this;
 
         vis.center = {
@@ -355,12 +357,14 @@ class StructureVis {
             vis.linkData = vis.data.links;
         }
 
+        console.timeEnd('initVis')
+
+        console.time('vis.update')
         vis.update();
+        console.timeEnd('vis.update')
 
         d3.select("svg").on("dblclick.zoom", null);
         vis.svg.call(vis.zoom.transform, d3.zoomIdentity)
-
-
     }
 
     update() {
