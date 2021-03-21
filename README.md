@@ -42,9 +42,44 @@ Because the skeleton example didn't work out of the box, and I couldn't get it t
 - NodeJS
 - npm
 
-## UI Improvements Ideas
+## Use cases
+- Discover new code base
+- Understand interactions between parts of a project, especially when making changes is helpful
+- Seeing units of code summarized as collections of their immediate children is helpful
+
+## UI Feedback
+- The links were super helpful
+- Switch between source code an visualization was useful
+- **Overlapping elements are terrible**
+- **Zoom levels are jumpy**
+- Font too big, everything doesn't fit on the screen
+- scaling is obtrusive (e.g. using a consistent font size and showing more stuff at a particular zoom level, maybe abstracting methods into points at some level and letting mouseover reveal names)
+- Resizing the window doesn't resize the viewport
+- Type of relationships are not clear (we can fix this by being precise for each level: e.g., methods -> calls, classes -> dependencies / imports)
+- Make dependency direction clearer
+
+## UI Improvement Ideas
+- Would like to see the viz and code at the same time (split screen)
+- Color coding was helpful but needs to be **color-blind friendly**
 - Button to clean all the links so the developer doesn't have to remove all of them manually
 - Ability to zoom by dragging the ruler on the bottom right
 - Add links between packages
 - Color code links based on their target's packages
 - Button to toggle on/off all the links between the methods in a class
+- Keep the same zoom level when you move from vis -> source code -> vis
+- Ability to put the visualization in a split view (in IDE or second screen) to get relevant information based on where I'm in the source file.
+- In split view, the visualization updates based on the active text editor (class) and my cursor (method)
+- Filtered views
+- Showing connections between modules/structs and type classes
+- In C, navigate namespaces, code vs header, where functions are defined
+- Open map to the side of your editor with text-to-map position syncing/"your cursor/currently selected method is here" on the map
+- some info about the last selected unit of code that would let you jump back to it after panning/zooming around
+- similarly, an "undo selection/redo selection" concept for moving between selections, since users understand maps in terms of discrete known positions. 
+- A way to clean all dependency information (arrows) from the map (right now the map gets "dirty" with old selections); - A way to show all dependency information for all children of a unit to quickly summarize connections in a module. 
+- Some kind of flexible "map search" + map filtering. I didn't pay much attention to the directions of dependencies, but - Incorporate liveness into the visualization, e.g. by tracing an actual execution path around the diagram. What I really would have wanted for the title-setting exercise would be something that shows me a map like yours and a running instance of JFreeChart, and when I set a title, I would look at the map to see what parts light up and maybe get a path connecting those parts. Without a running instance of the program (or some proxy for it) I wouldn't trust my analysis.
+- More levels (Google Maps has 10 levels which is why it looks so smooth: humans think mostly in Planet-Continent-City-Neighbourhood-Street)
+- More details for methods or class if I want to focus on them without jumping to the code. E.g., for a method show its dependencies directly instead of the links (some kind of `alt + click` behavior)
+- View Subtype relationship
+- Ability to search without leaving the visualization
+- Group closely related classes together
+- Jump to superclass from inside a class
