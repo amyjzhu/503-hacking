@@ -34,7 +34,9 @@ class StructureVis {
 
         // this.colours = ["red", "blue", "yellow", "green"]\
         // TODO we should make the colours get lighter or darker by level
-        this.colours = d3.interpolateRdYlGn;
+        // this.colours = d3.interpolateRdYlGn;
+        // this.colours = d3.interpolateViridis;
+        this.colours = d3.interpolateWarm;
 
         this.zoomBarHeight = 300;
         this.minZoom = 0.05;
@@ -61,8 +63,31 @@ class StructureVis {
         this.level2 = "class";
         this.level3 = "method";
 
-        this.initVis();
+        this.setLoader(parentDiv);
+
+        new Promise(() => this.initVis()).then(console.log("done!"))
     }
+
+    setLoader() {
+        console.log("loading!!!")
+        let vis = this;
+
+        var opts = {
+            lines: 9, // The number of lines to draw
+            length: 9, // The length of each line
+            width: 5, // The line thickness
+            radius: 14, // The radius of the inner circle
+            color: '#EE3124', // #rgb or #rrggbb or array of colors
+            speed: 1.9, // Rounds per second
+            trail: 40, // Afterglow percentage
+            className: 'spinner', // The CSS class to assign to the spinner
+          };
+
+          var spinner = new Spinner(opts).spin(vis.visArea);
+
+          vis.callWhenLoaded = () => spinner.stop();
+    }
+
 
     processData() {
         let vis = this;
@@ -303,12 +328,10 @@ class StructureVis {
 
         vis.getColour = d => vis.colours(vis.colourScale(d))
 
-        vis.visArea = vis.chart.append("g");
+        vis.visArea = vis.chart.append("g").attr("class", "vis-area");
         vis.zoomText = vis.chart.append("text").attr("class", "zoom-prompt");
 
-        vis.linkArea = vis.visArea.append("g").attr("class", "links")
-            .attr("stroke", "#999")
-            .attr("stroke-opacity", 0.6);
+        vis.linkArea = vis.visArea.append("g").attr("class", "links");
 
         vis.boxArea = vis.visArea.append("g").attr("class", "boxes");
     }
@@ -332,7 +355,6 @@ class StructureVis {
     }
 
     initVis() {
-
         console.time('initVis')
         let vis = this;
 
@@ -388,6 +410,8 @@ class StructureVis {
         console.time('vis.update')
         vis.update();
         console.timeEnd('vis.update')
+
+        vis.callWhenLoaded();
 
         // Disable zoom on double-click
         d3.select("svg").on("dblclick.zoom", null);
@@ -542,27 +566,26 @@ class StructureVis {
         texts.enter().append("text")
             .merge(texts)
             .attr("class", (vis.viewLevel == vis.level2 || vis.viewLevel == vis.level3 ? "zoomed-in-pkg" : "not-zoomed-in-pkg"))
+            .attr("class", "package-name-text")
             .attr("dx", 12)
             .attr("dy", "1em")
             .text(d => d.fqn)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? (vis.classesOnly ? "hidden" : "visible") : "hidden")
-            .style("opacity", d => !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1)
-            .style('font-size', 24)
-            .style("pointer-events", "none");
+            .style("opacity", d => !vis.currentlyHighlighted.includes(d.type + d.fqn) ? 0.5 : 1);
 
         texts.exit().remove();
 
         vis.level2Texts = vis.level2Groups.selectAll("text").data(d => [d]);
         vis.level2Texts = vis.level2Texts.enter().append("text")
             .merge(vis.level2Texts)
+            .attr("class", "class-name-text")
             .attr("dx", 12)
             .attr("dy", "1em")
             .attr("class", (vis.viewLevel == vis.level3 ? "zoomed-in-class" : "not-zoomed-in-class"))
             // .transition()
             .text(d => vis.viewLevel == vis.level1 ? "" : d.name)
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
-            .style("pointer-events", "none");
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
         vis.level2Texts.exit().remove();
 
         var level3Texts = vis.level3Groups.selectAll(".title-text").data(d => [d]);
@@ -573,11 +596,9 @@ class StructureVis {
             .attr("dy", "0.8em")
             // .transition()
             .text(d => vis.viewLevel == vis.level3 ? d.name : "")
-            .style("font-size", "5px")
             .style("font-family", "monospace")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
-            .style("pointer-events", "none");
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
         vis.level2Texts.exit().remove();
 
         var level3BodyTexts = vis.level3Groups.selectAll(".body-text").data(d => d.text == undefined ? [] : d.text.split("\n").map(t => { return { text: t, views: d.views, id: d.type + d.fqn } }));
@@ -588,10 +609,8 @@ class StructureVis {
             .attr("dy", (d, i) => `${5 + i * 1}em`)
             // .transition()
             .text(d => vis.viewLevel == vis.level3 ? d.text : "")
-            .style("font-size", "2px")
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
-            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1)
-            .style("pointer-events", "none");
+            .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
 
         vis.level2Texts.exit().remove();
     }
@@ -600,9 +619,8 @@ class StructureVis {
         let vis = this;
         vis.links = vis.linkArea.selectAll("line").data(vis.linksToDraw, d => { vis.viewLevel == vis.level1 ? d.source.fqn + d.target.fqn : d.source + d.target });
         vis.links = vis.links.join("line")
+            .attr("class", "link")
             .attr("stroke-width", d => d.value)
-            .attr("stroke", "#999")
-            .attr('marker-end', 'url(#arrow)')
             .attr("stroke-opacity", d => !vis.linksHighlighted.includes(d) && vis.linksHighlighted.length != 0 ? 0.5 : 0.9)
             .on("dblclick", d => vis.autoPan(d));
 
@@ -848,6 +866,7 @@ class StructureVis {
     }
 
     onClick = (item) => {
+        // TODO: Hoist items above their siblings to view unobstructed 
         let vis = this;
 
         if ((d3.event.ctrlKey || d3.event.metaKey) && item.type == vis.level2) {
@@ -886,6 +905,7 @@ class StructureVis {
 
         if (!vis.highlightingEnabled) {
             vis.currentlyHighlighted = [item.fqn];
+            // vis.boxesToDraw.filter(b => b != item.fqn).addClass('deselected')
             vis.render();
             vis.updateLinks();
             return;
