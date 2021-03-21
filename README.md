@@ -2,7 +2,7 @@
 ## Directory structure
 The root directory contains the Visual Studio Code plugin framework. `package.json` and `extension.json` are the main file defining the plugin. `extension.json` contains the main logic of the plugin and the html code that's injected into view panel inside VSCode.
 
-- `toy-data/` contains the toy projects.
+- `data/` contains the toy projects.
 - `vis/` contains the visualization code. You can quickly test it by running `vis/index.html`.
 - `parsing/` contains the parsing scripts and libraries for the plugin.
 
