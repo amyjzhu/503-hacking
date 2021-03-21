@@ -65,10 +65,13 @@ class StructureVis {
 
         this.setLoader(parentDiv);
 
-        new Promise(() => this.initVis()).then(console.log("done!"))
+        // setTimeout so drawing the loader element comes 
+        // before all the processing 
+        setTimeout(() => 
+            this.initVis(), 0);
     }
 
-    setLoader() {
+    setLoader(target) {
         console.log("loading!!!")
         let vis = this;
 
@@ -77,13 +80,13 @@ class StructureVis {
             length: 9, // The length of each line
             width: 5, // The line thickness
             radius: 14, // The radius of the inner circle
-            color: '#EE3124', // #rgb or #rrggbb or array of colors
-            speed: 1.9, // Rounds per second
+            color: '#4b2e83', // #rgb or #rrggbb or array of colors
+            speed: 1, // Rounds per second
             trail: 40, // Afterglow percentage
             className: 'spinner', // The CSS class to assign to the spinner
           };
 
-          var spinner = new Spinner(opts).spin(vis.visArea);
+          var spinner = new Spinner(opts).spin(target);
 
           vis.callWhenLoaded = () => spinner.stop();
     }
@@ -91,6 +94,7 @@ class StructureVis {
 
     processData() {
         let vis = this;
+        console.log("processing")
         // create packages using hierarchy data and assign groups
         // propagate groups downwards
         // we need to use numbers for groups because there will be a lot of groups
@@ -411,8 +415,6 @@ class StructureVis {
         vis.update();
         console.timeEnd('vis.update')
 
-        vis.callWhenLoaded();
-
         // Disable zoom on double-click
         d3.select("svg").on("dblclick.zoom", null);
 
@@ -480,6 +482,8 @@ class StructureVis {
             });
 
             vis.initialized = 1;
+            vis.callWhenLoaded();
+        
         }
     }
 
