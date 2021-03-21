@@ -64,16 +64,8 @@ class StructureVis {
         this.initVis();
     }
 
-    initVis() {
-
-        console.time('initVis')
+    processData() {
         let vis = this;
-
-        vis.center = {
-            x: vis.width / 2,
-            y: 1.25 * vis.height / 3
-        };
-
         // create packages using hierarchy data and assign groups
         // propagate groups downwards
         // we need to use numbers for groups because there will be a lot of groups
@@ -92,21 +84,7 @@ class StructureVis {
             .domain([0, Object.values(groupMap).length])
             .range([0, 1])
 
-        vis.getColour = d => vis.colours(vis.colourScale(d))
-
-
-        // TODO make a level1, level2, level3 array for reuse
-
-        vis.visArea = vis.chart.append("g");
-        vis.zoomText = vis.chart.append("text").attr("class", "zoom-prompt");
-
-        vis.linkArea = vis.visArea.append("g").attr("class", "links")
-            .attr("stroke", "#999")
-            .attr("stroke-opacity", 0.6);
-
-        vis.boxArea = vis.visArea.append("g").attr("class", "boxes");
-
-        // append container information to each entity using hierarchy info
+            // append container information to each entity using hierarchy info
         // naive implementation, could be faster
         vis.data.hierarchy.forEach(d => {
             // get child and add parent as container
@@ -156,34 +134,10 @@ class StructureVis {
             vis.level3ByLevel2[id] = vis.boxData.filter(m => m.type == vis.level3 && m.container == id);
         });
 
+    }
 
-        let dynamicallySetSizes = () => {
-            // we need the container to be at least squared big as the height and width 
-            // to avoid overlapping and keep them within the containers
-            let maxLevel3 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
-            let alpha = 1;
-
-            // methods are a bit weird though since their size is variable
-            let sqrtMaxLevel3 = Math.sqrt(maxLevel3);
-            // also, make them square (why not?)
-            vis.level3CollisionSquare = sqrtMaxLevel3 * Math.max(vis.smallestBoxHeight, vis.smallestBoxWidth) * alpha;
-            // vis.smallBoxHeight = sqrtMaxLevel3 * vis.smallestBoxHeight * alpha;
-            // vis.smallBoxWidth = vis.smallBoxHeight;
-
-            // need to determine package sizes based on how many entities there are
-            let maxLevel2 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
-            let sqrtMaxLevel2 = Math.sqrt(maxLevel2);
-            // vis.boxWidth = sqrtMaxLevel2 * vis.smallBoxWidth * alpha;
-            // vis.boxHeight = sqrtMaxLevel2 * vis.smallBoxHeight * alpha;
-            vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
-        }
-
-
-        dynamicallySetSizes();
-
-        function charge() {
-            return -Math.pow(vis.boxHeight, 2.2) * vis.forceStrength;
-        }
+    createForceSimulations() {
+        let vis = this;
 
         vis.level1Simulation = d3.forceSimulation()
             .velocityDecay(0.18)
@@ -195,22 +149,6 @@ class StructureVis {
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .on('tick', () => vis.fastTick(vis.boxGroups));
         vis.level1Simulation.stop();
-
-        console.log(vis.centeredOn);
-        // center an item, if valid
-        if (vis.centeredOn != undefined) {
-            let center = vis.boxData.find(f => f.type + f.filePath == vis.centeredOn);
-
-            center.fx = vis.center.x;
-            center.fy = vis.center.y;
-
-            if (center.type == vis.level2) {
-                let centerContainer = vis.boxData.find(f => `${vis.level1}${center.container}` == f.type + f.fqn);
-                console.log(vis.boxData)
-                centerContainer.fx = vis.center.x - vis.boxWidth / 2 + vis.smallBoxWidth / 2;
-                centerContainer.fy = vis.center.y - vis.boxHeight / 2 + vis.smallBoxHeight / 2;
-            }
-        }
 
 
         // let's also make simulations per class
@@ -255,12 +193,37 @@ class StructureVis {
             mapping.assoc = vis.level3ByLevel2[level2];
             return mapping;
         });
+    }
+    
+    createMarkerDefinitions() {
+        let vis = this;
 
-        console.log(vis.level3Simulations)
-        console.log(vis.level2Simulations)
+        let markerBoxWidth = 20;
+        let markerBoxHeight = 20;
+        let refX = markerBoxWidth / 2;
+        let refY = markerBoxHeight / 2;
+        let markerWidth = 10;
+        let markerHeight = 10;
+        let arrowPoints = [[0, 0], [0, 20], [20, 10]];
 
-        vis.addZoomLevel();
-        vis.addViewButtons();
+        vis.svg
+            .append('defs')
+            .append('marker')
+            .attr('id', 'arrow')
+            .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
+            .attr('refX', refX)
+            .attr('refY', refY)
+            .attr('markerWidth', markerWidth)
+            .attr('markerHeight', markerHeight)
+            .attr('orient', 'auto-start-reverse')
+            .append('path')
+            .attr('d', d3.line()(arrowPoints))
+            .attr('stroke', 'black');
+
+    }
+
+    configureZoomSettings() {
+        let vis = this;
 
         vis.zoom = d3.zoom()
             .scaleExtent([vis.minZoom, vis.maxZoom])
@@ -273,6 +236,7 @@ class StructureVis {
 
             });
 
+        
         vis.svg
             .call(vis.zoom.on("zoom", function () {
                 vis.visArea.attr("transform", d3.event.transform);
@@ -281,7 +245,7 @@ class StructureVis {
                 let ty = d3.event.transform.y / k * -1;
                 let scaledWidth = vis.width / k;
                 let scaledHeight = vis.height / k;
-                // vis.currentCoords = {x0: }
+
                 console.log(d3.event.transform)
                 console.log({ x: tx / k, y: ty / k })
 
@@ -328,31 +292,93 @@ class StructureVis {
                 // }
 
             }));
+    }
 
-        let markerBoxWidth = 20;
-        let markerBoxHeight = 20;
-        let refX = markerBoxWidth / 2;
-        let refY = markerBoxHeight / 2;
-        let markerWidth = 10;
-        let markerHeight = 10;
-        let arrowPoints = [[0, 0], [0, 20], [20, 10]];
+    setUpVisAreas() {
+        let vis = this;
+        vis.center = {
+            x: vis.width / 2,
+            y: 1.25 * vis.height / 3
+        };
 
-        vis.svg
-            .append('defs')
-            .append('marker')
-            .attr('id', 'arrow')
-            .attr('viewBox', [0, 0, markerBoxWidth, markerBoxHeight])
-            .attr('refX', refX)
-            .attr('refY', refY)
-            .attr('markerWidth', markerWidth)
-            .attr('markerHeight', markerHeight)
-            .attr('orient', 'auto-start-reverse')
-            .append('path')
-            .attr('d', d3.line()(arrowPoints))
-            .attr('stroke', 'black');
+        vis.getColour = d => vis.colours(vis.colourScale(d))
 
+        vis.visArea = vis.chart.append("g");
+        vis.zoomText = vis.chart.append("text").attr("class", "zoom-prompt");
+
+        vis.linkArea = vis.visArea.append("g").attr("class", "links")
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6);
+
+        vis.boxArea = vis.visArea.append("g").attr("class", "boxes");
+    }
+
+    centerWindowOnEntity() {
+        let vis = this;
+        if (vis.centeredOn != undefined) {
+            let center = vis.boxData.find(f => f.type + f.filePath == vis.centeredOn);
+
+            center.fx = vis.center.x;
+            center.fy = vis.center.y;
+
+            if (center.type == vis.level2) {
+                let centerContainer = vis.boxData.find(f => `${vis.level1}${center.container}` == f.type + f.fqn);
+                console.log(vis.boxData)
+                centerContainer.fx = vis.center.x - vis.boxWidth / 2 + vis.smallBoxWidth / 2;
+                centerContainer.fy = vis.center.y - vis.boxHeight / 2 + vis.smallBoxHeight / 2;
+            }
+        }
+
+    }
+
+    initVis() {
+
+        console.time('initVis')
+        let vis = this;
+
+        vis.processData();
+
+        vis.setUpVisAreas();
+        
+        let dynamicallySetSizes = () => {
+            // we need the container to be at least squared big as the height and width 
+            // to avoid overlapping and keep them within the containers
+            let maxLevel3 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+            let alpha = 1;
+
+            // methods are a bit weird though since their size is variable
+            let sqrtMaxLevel3 = Math.sqrt(maxLevel3);
+            // also, make them square (why not?)
+            vis.level3CollisionSquare = sqrtMaxLevel3 * Math.max(vis.smallestBoxHeight, vis.smallestBoxWidth) * alpha;
+            // vis.smallBoxHeight = sqrtMaxLevel3 * vis.smallestBoxHeight * alpha;
+            // vis.smallBoxWidth = vis.smallBoxHeight;
+
+            // need to determine package sizes based on how many entities there are
+            let maxLevel2 = Math.max(...Object.values(vis.level2ByLevel1).map(a => a.length));
+            let sqrtMaxLevel2 = Math.sqrt(maxLevel2);
+            // vis.boxWidth = sqrtMaxLevel2 * vis.smallBoxWidth * alpha;
+            // vis.boxHeight = sqrtMaxLevel2 * vis.smallBoxHeight * alpha;
+            vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
+        }
+
+
+        dynamicallySetSizes();
+
+        
+        console.log(vis.centeredOn);
+        vis.centerWindowOnEntity();
+
+        vis.createForceSimulations();
+
+        vis.addZoomLevel();
+        vis.addViewButtons();
+
+        vis.configureZoomSettings();
+
+        vis.createMarkerDefinitions();
 
         if (vis.performanceMode) {
+            // Don't draw links in performance mode
             vis.linksToDraw = [];
             vis.linkData = vis.data.links;
         }
@@ -363,7 +389,10 @@ class StructureVis {
         vis.update();
         console.timeEnd('vis.update')
 
+        // Disable zoom on double-click
         d3.select("svg").on("dblclick.zoom", null);
+
+        // Create an initial zoom event to populate the winodw
         vis.svg.call(vis.zoom.transform, d3.zoomIdentity)
     }
 
@@ -385,9 +414,53 @@ class StructureVis {
         vis.render();
     }
 
-    render() {
+    applyForceSimulations() {
         let vis = this;
+        if (vis.initialized == 0) {
+            // Instantly move packages to final destination
+            // vis.level1Simulation.nodes(vis.boxData).restart();
 
+            vis.level1Simulation.nodes(vis.boxData).restart()
+                .force("link", d3.forceLink(vis.data.links.filter(x => x.type == vis.level1)).id(d => d.fqn))
+
+            for (var i = 0; i < 20; i++) {
+                vis.level1Simulation.tick();
+            }
+            vis.level1Simulation.stop();
+            vis.ticked(vis);
+
+            vis.level2Simulations.forEach(sim => {
+                if (sim.sim == undefined) {
+                    sim.sim = sim.simFn();
+                    sim.sim.nodes(sim.assoc).restart();
+                    for (i = 0; i < 100; i++) {
+                        sim.sim.tick();
+                    }
+                    sim.sim.stop();
+                    vis.level2Ticked(vis);
+                }
+            })
+
+
+            vis.level3Simulations.forEach(sim => {
+                if (sim.sim == undefined) {
+                    // now we need to create it, if it's the first time...
+                    sim.sim = sim.simFn();
+                    sim.sim.nodes(sim.assoc).restart();
+                    for (i = 0; i < 100; i++) {
+                        sim.sim.tick();
+                    }
+                    sim.sim.stop();
+                    vis.level3Ticked(vis);
+                }
+            });
+
+            vis.initialized = 1;
+        }
+    }
+
+    renderEntityBoxes() {
+        let vis = this;
         vis.boxGroupsSelect = vis.boxArea.selectAll("g").data(vis.boxesToDraw.filter(d => d.type == vis.level1), d => { return d.fqn });
         vis.boxGroups = vis.boxGroupsSelect.enter().append("g").attr("class", "boxgroups").merge(vis.boxGroupsSelect);
 
@@ -460,8 +533,10 @@ class StructureVis {
             .transition()
             .style("visibility", d => { return vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden" })
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
+    }
 
-        // vis.level3Rects.exit().remove();
+    renderEntityText() {
+        let vis = this;
 
         var texts = vis.boxGroups.selectAll("text").data(d => [d]);
         texts.enter().append("text")
@@ -519,9 +594,10 @@ class StructureVis {
             .style("pointer-events", "none");
 
         vis.level2Texts.exit().remove();
+    }
 
-        // TODO this might be tricky with visibility
-
+    renderLinks() {
+        let vis = this;
         vis.links = vis.linkArea.selectAll("line").data(vis.linksToDraw, d => { vis.viewLevel == vis.level1 ? d.source.fqn + d.target.fqn : d.source + d.target });
         vis.links = vis.links.join("line")
             .attr("stroke-width", d => d.value)
@@ -531,48 +607,15 @@ class StructureVis {
             .on("dblclick", d => vis.autoPan(d));
 
         vis.links.exit().remove();
+    }
 
-        if (vis.initialized == 0) {
-            // Instantly move packages to final destination
-            // vis.level1Simulation.nodes(vis.boxData).restart();
+    render() {
+        let vis = this;
+        vis.renderEntityBoxes();
+        vis.renderEntityText();
+        vis.renderLinks();
 
-            vis.level1Simulation.nodes(vis.boxData).restart()
-                .force("link", d3.forceLink(vis.data.links.filter(x => x.type == vis.level1)).id(d => d.fqn))
-
-            for (var i = 0; i < 20; i++) {
-                vis.level1Simulation.tick();
-            }
-            vis.level1Simulation.stop();
-            vis.ticked(vis);
-
-            vis.level2Simulations.forEach(sim => {
-                if (sim.sim == undefined) {
-                    sim.sim = sim.simFn();
-                    sim.sim.nodes(sim.assoc).restart();
-                    for (i = 0; i < 100; i++) {
-                        sim.sim.tick();
-                    }
-                    sim.sim.stop();
-                    vis.level2Ticked(vis);
-                }
-            })
-
-
-            vis.level3Simulations.forEach(sim => {
-                if (sim.sim == undefined) {
-                    // now we need to create it, if it's the first time...
-                    sim.sim = sim.simFn();
-                    sim.sim.nodes(sim.assoc).restart();
-                    for (i = 0; i < 100; i++) {
-                        sim.sim.tick();
-                    }
-                    sim.sim.stop();
-                    vis.level3Ticked(vis);
-                }
-            });
-
-            vis.initialized = 1;
-        }
+        vis.applyForceSimulations();
 
     }
 
@@ -613,17 +656,10 @@ class StructureVis {
                     console.log("level2 undefined", level2);
                     console.log("d", d);
                 }
-                // let level2 = vis.boxesToDraw.find(box => box.fqn == d.container && box.type == vis.level2);
 
                 let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
                 let height = level2.y + vis.smallBoxHeight - vis.smallestBoxHeight;
 
-                // let width = level2.x + vis.smallBoxWidth - vis.smallestBoxWidth;
-                // let height = level2.y + vis.smallBoxHeight - d.width;
-
-                // either where we are, or the max coordinate (far edge)
-                // either where we are, or the min coordinate (close edge)
-                // TODO fix the fact that one is anchored to a corner
                 d.x = Math.max(level2.x, Math.min(width, d.x));
                 d.y = Math.max(level2.y, Math.min(height, d.y));
                 return `translate(${d.x}, ${d.y})`;
@@ -664,31 +700,16 @@ class StructureVis {
 
     }
 
-    changeViewLevel(direction) {
+    changeViewLevel() {
         let vis = this;
 
-        // TODO hacky, need to fix this impl later for extensibility
         var viewThreshold = vis.transitionPoints[0];
         var viewThresholdlevel3 = vis.transitionPoints[1];
 
         if (vis.zoomLevel >= viewThreshold && vis.zoomLevel <= viewThresholdlevel3 && vis.viewLevel != vis.level2) {
             vis.level1Simulation.stop();
+
             vis.viewLevel = vis.level2;
-
-            // vis.level2Simulations.forEach(sim => {
-            //     if (sim.sim == undefined) {
-            //         // now we need to create it, if it's the first time...
-            //         sim.sim = sim.simFn();
-            //         sim.sim.nodes(sim.assoc).restart();
-            //     }
-            // })
-
-            // vis.level3Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // })
-
             vis.update();
             vis.updateLinks();
             return true;
@@ -697,18 +718,6 @@ class StructureVis {
         } else if (vis.zoomLevel <= viewThreshold && vis.viewLevel != vis.level1) {
             vis.level1Simulation.stop();
 
-            // vis.level2Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // })
-
-            // vis.level3Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // })
-
             vis.viewLevel = vis.level1;
             vis.update();
             vis.updateLinks();
@@ -716,20 +725,6 @@ class StructureVis {
 
         } else if (vis.zoomLevel >= viewThresholdlevel3 && vis.viewLevel != vis.level3) {
             vis.level1Simulation.stop();
-
-            // vis.level3Simulations.forEach(sim => {
-            //     if (sim.sim == undefined) {
-            //         // now we need to create it, if it's the first time...
-            //         sim.sim = sim.simFn();
-            //         sim.sim.nodes(sim.assoc).restart();
-            //     }
-            // });
-
-            // vis.level2Simulations.forEach(sim => {
-            //     if (sim.sim != undefined) {
-            //         sim.sim.stop();
-            //     }
-            // });
 
             vis.viewLevel = vis.level3;
             vis.update();
@@ -779,10 +774,6 @@ class StructureVis {
         }
         let item = todo[0];
 
-        // TODO this is actually unidirectional
-        // (but we don't display the arrows)
-        // (and we should in the future)
-
         let nodes;
         console.log({ item })
         let connected = vis.boxData.find(f => f.fqn == item).sourceOf;
@@ -815,10 +806,16 @@ class StructureVis {
     _centerOn(destination) {
         console.log({ name: destination.name, x: destination.x, y: destination.y })
         let vis = this;
-        let scaledWidth = (destination.type == vis.level1) ? vis.boxWidth : ((destination.type == vis.level2) ? vis.smallBoxWidth : vis.smallestBoxWidth); //destination.width// / vis.zoomLevel;
-        let scaledHeight = (destination.type == vis.level1) ? vis.boxHeight : ((destination.type == vis.level2) ? vis.smallBoxHeight : vis.smallestBoxHeight);//destination.height// / vis.zoomLevel;
-        let nx = destination.x * -1  + scaledWidth/2//vis.windowX;
-        let ny = destination.y * -1  + scaledHeight/2 //+ vis.windowY;
+        let boxWidth = (destination.type == vis.level1) ? vis.boxWidth : ((destination.type == vis.level2) ? vis.smallBoxWidth : vis.smallestBoxWidth); //destination.width// / vis.zoomLevel;
+        let boxHeight = (destination.type == vis.level1) ? vis.boxHeight : ((destination.type == vis.level2) ? vis.smallBoxHeight : vis.smallestBoxHeight);//destination.height// / vis.zoomLevel;
+        // TODO methods will look slightly off-centre width-wise due to their variable width
+        let scaledWidth = (vis.width / 2) / vis.zoomLevel - (boxWidth / 2) /// vis.zoomLevel
+        let scaledHeight = (vis.height / 2) / vis.zoomLevel - (boxHeight / 2) /// vis.zoomLevel
+        console.log({width: scaledWidth, height: scaledHeight})
+        let nx = destination.x * -1 + scaledWidth//vis.windowX;
+        let ny = destination.y * -1 + scaledHeight //+ vis.windowY;
+
+        console.log(vis.zoomLevel);
 
 
         var transform = d3.zoomIdentity.scale(vis.zoomLevel).translate(nx, ny);
