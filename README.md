@@ -59,6 +59,8 @@ Because the skeleton example didn't work out of the box, and I couldn't get it t
 - Resizing the window doesn't resize the viewport
 - Type of relationships are not clear (we can fix this by being precise for each level: e.g., methods -> calls, classes -> dependencies / imports)
 - Make dependency direction clearer
+- Should show different levels of information when zooming into a package/class/method, shouldn't just be static; i.e., could show private/public/protected for methods, or the number of methods in a class or whether it's an interface or abstract class, or the number of classes in a package. Since the class is so much bigger on the screen at a higher zoom level, it shouldn't just take up the whole screen with a blank box.
+- Another idea to introduce more smooth transitions: gradually make the class/package less and less opaque as you zoom in on it more
 
 ## UI Improvement Ideas
 - Would like to see the viz and code at the same time (split screen)
