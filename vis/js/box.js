@@ -35,8 +35,8 @@ class StructureVis {
         // this.colours = ["red", "blue", "yellow", "green"]\
         // TODO we should make the colours get lighter or darker by level
         // this.colours = d3.interpolateRdYlGn;
-        // this.colours = d3.interpolateViridis;
-        this.colours = d3.interpolateWarm;
+        this.colours = d3.interpolateViridis;
+        // this.colours = d3.interpolateWarm;
 
         this.zoomBarHeight = 300;
         this.minZoom = 0.05;
