@@ -45,6 +45,13 @@ class StructureVis {
 
         this.centeredOn = _config.centeredOnPackage || _config.centeredOnClass;
 
+        if(this.centeredOn == 'random') {
+            let classes = this.data.nodes.filter(node => node.type == 'class')
+            let randomClass = `class${classes[Math.floor(Math.random()*classes.length)].filePath}`
+            console.log(`Random class is ${randomClass}`)
+            this.centeredOn = randomClass
+        }
+
         // this.transitionPoints = [0.25];
         // this.transitionPoints = [1.48, 9.875];
         // this.transitionPoints = [1.01, 9.875];
@@ -342,6 +349,9 @@ class StructureVis {
 
     centerWindowOnEntity() {
         let vis = this;
+
+        console.log(vis.centeredOn);
+
         if (vis.centeredOn != undefined) {
             let center = vis.boxData.find(f => f.type + f.filePath == vis.centeredOn);
 
@@ -387,11 +397,8 @@ class StructureVis {
             vis.level2CollisionSquare = sqrtMaxLevel2 * Math.max(vis.smallBoxHeight, vis.smallBoxWidth) * alpha;
         }
 
-
         dynamicallySetSizes();
 
-        
-        console.log(vis.centeredOn);
         vis.centerWindowOnEntity();
 
         vis.createForceSimulations();
