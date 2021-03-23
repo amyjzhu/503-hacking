@@ -272,6 +272,19 @@ class StructureVis {
 
             });
 
+        $(window).resize(function () {
+            let oldWidth = vis.width;
+            let oldHeight = vis.height;
+            let theSvg = $("svg#vis");
+            vis.width = theSvg.width();
+            vis.height = theSvg.height();
+            console.log("Old width & height: ", oldWidth, oldHeight);
+            console.log("New width & height: ", vis.width, vis.height);
+            d3.select("g.zoombar").attr("transform", `translate(${vis.width - 70}, ${vis.height - vis.zoomBarHeight - 20})`);
+            vis.render();
+            vis.tickAll();
+        })
+
         
         vis.svg
             .call(vis.zoom.on("zoom", function () {
@@ -501,16 +514,42 @@ class StructureVis {
 
         var boxes = vis.boxGroups.selectAll("rect").data(d => [d]);
 
+        function isLevel1(vis) {
+            return vis.viewLevel === vis.level1;
+        }
+        function isLevel2(vis) {
+            return vis.viewLevel === vis.level2;
+        }
+        function isLevel3(vis) {
+            return vis.viewLevel === vis.level3;
+        }
+
+        function getLevelClass(vis) {
+            if (isLevel1(vis)) {
+                return "level-1";
+            } else if (isLevel2(vis)) {
+                return "level-2";
+            }
+            return "level-3";
+        }
+
+        // console.log("View level: ", vis.viewLevel);
+        // console.log("Is level 1?: ", isLevel1(vis))
+        // console.log("Is level 2?: ", isLevel2(vis))
+        // console.log("Is level 3?: ", isLevel3(vis))
+
+
         // packages
         boxes.enter().append("rect")
-            .attr("class", "box")
+            .attr("class", "box hi " + getLevelClass(vis))
             .merge(boxes)
-            .attr("width", vis.boxWidth)
-            .attr("height", vis.boxHeight)
+            .attr("class", "box " + getLevelClass(vis))
+            // .attr("width", vis.boxWidth)
+            // .attr("height", vis.boxHeight)
             // colour coded by group
-            .style("fill", d => vis.viewLevel == vis.level1 ? vis.getColour(d.group) : "none")
-            .style("stroke", d => vis.viewLevel == vis.level1 ? "none" : vis.getColour(d.group))
-            .style("stroke-opacity", vis.viewLevel == vis.level3 ? 0.6 : 1)
+            .style("fill", d => isLevel1(vis) ? vis.getColour(d.group) : "none")
+            .style("stroke", d => isLevel1(vis) ? "none" : vis.getColour(d.group))
+            // .style("stroke-opacity", isLevel3() ? 0.6 : 1)
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
             .on("click", vis.onClick)
@@ -530,12 +569,13 @@ class StructureVis {
             .append("rect")
             .attr("class", "level2-box")
             .merge(vis.level2Rects)
+            .attr("class", "level2-box " + getLevelClass(vis))
             .on("click", vis.onClick)
-            .attr("width", vis.smallBoxWidth)
-            .attr("height", vis.smallBoxHeight)
-            .style("fill", d => vis.viewLevel == vis.level2 ? vis.getColour(d.group) : "none")
-            .style("stroke", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
-            .style("stroke-opacity", vis.viewLevel == vis.level3 ? 0.5 : 1)
+            // .attr("width", vis.smallBoxWidth)
+            // .attr("height", vis.smallBoxHeight)
+            .style("fill", d => isLevel2(vis) ? vis.getColour(d.group) : "none")
+            .style("stroke", d => isLevel3(vis) ? vis.getColour(d.group) : "none")
+            // .style("stroke-opacity", isLevel3(vis) ? 0.5 : 1)
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
             .transition()
@@ -555,13 +595,14 @@ class StructureVis {
             .append("rect")
             .attr("class", "level3-box")
             .merge(vis.level3Rects)
+            .attr("class", "level3-box " + getLevelClass(vis))
             .attr("width", d => {
                 // TODO this should approximate it, but we need to check afterwards
                 return d.name == undefined ? vis.smallestBoxWidth : Math.max(d.name.split("\n").map(s => s.length)) * 3.3// for 2px;
                 // document.getElementById('text').getComputedTextLength()
             })//vis.smallestBoxWidth)
             .attr("height", vis.smallestBoxHeight)
-            .style("fill", d => vis.viewLevel == vis.level3 ? vis.getColour(d.group) : "none")
+            .style("fill", d => isLevel3(vis) ? vis.getColour(d.group) : "none")
             .on("mouseover", d => vis.addHighlighting(d))
             .on("mouseout", d => vis.removeHighlighting(d))
             .on("click", vis.onClick)

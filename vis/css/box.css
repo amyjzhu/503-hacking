@@ -1,0 +1,44 @@
+svg#vis {
+    height: 100%;
+    width: 100%;
+}
+
+
+.in-view {
+    visibility: visible;
+}
+
+.out-of-view {
+    visibility: hidden;
+}
+
+.box {
+    width: 600px;
+    height: 500px;
+    stroke-opacity: 1;
+}
+
+
+
+.box.level-2 {
+    stroke: none;
+    fill: none;
+}
+
+.box.level-3 {
+    stroke-opacity: 0.6;
+}
+
+.level2-box {
+    width: 200px;
+    height: 166px;
+    stroke-opacity: 1;
+}
+
+.level2-box.level-3 {
+    stroke-opacity: 0.5;
+}
+
+.level3-box {
+    height: 15px;
+}
