@@ -7,11 +7,13 @@ public class ClassInfo {
     static final String CLASS_NAME = "className";
     static final String FILE_NAME = "fileName";
     static final String METHODS = "methods";
+    static final String LINE_NUMBER = "lineNumber";
     JSONObject info = new JSONObject();
 
     public ClassInfo() {
         setClassName("");
         setFileName("");
+        setLineNumber(0);
         info.put(METHODS, new JSONArray());
     }
 
@@ -33,6 +35,10 @@ public class ClassInfo {
 
     public void setFileName(String fileName) {
         info.put(FILE_NAME, fileName);
+    }
+
+    public void setLineNumber(int lineNumber) {
+        info.put(LINE_NUMBER, lineNumber);
     }
 
     public void addMethod(JSONObject method) {

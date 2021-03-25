@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.nio.file.Path;
@@ -13,10 +14,12 @@ import java.nio.file.Paths;
 import java.lang.SecurityException;
 import java.io.IOException;
 
+import com.github.javaparser.Position;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
@@ -63,6 +66,9 @@ public class ResolveMethodReferences {
     private static ClassInfo getClassInfo(String fileName, ClassOrInterfaceDeclaration classOrInterface) {
         ClassInfo ci = new ClassInfo();
         String qualifiedName = classOrInterface.resolve().getQualifiedName();
+        SimpleName name = classOrInterface.getName();
+        Optional<Position> pos = name.getBegin();
+        pos.ifPresent(position -> ci.setLineNumber(position.line));
         ci.setClassName(qualifiedName);
         ci.setFileName(fileName);
         return ci;
@@ -86,9 +92,12 @@ public class ResolveMethodReferences {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+        SimpleName name = method.getName();
 
+        mdi.setName(name.asString());
+        Optional<Position> lineNumber = name.getBegin();
+        lineNumber.ifPresent(position -> mdi.setLineNumber(position.line));
 
-        mdi.setName(method.getName().asString());
         NodeList<Modifier> modifiers = method.getModifiers();
         for (Modifier mod : modifiers) {
             switch (mod.getKeyword()) {
@@ -303,6 +312,8 @@ public class ResolveMethodReferences {
             if (leftoverArgs.length == 2) {
                 dataFile = leftoverArgs[1];
             }
+            // Ensure that ~ is properly expanded in paths
+            sourceDir = sourceDir.replaceFirst("^~", System.getProperty("user.home"));
             parse(sourceDir, dataFile);
         } catch (ParseException e) {
             System.out.println("Error parsing command line args.");

@@ -22,7 +22,8 @@ public class MethodDeclarationInfo {
     static final String TYPE_PARAMETERS = "typeParameters";
     static final String PARAMETERS = "parameters";
     static final String CALLS = "calls";
-    private HashSet<String> calledMethods = new HashSet<String>();
+    static final String LINE_NUMBER = "lineNumber";
+    private HashSet<String> calledMethods = new HashSet<>();
 
     public MethodDeclarationInfo() {
         setVisibility("public");
@@ -37,6 +38,7 @@ public class MethodDeclarationInfo {
         setDeclaration("");
         setName("");
         setReturn("");
+        setLineNumber(0);
         methodInfo.put(TYPE_PARAMETERS, new JSONArray());
         methodInfo.put(PARAMETERS, new JSONArray());
         methodInfo.put(CALLS, new JSONArray());
@@ -56,6 +58,10 @@ public class MethodDeclarationInfo {
 
     public int getNumCalls() {
         return getCalls().length();
+    }
+
+    public void setLineNumber(int lineNumber) {
+        methodInfo.put(LINE_NUMBER, lineNumber);
     }
 
     private JSONArray getCalls() {
