@@ -31,6 +31,7 @@ rect .deselected {
 
 text {
     pointer-events: none;
+    font-family: monospace;
 }
 
 text.package-name-text {
@@ -39,7 +40,6 @@ text.package-name-text {
 
 text.title-text {
     font-size: 5px;
-    font-family: monospace;
 }
 
 text.body-text {

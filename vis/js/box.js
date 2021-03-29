@@ -648,7 +648,6 @@ class StructureVis {
             .attr("dy", "0.8em")
             // .transition()
             .text(d => vis.viewLevel == vis.level3 ? d.name : "")
-            .style("font-family", "monospace")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
         vis.level2Texts.exit().remove();
