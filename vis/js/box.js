@@ -29,6 +29,9 @@ class StructureVis {
         this.smallestBoxWidth = 200 / 3;
         this.smallestBoxHeight = 500 / 32;
 
+        this.defaultClassWidth = 200;
+        this.defaultClassHeight = 500 / 3;
+
         this.highlightingEnabled = _config.highlighting;
         this.performanceMode = _config.performanceMode;
 
@@ -758,11 +761,18 @@ class StructureVis {
                 .style("visibility", d => vis.view == "default" || (d.source.views.includes(vis.view) && d.target.views.includes(vis.view)) ?
                     (vis.classesOnly ? "hidden" : "visible") : "hidden")
 
-
+        } else if (vis.viewLevel == vis.level2) {
+            vis.links
+                .attr("x1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x + vis.defaultClassWidth / 2})
+                .attr("y1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y + vis.defaultClassHeight / 2})
+                .attr("x2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.x })
+                .attr("y2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.y })
+                .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
+                    && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         } else {
             vis.links
-                .attr("x1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x })
-                .attr("y1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y })
+                .attr("x1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x})
+                .attr("y1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y})
                 .attr("x2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.x })
                 .attr("y2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.y })
                 .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
