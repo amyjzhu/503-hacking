@@ -4,7 +4,13 @@
 
 #button-area {
     height: 40px;
-    /* background-color: red; */
+    border-bottom: 2px solid rgb(50, 50, 50);
+    padding: 5px;
+}
+
+#button-area > button {
+    height: 100%;
+    margin-right: 5px;
 }
 
 #container {
