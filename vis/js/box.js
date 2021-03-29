@@ -70,6 +70,8 @@ class StructureVis {
         this.level2 = "class";
         this.level3 = "method";
 
+        this.methodSuffix = "(...)" // Suffix to append to method names. `doStuff` becomes `doStuff(...)`
+
         this.setLoader(parentDiv);
 
         // setTimeout so drawing the loader element comes 
@@ -597,10 +599,10 @@ class StructureVis {
             .merge(vis.level3Rects)
             .attr("class", "level3-box " + getLevelClass(vis))
             .attr("width", d => {
-                // TODO this should approximate it, but we need to check afterwards
-                return d.name == undefined ? vis.smallestBoxWidth : Math.max(d.name.split("\n").map(s => s.length)) * 3.3// for 2px;
-                // document.getElementById('text').getComputedTextLength()
-            })//vis.smallestBoxWidth)
+                return d.name == undefined ? 
+                    vis.smallestBoxWidth : 
+                    (Math.max(d.name.split("\n").map(s => s.length)) + this.methodSuffix.length) * 3.1
+            })
             .attr("height", vis.smallestBoxHeight)
             .style("fill", d => isLevel3(vis) ? vis.getColour(d.group) : "none")
             .on("mouseover", d => vis.addHighlighting(d))
@@ -647,7 +649,7 @@ class StructureVis {
             .attr("dx", 1)
             .attr("dy", "0.8em")
             // .transition()
-            .text(d => vis.viewLevel == vis.level3 ? d.name : "")
+            .text(d => vis.viewLevel == vis.level3 ? d.name + vis.methodSuffix : "")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
             .style("opacity", d => vis.currentlyHighlighted.length != 0 && !vis.currentlyHighlighted.includes(d.fqn) ? 0.5 : 1);
         vis.level2Texts.exit().remove();
@@ -685,7 +687,6 @@ class StructureVis {
         vis.renderLinks();
 
         vis.applyForceSimulations();
-
     }
 
     tickAll() {
