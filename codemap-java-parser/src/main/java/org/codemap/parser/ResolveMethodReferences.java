@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -23,6 +24,8 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
@@ -65,7 +68,47 @@ public class ResolveMethodReferences {
 
     private static ClassInfo getClassInfo(String fileName, ClassOrInterfaceDeclaration classOrInterface) {
         ClassInfo ci = new ClassInfo();
-        String qualifiedName = classOrInterface.resolve().getQualifiedName();
+        ResolvedReferenceTypeDeclaration classType = classOrInterface.resolve();
+        String qualifiedName = classType.getQualifiedName();
+        List<ResolvedReferenceType> directAncestors = classType.getAncestors();
+        for (ResolvedReferenceType ancestor : directAncestors) {
+            String ancestorName = ancestor.getQualifiedName();
+            if (sharePackagePrefix(qualifiedName, ancestorName)) {
+                ci.addSuperClass(ancestorName);
+            }
+        }
+        ci.setIsInterface(classOrInterface.isInterface());
+        ci.setIsInnerClass(classOrInterface.isInnerClass());
+        ci.setAnonymous(classType.isAnonymousClass());
+
+        NodeList<Modifier> mods = classOrInterface.getModifiers();
+        for (Modifier mod : mods) {
+            switch (mod.getKeyword()) {
+                case PUBLIC:
+                    ci.setVisibility("public");
+                    break;
+                case PRIVATE:
+                    ci.setVisibility("private");
+                    break;
+                case PROTECTED:
+                    ci.setVisibility("protected");
+                    break;
+                case ABSTRACT:
+                    ci.setAbstract(true);
+                    break;
+                case STATIC:
+                    ci.setStatic(true);
+                    break;
+                case STRICTFP:
+                    ci.setStrictfp(true);
+                    break;
+                case FINAL:
+                    ci.setFinal(true);
+                    break;
+                default:
+                    break;
+            }
+        }
         SimpleName name = classOrInterface.getName();
         Optional<Position> pos = name.getBegin();
         pos.ifPresent(position -> ci.setLineNumber(position.line));
@@ -198,6 +241,7 @@ public class ResolveMethodReferences {
     private static void writeData(String dataFile,
                                   JSONArray classList,
                                   JSONArray classNamesList,
+                                  JSONArray interfaceNamesList,
                                   AtomicReference<Integer> numErrors,
                                   AtomicReference<Integer> numMethodCalls) {
         System.out.println("Number of errors: " + numErrors.toString());
@@ -205,6 +249,7 @@ public class ResolveMethodReferences {
         JSONObject allData = new JSONObject();
         allData.put("classNames", classNamesList);
         allData.put("classData", classList);
+        allData.put("interfaceNames", interfaceNamesList);
         try (FileWriter file = new FileWriter(dataFile)) {
             file.write(allData.toString(2));
             file.flush();
@@ -219,6 +264,7 @@ public class ResolveMethodReferences {
 
         ArrayList<String> fileNames = getJavaFiles(sourceDir);
         JSONArray classList = new JSONArray();
+        JSONArray interfaceNamesList = new JSONArray();
         JSONArray classNamesList = new JSONArray();
         AtomicReference<Integer> numErrors = new AtomicReference<>(0);
         AtomicReference<Integer> numMethodCalls = new AtomicReference<>(0);
@@ -254,14 +300,18 @@ public class ResolveMethodReferences {
                                       numErrors.set(numErrors.get() + 1);
                                   }
                               });
-                                numMethodCalls.set(numMethodCalls.get() + methodInfo.getNumCalls());
+                            numMethodCalls.set(numMethodCalls.get() + methodInfo.getNumCalls());
                             classInfo.addMethod(methodInfo.getJSON());
                         });
-                classNamesList.put(classInfo.getClassName());
+                if (classInfo.isInterface()) {
+                    interfaceNamesList.put(classInfo.getClassName());
+                } else {
+                    classNamesList.put(classInfo.getClassName());
+                }
                 classList.put(classInfo.getJSON());
             });
         }
-        writeData(dataFile, classList, classNamesList, numErrors, numMethodCalls);
+        writeData(dataFile, classList, classNamesList, interfaceNamesList, numErrors, numMethodCalls);
     }
 
     private static void setupParser(String sourceDir) {
