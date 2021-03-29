@@ -648,6 +648,7 @@ class StructureVis {
             .merge(level3Texts)
             .attr("dx", 1)
             .attr("dy", "0.8em")
+            .attr("dominant-baseline", "hanging")
             // .transition()
             .text(d => vis.viewLevel == vis.level3 ? d.name + vis.methodSuffix : "")
             .style("visibility", d => vis.view == "default" || d.views.includes(vis.view) ? "visible" : "hidden")
