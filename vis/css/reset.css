@@ -1,3 +1,7 @@
+/* 
+	Resets the CSS style from browser's defaults. To adjust style, please modify another CSS file.
+ */
+ 
 html {
 	box-sizing: border-box;
 	font-size: 13px;
@@ -28,48 +32,4 @@ ul {
 img {
 	max-width: 100%;
 	height: auto;
-}
-
-#button-area {
-    height: 40px;
-    /* background-color: red; */
-}
-
-#container {
-    /* background-color: yellow; */
-    position: absolute;
-    top: 40px;
-    bottom: 0px;
-    width:100%;
-}
-
-.content {
-    color:#fff;
-}
-
-
-rect .deselected {
-    opacity: 0.5
-}
-
-text {
-    pointer-events: none;
-}
-
-text.package-name-text {
-    font-size: 24px;
-}
-
-text.title-text {
-    font-size: 5px;
-    font-family: monospace;
-}
-
-text.body-text {
-    font-size: 2px;
-}
-
-.link {
-    stroke: #999;
-    marker-end: url(#arrow);
 }
