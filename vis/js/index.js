@@ -1,10 +1,11 @@
 // Load data from disk and initialize the visualization
 d3.json(dataPathGlobal).then(jsonData => {
-    console.log({jsonData})
+    console.log({ jsonData })
 
     console.time('processJson')
     var data = processJson(jsonData);
     console.timeEnd('processJson')
+
     console.log(data);
 
     initializeVisualization(data);
@@ -14,13 +15,13 @@ var visvis = undefined;
 
 let initializeVisualization = (data) => {
     var vis = new StructureVis({
-        parentElement: "#vis", 
+        parentElement: "#vis",
         data: data,
         centeredOnClass: centerOnGlobal, // Please control centeredOnClass via the centerOnGlobal in index.html.
         classesOnly: false,
         highlighting: false,
         performanceMode: true,
-     });
+    });
 
     vis.classOnClick = getPathOnClick;
 
@@ -44,13 +45,13 @@ window.addEventListener('message', event => {
 });
 
 // Transform JSON to flat representations: nodes, links, hierarchy
-let processJson = ({classData, classNames}) => {
+let processJson = ({ classData, classNames }) => {
 
-    console.log({classData})
+    console.log({ classData })
 
     let classNodes = classData.map(item => ({
-        fqn: item.className, 
-        name: getShortName(item.className), 
+        fqn: item.className,
+        name: getShortName(item.className),
         filePath: makeRelative(item.fileName),
         type: "class"
     }));
@@ -93,12 +94,12 @@ let processJson = ({classData, classNames}) => {
 
         // Remove parents that are classes until we find a package.
         while (isClass(parent)) {
-            parent = getPackage(parent)    
+            parent = getPackage(parent)
         }
 
         return {
             parent: parent,
-            child: fqnClassName, 
+            child: fqnClassName,
             type: 'class'
         }
     });
@@ -111,7 +112,7 @@ let processJson = ({classData, classNames}) => {
         let sourceClass = methodContainers.find(m => m.child == ml.source);
         let targetClass = methodContainers.find(m => m.child == ml.target);
         if (targetClass == undefined || sourceClass == undefined) return;
-        classLinks.push({source: sourceClass.parent, target: targetClass.parent, type: 'class' })
+        classLinks.push({ source: sourceClass.parent, target: targetClass.parent, type: 'class' })
     })
 
     classLinks = Array.from(new Set(classLinks));
@@ -122,16 +123,16 @@ let processJson = ({classData, classNames}) => {
         let sourcePkg = classContainers.find(m => m.child == ml.source);
         let targetPkg = classContainers.find(m => m.child == ml.target);
         if (sourcePkg == undefined || targetPkg == undefined) return;
-        packageLinks.push({source: sourcePkg.parent, target: targetPkg.parent, type: 'class' })
+        packageLinks.push({ source: sourcePkg.parent, target: targetPkg.parent, type: 'class' })
     })
 
     links = links.concat(classLinks).concat(packageLinks);
 
-    console.log({nodes})
-    console.log({links})
-    console.log({hierarchy})
+    console.log({ nodes })
+    console.log({ links })
+    console.log({ hierarchy })
 
-    return {nodes: nodes, links: links, hierarchy: hierarchy}
+    return { nodes: nodes, links: links, hierarchy: hierarchy }
 }
 
 let getPathOnClick = (d) => {
@@ -152,7 +153,7 @@ function getShortName(fullQualifiedName) {
 }
 
 // Converts a fully qualified class name and method name to a method FQN.
-function getMethodFqn(classFqn, methodName){
+function getMethodFqn(classFqn, methodName) {
     return classFqn + "." + methodName + "()";
 }
 
@@ -171,7 +172,7 @@ function isClass(classFqn) {
 // Attempts to make an absolute path relative IF the global variable `rootFolderNameGlobal` is set.
 // Will delete the path before encountering `rootFolderNameGlobal`.
 function makeRelative(absolutePath) {
-    if(!rootFolderNameGlobal){ return absolutePath;}
+    if (!rootFolderNameGlobal) { return absolutePath; }
 
     let index = absolutePath.indexOf(rootFolderNameGlobal) + rootFolderNameGlobal.length;
 

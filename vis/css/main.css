@@ -1,0 +1,52 @@
+/* 
+    General stylesheet for the visualization canvas and elements.
+*/
+
+#button-area {
+    height: 40px;
+    border-bottom: 2px solid rgb(50, 50, 50);
+    padding: 5px;
+}
+
+#button-area > button {
+    height: 100%;
+    margin-right: 5px;
+}
+
+#container {
+    /* background-color: yellow; */
+    position: absolute;
+    top: 40px;
+    bottom: 0px;
+    width: 100%;
+}
+
+.content {
+    color: #fff;
+}
+
+rect .deselected {
+    opacity: 0.5
+}
+
+text {
+    pointer-events: none;
+    font-family: monospace;
+}
+
+text.package-name-text {
+    font-size: 24px;
+}
+
+text.title-text {
+    font-size: 5px;
+}
+
+text.body-text {
+    font-size: 2px;
+}
+
+.link {
+    stroke: #999;
+    marker-end: url(#arrow);
+}
