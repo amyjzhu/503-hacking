@@ -1,6 +1,11 @@
-// Load data from disk and initialize the visualization
-d3.json(dataPathGlobal).then(jsonData => {
-    console.log({ jsonData })
+var visvis = undefined;
+
+main();
+
+async function main() {
+    const jsonData = await d3.json(dataPathGlobal);
+    
+    console.log({jsonData})
 
     console.time('processJson')
     var data = processJson(jsonData);
@@ -9,9 +14,7 @@ d3.json(dataPathGlobal).then(jsonData => {
     console.log(data);
 
     initializeVisualization(data);
-})
-
-var visvis = undefined;
+}
 
 let initializeVisualization = (data) => {
     var vis = new StructureVis({
@@ -29,20 +32,22 @@ let initializeVisualization = (data) => {
     // TODO we should also have a different views data structure to help us filter elements
 }
 
-// Receives messages sent from the extension.
-window.addEventListener('message', event => {
+function initEventListeners() {
+    // Receives messages sent from the extension.
+    window.addEventListener('message', event => {
 
-    const message = event.data;
+        const message = event.data;
 
-    switch (message.command) {
-        case 'center':
-            console.log("It works");
-            console.log(message.class);
-            console.log(visvis)
-            visvis.centerOn(message.class);
-            break;
-    }
-});
+        switch (message.command) {
+            case 'center':
+                console.log("It works");
+                console.log(message.class);
+                console.log(visvis)
+                visvis.centerOn(message.class);
+                break;
+        }
+    });
+}
 
 // Transform JSON to flat representations: nodes, links, hierarchy
 let processJson = ({ classData, classNames }) => {
