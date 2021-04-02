@@ -268,8 +268,8 @@ class StructureVis {
 
         vis.zoom = d3.zoom()
             .scaleExtent([vis.minZoom, vis.maxZoom])
-            .filter(function () {
-                d3.event.preventDefault();
+            .filter(function (event) {
+                // event.preventDefault(); // Changing it doesn't seem to do anything. Can it be removed? 
                 // 0 is left mouse, 1 is wheel, 2 is right mouse
                 return (event.button === 0 ||
                     event.button === 1 ||
@@ -292,15 +292,15 @@ class StructureVis {
 
         
         vis.svg
-            .call(vis.zoom.on("zoom", function () {
-                vis.visArea.attr("transform", d3.event.transform);
-                let k = d3.event.transform.k;
-                let tx = d3.event.transform.x / k * -1;
-                let ty = d3.event.transform.y / k * -1;
+            .call(vis.zoom.on("zoom", function ({transform}, d) {
+                vis.visArea.attr("transform", transform);
+                let k = transform.k;
+                let tx = transform.x / k * -1;
+                let ty = transform.y / k * -1;
                 let scaledWidth = vis.width / k;
                 let scaledHeight = vis.height / k;
 
-                console.log(d3.event.transform)
+                console.log(transform)
                 console.log({ x: tx / k, y: ty / k })
 
                 vis.windowX = tx;
@@ -336,7 +336,7 @@ class StructureVis {
 
                 // width and height also change with size
                 let changed = vis.changeViewLevel();
-                vis.zoomLevel = d3.event.transform.k;
+                vis.zoomLevel = transform.k;
                 vis.updateZoomLevel();
 
                 // if (!changed) {
@@ -928,11 +928,11 @@ class StructureVis {
         }
     }
 
-    onClick = (item) => {
+    onClick = (event, item) => {
         // TODO: Hoist items above their siblings to view unobstructed 
         let vis = this;
 
-        if ((d3.event.ctrlKey || d3.event.metaKey) && item.type == vis.level2) {
+        if ((event.ctrlKey || event.metaKey) && item.type == vis.level2) {
             vis.classOnClick(item)
         } else {
             if (vis.performanceMode) {
