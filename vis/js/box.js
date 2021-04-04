@@ -6,7 +6,6 @@ class StructureVis {
         this.config = {
             parentElement: _config.parentElement,
         }
-        this.config.margin = _config.margin || { top: 60, bottom: 20, right: 20, left: 50 }
         this.data = _config.data;
 
         var parentDiv = document.getElementById("container");
