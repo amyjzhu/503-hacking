@@ -1,7 +1,5 @@
 "use strict";
 
-var visvis = undefined;
-
 main();
 
 async function main() {
@@ -15,7 +13,9 @@ async function main() {
 
     console.log(data);
 
-    initializeVisualization(data);
+    let vis = initializeVisualization(data);
+
+    initEventListeners(vis);
 }
 
 let initializeVisualization = (data) => {
@@ -30,11 +30,10 @@ let initializeVisualization = (data) => {
 
     vis.classOnClick = getPathOnClick;
 
-    visvis = vis;
-    // TODO we should also have a different views data structure to help us filter elements
+    return vis;
 }
 
-function initEventListeners() {
+function initEventListeners(vis) {
     // Receives messages sent from the extension.
     window.addEventListener('message', event => {
 
@@ -44,8 +43,8 @@ function initEventListeners() {
             case 'center':
                 console.log("It works");
                 console.log(message.class);
-                console.log(visvis)
-                visvis.centerOn(message.class);
+                console.log(vis)
+                vis.centerOn(message.class);
                 break;
         }
     });
