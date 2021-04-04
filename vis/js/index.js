@@ -18,7 +18,7 @@ async function main() {
     initEventListeners(vis);
 }
 
-let initializeVisualization = (data) => {
+function initializeVisualization (data) {
     var vis = new StructureVis({
         parentElement: "#vis",
         data: data,
@@ -51,7 +51,7 @@ function initEventListeners(vis) {
 }
 
 // Transform JSON to flat representations: nodes, links, hierarchy
-let processJson = ({ classData, classNames }) => {
+function processJson({ classData, classNames }) {
 
     console.log({ classData })
 
@@ -141,8 +141,7 @@ let processJson = ({ classData, classNames }) => {
     return { nodes: nodes, links: links, hierarchy: hierarchy }
 }
 
-let getPathOnClick = (d) => {
-    // console.log(d.filePath)
+function getPathOnClick(d) {
 
     // Sending messages to the plugin
     vscode.postMessage({
