@@ -1,3 +1,5 @@
+"use strict";
+
 var visvis = undefined;
 
 main();
@@ -153,7 +155,7 @@ let getPathOnClick = (d) => {
 // Converts a Fully Qualified Name to a short name
 // e.g., org.animals.Poodle -> Poodle
 function getShortName(fullQualifiedName) {
-    res = fullQualifiedName.split('.'); // There might be a more efficient way to do this.
+    let res = fullQualifiedName.split('.'); // There might be a more efficient way to do this.
     return res[res.length - 1] // Return the last element, which is the class name.
 }
 
