@@ -283,8 +283,8 @@ class StructureVis {
             let theSvg = $("svg#vis");
             vis.width = theSvg.width();
             vis.height = theSvg.height();
-            console.log("Old width & height: ", oldWidth, oldHeight);
-            console.log("New width & height: ", vis.width, vis.height);
+            // console.log("Old width & height: ", oldWidth, oldHeight);
+            // console.log("New width & height: ", vis.width, vis.height);
             d3.select("g.zoombar").attr("transform", `translate(${vis.width - 70}, ${vis.height - vis.zoomBarHeight - 20})`);
             vis.render();
             vis.tickAll();
@@ -300,8 +300,8 @@ class StructureVis {
                 let scaledWidth = vis.width / k;
                 let scaledHeight = vis.height / k;
 
-                console.log(d3.event.transform)
-                console.log({ x: tx / k, y: ty / k })
+                // console.log(d3.event.transform)
+                // console.log({ x: tx / k, y: ty / k })
 
                 vis.windowX = tx;
                 vis.windowY = ty;
@@ -331,8 +331,8 @@ class StructureVis {
                 }
 
                 vis.boxesToDraw = vis.boxData.filter(vis.withinFrame);
-                console.log("Boxes to draw")
-                console.log(vis.boxesToDraw)
+                // console.log("Boxes to draw")
+                // console.log(vis.boxesToDraw)
 
                 // width and height also change with size
                 let changed = vis.changeViewLevel();
@@ -762,13 +762,160 @@ class StructureVis {
                     (vis.classesOnly ? "hidden" : "visible") : "hidden")
 
         } else if (vis.viewLevel == vis.level2) {
+            function getCenterX(found) {
+                return found === undefined ? 0 : found.x + vis.defaultClassWidth / 2;
+            }
+
+            function getCenterY(found) {
+                return found === undefined ? 0 : found.y + vis.defaultClassHeight / 2;
+            }
+
+            function getAngle(found1, found2) {
+                return Math.atan2(found2.y - found1.y, found2.x - found1.x);
+            }
+
+            function getTheta(x1, y1, x2, y2) {
+                return Math.atan2(y2 - y1, x2 - x1);
+            }
+
+            function getSourceLinkX(d) {
+                let source = vis.boxData.find(data => d.source === data.fqn)
+                let target = vis.boxData.find(data => d.target === data.fqn)
+
+
+
+                if (source !== undefined && target !== undefined) {
+                    let sourceX = getCenterX(source);
+                    let sourceY = getCenterY(source);
+                    let targetX = getCenterX(target);
+                    let targetY = getCenterY(target);
+                    let center = {
+                        "x": sourceX,
+                        "y": sourceY
+                    }
+                    let targetCenter = {
+                        "x": targetX,
+                        "y": targetY
+                    }
+                    let angle = getAngle(center, targetCenter)
+
+                    let topY = source.y;
+                    let botY = source.y + vis.defaultClassHeight;
+                    let leftX = source.x;
+                    let rightX = source.x + vis.defaultClassWidth;
+                    let topLeftAngle = getAngle(center, source);
+                    let topRightAngle = getTheta(sourceX, sourceY, source.x + vis.defaultClassWidth, source.y);
+                    let botRightAngle = getTheta(sourceX, sourceY, source.x + vis.defaultClassWidth, source.y + vis.defaultClassHeight)
+                    let botLeftAngle = getTheta(sourceX, sourceY, source.x, source.y + vis.defaultClassHeight)
+                    let relY = sourceY - targetY;
+                    let relX = sourceX - targetX;
+                    if (angle >= topLeftAngle && angle < topRightAngle) {
+                        console.log("On the top x: ", d)
+                        let relTopY = topY - targetY;
+
+                        return ((relTopY / relY) * relX) + targetX;
+                    }
+                    if (angle < topLeftAngle || angle >= botLeftAngle) {
+                        // On the left
+                        // let relLeftX = leftX - target.x;
+                        console.log("On the left x: ", d)
+                        return leftX;
+                    }
+                    if (angle < botLeftAngle && angle >= botRightAngle) {
+                        // On the bottom
+                        console.log("On the bottom x: ", d)
+                        let relBotY = botY - targetY;
+                        return ((relBotY / relY) * relX) + targetX;
+                    }
+                    if (angle < botRightAngle && angle >= topRightAngle) {
+                        // on the right
+                        console.log("On the right x: ", d)
+                        return rightX;
+                    }
+                }
+                return 0;
+            }
+
+            function getSourceLinkY(d) {
+                let source = vis.boxData.find(data => d.source === data.fqn)
+                let target = vis.boxData.find(data => d.target === data.fqn)
+
+                if (source !== undefined && target !== undefined) {
+                    // let angle = getAngle(source, target);
+                    let sourceX = getCenterX(source);
+                    let sourceY = getCenterY(source);
+                    let targetX = getCenterX(target);
+                    let targetY = getCenterY(target);
+                    let center = {
+                        "x": sourceX,
+                        "y": sourceY
+                    }
+                    let targetCenter = {
+                        "x": targetX,
+                        "y": targetY
+                    }
+                    let angle = getAngle(center, targetCenter)
+
+                    let topY = source.y;
+                    let botY = source.y + vis.defaultClassHeight;
+                    let leftX = source.x;
+                    let rightX = source.x + vis.defaultClassWidth;
+                    let topLeftAngle = getAngle(center, source);
+                    let topRightAngle = getTheta(sourceX, sourceY, source.x + vis.defaultClassWidth, source.y);
+                    let botRightAngle = getTheta(sourceX, sourceY, source.x + vis.defaultClassWidth, source.y + vis.defaultClassHeight)
+                    let botLeftAngle = getTheta(sourceX, sourceY, source.x, source.y + vis.defaultClassHeight)
+                    let relY = sourceY - targetY;
+                    let relX = sourceX - targetX;
+                    if (angle >= topLeftAngle && angle < topRightAngle) {
+                        console.log("On the top y", d)
+                        return topY;
+                        // let relTopY = topY - target.y;
+                        //
+                        // return ((relTopY / relY) * relX) + target.x;
+                    }
+                    if (angle < topLeftAngle || angle >= botLeftAngle) {
+                        // On the left
+                        console.log("On the left y: ", d)
+                        console.log(angle, topLeftAngle, botLeftAngle)
+                        let relLeftX = leftX - targetX;
+                        return ((relLeftX / relX) * relY) + targetY;
+                    }
+                    if (angle < botLeftAngle && angle >= botRightAngle) {
+                        console.log("On the bottom y: ", d)
+                        // On the bottom
+                        // let relBotY = botY - target.y;
+                        // return ((relBotY / relY) * relX) + target.x;
+                        return botY;
+                    }
+                    if (angle < botRightAngle && angle >= topRightAngle) {
+                        // on the right
+                        console.log("On the right y: ", d)
+                        let relRightX = rightX - targetX;
+                        return ((relRightX / relX) * relY) + targetY;
+                    }
+                }
+                return 0;
+            }
             vis.links
-                .attr("x1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x + vis.defaultClassWidth / 2})
-                .attr("y1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.y + vis.defaultClassHeight / 2})
-                .attr("x2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.x })
-                .attr("y2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return found == undefined ? 0 : found.y })
+                .attr("x1", getSourceLinkX)
+                .attr("y1", getSourceLinkY)
+                .attr("x2", d => getSourceLinkX({
+                    "target": d.source,
+                    "source": d.target
+                }))
+                .attr("y2", d => getSourceLinkY({
+                    "target": d.source,
+                    "source": d.target
+                }))
                 .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
                     && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
+            // vis.links
+            //     .attr("x1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return getCenterX(found) })
+            //     .attr("y1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return getCenterY(found) })
+            //     .attr("x2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return getCenterX(found) })
+            //     .attr("y2", d => { let found = vis.boxData.find(data => d.target == data.fqn); return getCenterY(found) })
+            //     .style("visibility", d => vis.view == "default" || (vis.boxData.find(data => d.source == data.fqn).views.includes(vis.view)
+            //         && vis.boxData.find(data => d.target == data.fqn).views.includes(vis.view)) ? "visible" : "hidden")
         } else {
             vis.links
                 .attr("x1", d => { let found = vis.boxData.find(data => d.source == data.fqn); return found == undefined ? 0 : found.x})
@@ -885,7 +1032,7 @@ class StructureVis {
     }
 
     _centerOn(destination) {
-        console.log({ name: destination.name, x: destination.x, y: destination.y })
+        // console.log({ name: destination.name, x: destination.x, y: destination.y })
         let vis = this;
         let boxWidth = (destination.type == vis.level1) ? vis.boxWidth : ((destination.type == vis.level2) ? vis.smallBoxWidth : vis.smallestBoxWidth); //destination.width// / vis.zoomLevel;
         let boxHeight = (destination.type == vis.level1) ? vis.boxHeight : ((destination.type == vis.level2) ? vis.smallBoxHeight : vis.smallestBoxHeight);//destination.height// / vis.zoomLevel;
@@ -896,7 +1043,7 @@ class StructureVis {
         let nx = destination.x * -1 + scaledWidth//vis.windowX;
         let ny = destination.y * -1 + scaledHeight //+ vis.windowY;
 
-        console.log(vis.zoomLevel);
+        // console.log(vis.zoomLevel);
 
 
         var transform = d3.zoomIdentity.scale(vis.zoomLevel).translate(nx, ny);
@@ -913,8 +1060,8 @@ class StructureVis {
 
         if (sourceInWindow != undefined) {
             if (targetInWindow != undefined) {
-                console.log(link)
-                console.log(vis.boxesToDraw)
+                // console.log(link)
+                // console.log(vis.boxesToDraw)
                 // do nothing, we can't determine the destination
                 return;
             }
