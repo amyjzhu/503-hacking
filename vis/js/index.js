@@ -1,6 +1,11 @@
-// Load data from disk and initialize the visualization
-d3.json(dataPathGlobal).then(jsonData => {
-    console.log({ jsonData })
+"use strict";
+
+main();
+
+async function main() {
+    const jsonData = await d3.json(dataPathGlobal);
+    
+    console.log({jsonData})
 
     console.time('processJson')
     var data = processJson(jsonData);
@@ -8,12 +13,12 @@ d3.json(dataPathGlobal).then(jsonData => {
 
     console.log(data);
 
-    initializeVisualization(data);
-})
+    let vis = initializeVisualization(data);
 
-var visvis = undefined;
+    initEventListeners(vis);
+}
 
-let initializeVisualization = (data) => {
+function initializeVisualization (data) {
     var vis = new StructureVis({
         parentElement: "#vis",
         data: data,
@@ -25,27 +30,28 @@ let initializeVisualization = (data) => {
 
     vis.classOnClick = getPathOnClick;
 
-    visvis = vis;
-    // TODO we should also have a different views data structure to help us filter elements
+    return vis;
 }
 
-// Receives messages sent from the extension.
-window.addEventListener('message', event => {
+function initEventListeners(vis) {
+    // Receives messages sent from the extension.
+    window.addEventListener('message', event => {
 
-    const message = event.data;
+        const message = event.data;
 
-    switch (message.command) {
-        case 'center':
-            console.log("It works");
-            console.log(message.class);
-            console.log(visvis)
-            visvis.centerOn(message.class);
-            break;
-    }
-});
+        switch (message.command) {
+            case 'center':
+                console.log("It works");
+                console.log(message.class);
+                console.log(vis)
+                vis.centerOn(message.class);
+                break;
+        }
+    });
+}
 
 // Transform JSON to flat representations: nodes, links, hierarchy
-let processJson = ({ classData, classNames }) => {
+function processJson({ classData, classNames }) {
 
     console.log({ classData })
 
@@ -135,8 +141,7 @@ let processJson = ({ classData, classNames }) => {
     return { nodes: nodes, links: links, hierarchy: hierarchy }
 }
 
-let getPathOnClick = (d) => {
-    // console.log(d.filePath)
+function getPathOnClick(d) {
 
     // Sending messages to the plugin
     vscode.postMessage({
@@ -148,7 +153,7 @@ let getPathOnClick = (d) => {
 // Converts a Fully Qualified Name to a short name
 // e.g., org.animals.Poodle -> Poodle
 function getShortName(fullQualifiedName) {
-    res = fullQualifiedName.split('.'); // There might be a more efficient way to do this.
+    let res = fullQualifiedName.split('.'); // There might be a more efficient way to do this.
     return res[res.length - 1] // Return the last element, which is the class name.
 }
 
