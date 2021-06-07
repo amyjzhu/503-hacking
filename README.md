@@ -1,7 +1,7 @@
 # Code Map
 Live at http://amy.zhucchini.ca/503-hacking/vis/index.html
 
-Report at https://github.com/amyjzhu/503-hacking/raw/master/cse503-report.pdf
+Report at https://github.com/amyjzhu/503-hacking/blob/master/cse503-report.pdf
 
 ## Directory structure
 The root directory contains the Visual Studio Code plugin framework. `package.json` and `extension.json` are the main file defining the plugin. `extension.json` contains the main logic of the plugin and the html code that's injected into view panel inside VSCode.
